@@ -1,0 +1,21 @@
+{
+  "name": "NeoParkingAPI",
+  "root": "apps/api",
+  "sourceRoot": "apps/api/src",
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "./gradlew bootRun",
+        "cwd": "apps/api"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && ./gradlew build"
+      }
+    }
+  }
+}
