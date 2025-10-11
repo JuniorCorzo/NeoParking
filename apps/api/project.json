@@ -10,12 +10,6 @@
         "command": "./gradlew bootRun",
         "cwd": "apps/api"
       }
-    },
-    "build": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "cd apps/api && ./gradlew build"
-      }
     }
   }
 }
