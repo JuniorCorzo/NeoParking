@@ -118,15 +118,90 @@ La aplicación se diseñará como SaaS multitenant: una sola instancia de la apl
 - **Terminales de pago y otros dispositivos:** Ejemplo: terminal de pago de salida que autoriza apertura de barrera tras pago[\[13\]](https://parklio.com/es/software-de-aparcamiento/sistema-de-gestion-de-aparcamiento#:~:text=,Acepta%20diversos%20m%C3%A9todos%20de%20pago). Estos dispositivos se integrarán vía API (Webhooks) o directamente se marcarán como pagos manuales en el sistema.
 - En resumen, se emplearán APIs REST para pagos, protocolos estándar para lectores/BX, plugins o PoC para hardware especializado (sensores, cámaras). El integrador de hardware trabajará junto a los proveedores para habilitar estas conexiones.
 ## <a name="modelo-de-datos-básico-entidades-clave"></a>Modelo de datos básico / Entidades clave
-- **Parqueadero:** id; nombre; dirección completa; capacidad total; dueño/propietario (referencia a Owner); zona horaria; moneda por defecto; horario de operación; atributos adicionales (ej. coordenadas).
-- **Plaza (Slot):** id; parqueadero\_id; número o código interno; tipo de plaza (auto, moto, discapacitado, EV, etc.); zona/área; estado actual (libre, reservada, ocupada); posición en mapa (opcional); sensor asociada (opcional).
-- **Tarifa:** id; parqueadero\_id; descripción; precio por unidad de tiempo (por minuto, hora); tiempo mínimo cobrado; unidad de tiempo base; vehículo\_tipo (si aplica); horario de vigencia (p.ej. tarifas diferentes por día de la semana); políticas especiales (first free minutes, tarifa diaria máxima, etc.).
-- **Reserva:** id; plaza\_id; usuario\_id (conductor); inicio\_datetime; fin\_datetime; estado (activa, cancelada, finalizada); fecha de creación; método de pago (si se preautoriza un pago) o código de reserva.
-- **Ticket de estacionamiento:** id; plaza\_id; licencia\_vehículo; usuario\_id (cliente, opcional); hora\_entrada; hora\_salida; reserva\_id (si vino de reserva); tarifa\_aplicada; total\_a\_cobrar; estado (abierto, cerrado); método\_pago; referencia\_transacción.
-- **Usuario:** id; nombre completo; correo electrónico; contraseña (hash); rol (Owner, Manager, Operador, Conductor, Auditor); parqueadero\_id (para roles internos); datos de contacto; fecha de creación.
-- **Transacción:** id; ticket\_id o reserva\_id; fecha; monto; método de pago (tarjeta, efectivo, etc.); estado (éxito, fallida); detalles del proveedor de pagos (por ej. ID de transacción externa).
-- **RegistroEntradaSalida:** (opcional, relacionado con Ticket) id; ticket\_id; hora\_entrada; hora\_salida; lugar de registro (p.ej. terminal identificador); notas (pérdida de ticket, incidente).
-- **Propietario (Owner):** id; nombre de empresa o persona; datos de contacto; email; fecha de registro; estado activo/inactivo; configuración del parqueadero (p.ej. branding, límites de usuarios). *(En la práctica, Owner es un Usuario con rol Owner más campos de organización.)*
+- **Parqueadero:**
+  - id
+  - nombre
+  - dirección completa
+  - capacidad total
+  - dueño/propietario (referencia a Owner)
+  - zona horaria
+  - moneda por defecto
+  - horario de operación
+  - atributos adicionales (ej. coordenadas)
+- **Plaza (Slot):**
+  - id
+  - parqueadero_id
+  - número o código interno
+  - tipo de plaza (auto, moto, discapacitado, EV, etc.)
+  - zona/área
+  - estado actual (libre, reservada, ocupada)
+  - posición en mapa (opcional)
+  - sensor asociada (opcional)
+- **Tarifa:**
+  - id
+  - parqueadero_id
+  - descripción
+  - precio por unidad de tiempo (por minuto, hora)
+  - tiempo mínimo cobrado
+  - unidad de tiempo base
+  - vehículo_tipo (si aplica)
+  - horario de vigencia (p.ej. tarifas diferentes por día de la semana)
+  - políticas especiales (first free minutes, tarifa diaria máxima, etc.)
+- **Reserva:**
+  - id
+  - plaza_id
+  - usuario_id (conductor)
+  - inicio_datetime
+  - fin_datetime
+  - estado (activa, cancelada, finalizada)
+  - fecha de creación
+  - método de pago (si se preautoriza un pago) o código de reserva
+- **Ticket de estacionamiento:**
+  - id
+  - plaza_id
+  - licencia_vehículo
+  - usuario_id (cliente, opcional)
+  - hora_entrada
+  - hora_salida
+  - reserva_id (si vino de reserva)
+  - tarifa_aplicada
+  - total_a_cobrar
+  - estado (abierto, cerrado)
+  - método_pago
+  - referencia_transacción
+- **Usuario:**
+  - id
+  - nombre completo
+  - correo electrónico
+  - contraseña (hash)
+  - rol (Owner, Manager, Operador, Conductor, Auditor)
+  - parqueadero_id (para roles internos)
+  - datos de contacto
+  - fecha de creación
+- **Transacción:**
+  - id
+  - ticket_id o reserva_id
+  - fecha
+  - monto
+  - método de pago (tarjeta, efectivo, etc.)
+  - estado (éxito, fallida)
+  - detalles del proveedor de pagos (por ej. ID de transacción externa)
+- **RegistroEntradaSalida:** (opcional, relacionado con Ticket)
+  - id
+  - ticket_id
+  - hora_entrada
+  - hora_salida
+  - lugar de registro (p.ej. terminal identificador)
+  - notas (pérdida de ticket, incidente)
+- **Propietario (Owner):**
+  - id
+  - nombre de empresa o persona
+  - datos de contacto
+  - email
+  - fecha de registro
+  - estado activo/inactivo
+  - configuración del parqueadero (p.ej. branding, límites de usuarios)
+  - *(En la práctica, Owner es un Usuario con rol Owner más campos de organización.)*
 ## <a name="reglas-de-negocio-críticas"></a>Reglas de negocio críticas
 - **Tarificación por fracción de tiempo:** Se cobrará por minuto u hora según lo definido. Ejemplo: tarifa X por hora con unidad de cobro en fracciones (cobro proporcional). Se puede definir tiempo mínimo (p.ej. la primera media hora siempre completa) para asegurar pago mínimo.
 - **Tarifas variables:** Se podrán establecer tarifas diferentes según la zona del parqueadero o el tipo de vehículo (auto, moto, camión)[\[10\]](https://parklio.com/es/software-de-aparcamiento/sistema-de-gestion-de-aparcamiento#:~:text=Establece%20diferentes%20tarifas%20para%20distintas,adapten%20a%20tus%20necesidades%20espec%C3%ADficas). Por ejemplo, zona VIP +20%, auto > moto, etc.
