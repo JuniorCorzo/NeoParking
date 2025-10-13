@@ -1,0 +1,116 @@
+package dev.angelcorzo.neoparking.usecase.registertenant;
+
+import dev.angelcorzo.neoparking.model.tenants.Tenants;
+import dev.angelcorzo.neoparking.model.tenants.gateways.TenantsRepository;
+import dev.angelcorzo.neoparking.model.users.Users;
+import dev.angelcorzo.neoparking.model.users.enums.Roles;
+import dev.angelcorzo.neoparking.model.users.exceptions.EmailAlreadyExistsException;
+import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class RegisterTenantUseCaseTest {
+
+    private final UUID tenantId = UUID.randomUUID();
+    private final UUID userId = UUID.randomUUID();
+    // Mocks for dependencies (ports in hexagonal architecture)
+    @Mock
+    private UsersRepository usersRepository;
+    @Mock
+    private TenantsRepository tenantsRepository;
+    // Injects mocks into the class under test
+    @InjectMocks
+    private RegisterTenantUseCase registerTenantUseCase;
+    private Users userToRegister;
+    private Tenants tenantToRegister;
+
+    @BeforeEach
+    void setUp() {
+        // Input data for tests
+        tenantToRegister = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Tenant")
+                .build();
+
+        userToRegister = Users.builder()
+                .id(userId)
+                .fullName("Test User")
+                .email("test@example.com")
+                .password("password123")
+                .contactInfo("3000000000")
+                .build();
+    }
+
+    @Test
+    @DisplayName("Should successfully register a tenant and a user")
+    void shouldRegisterTenantAndUserSuccessfully() {
+        // Arrange
+
+        // 1. When checking if email exists, return false (does not exist)
+        when(usersRepository.existsByEmail(userToRegister.getEmail())).thenReturn(false);
+
+        // 2. When saving the tenant, return the same tenant (simulating save)
+        when(tenantsRepository.save(any(Tenants.class))).thenReturn(tenantToRegister);
+
+        // 3. When saving the user, return the same user
+        when(usersRepository.save(any(Users.class))).thenReturn(userToRegister);
+
+        // Act
+        RegisterTenantUseCase.RegisterTenantResponse response = registerTenantUseCase.register(userToRegister, tenantToRegister);
+
+        // Assert
+
+        // Verify that the response is not null and contains the expected data
+        assertNotNull(response);
+        assertEquals(tenantId, response.getTenant().getId());
+        assertEquals(userId, response.getUser().getId());
+        assertEquals(Roles.OWNER, response.getUser().getRole());
+
+        // ArgumentCaptor to verify the state of the User object passed to the save method
+        ArgumentCaptor<Users> userCaptor = ArgumentCaptor.forClass(Users.class);
+
+        // Verify that repository methods were called
+        verify(usersRepository, times(1)).existsByEmail("test@example.com");
+        verify(tenantsRepository, times(1)).save(any(Tenants.class));
+        verify(usersRepository, times(1)).save(userCaptor.capture()); // Capture the argument
+
+        // Verify that the tenant ID was correctly assigned to the user before saving
+        assertEquals(tenantId, userCaptor.getValue().getTenantId());
+    }
+
+    @Test
+    @DisplayName("Should throw EmailAlreadyExistsException if email already exists")
+    void shouldThrowExceptionWhenEmailAlreadyExists() {
+        // Arrange
+
+        // 1. When checking if email exists, return true (it does exist)
+        when(usersRepository.existsByEmail(userToRegister.getEmail())).thenReturn(true);
+
+        // Act & Assert
+
+        // Verify that the correct exception is thrown
+        EmailAlreadyExistsException exception = assertThrows(EmailAlreadyExistsException.class, () -> {
+            registerTenantUseCase.register(userToRegister, tenantToRegister);
+        });
+
+        // Optional: verify the exception message
+        assertEquals("El email test@example.com ya existe", exception.getMessage());
+
+        // VERY IMPORTANT: Verify that nothing was attempted to be saved
+        verify(tenantsRepository, never()).save(any(Tenants.class));
+        verify(usersRepository, never()).save(any(Users.class));
+    }
+}
