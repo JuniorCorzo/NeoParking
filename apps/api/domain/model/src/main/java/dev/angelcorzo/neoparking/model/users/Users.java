@@ -20,6 +20,8 @@ public class Users {
     private Roles role;
     private UUID tenantId;
     private String contactInfo;
+    private UUID deletedBy;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    private OffsetDateTime deletedAt;
 }

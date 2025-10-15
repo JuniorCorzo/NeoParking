@@ -4,7 +4,11 @@ public enum ErrorMessagesModel {
     INVITATION_NOT_FOUND("Invitación no encontrada"),
     INVITATION_EXPIRED("La invitación expiro"),
     INVITATION_ALREADY_ACCEPTED("La invitación fue aceptada el %s"),
-    USER_NOT_EXIST_EMAIL("El usuario con email %s no existe"),;
+    USER_NOT_EXIST_EMAIL("El usuario con email %s no existe"),
+    USER_NOT_EXIST_ID("El usuario con ID %s no existe"),
+    USER_NOT_EXIST_IN_TENANT("El usuario no esta asociado al tenant"),
+    USER_ALREADY_DEACTIVATED("El usuario %s ya fue desactivado"),
+    LAST_OWNER_CANNOT_BE_DEACTIVATED("El ultimo dueño no puede ser desactivado"),;
 
     private final String template;
     ErrorMessagesModel(String template) {
