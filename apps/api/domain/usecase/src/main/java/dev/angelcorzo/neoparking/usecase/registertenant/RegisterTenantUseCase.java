@@ -21,7 +21,7 @@ public final class RegisterTenantUseCase {
 
         final Tenants tenantCreated = this.tenantsRepository.save(tenant);
 
-        user.setTenantId(tenantCreated.getId());
+        user.setTenant(tenantCreated);
         user.setRole(Roles.OWNER);
         final Users userCreated = this.usersRepository.save(user);
 

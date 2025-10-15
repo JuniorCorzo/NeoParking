@@ -36,11 +36,17 @@ class RegisterTenantUseCaseTest {
     private RegisterTenantUseCase registerTenantUseCase;
     private Users userToRegister;
     private Tenants tenantToRegister;
+    private Tenants tenant;
 
     @BeforeEach
     void setUp() {
         // Input data for tests
         tenantToRegister = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Tenant")
+                .build();
+
+        tenant = Tenants.builder()
                 .id(tenantId)
                 .companyName("Test Tenant")
                 .build();
@@ -75,7 +81,7 @@ class RegisterTenantUseCaseTest {
 
         // Verify that the response is not null and contains the expected data
         assertNotNull(response);
-        assertEquals(tenantId, response.getTenant().getId());
+        assertEquals(tenantToRegister, response.getTenant());
         assertEquals(userId, response.getUser().getId());
         assertEquals(Roles.OWNER, response.getUser().getRole());
 
@@ -87,8 +93,9 @@ class RegisterTenantUseCaseTest {
         verify(tenantsRepository, times(1)).save(any(Tenants.class));
         verify(usersRepository, times(1)).save(userCaptor.capture()); // Capture the argument
 
-        // Verify that the tenant ID was correctly assigned to the user before saving
-        assertEquals(tenantId, userCaptor.getValue().getTenantId());
+        // Verify that the tenant was correctly assigned to the user before saving
+        assertEquals(tenant, userCaptor.getValue().getTenant());
+        assertEquals(tenantId, userCaptor.getValue().getTenant().getId());
     }
 
     @Test
