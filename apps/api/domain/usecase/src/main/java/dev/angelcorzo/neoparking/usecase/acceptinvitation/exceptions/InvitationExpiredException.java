@@ -1,3 +1,4 @@
+
 package dev.angelcorzo.neoparking.usecase.acceptinvitation.exceptions;
 
 import dev.angelcorzo.neoparking.model.exceptions.ErrorMessagesModel;

@@ -1,5 +1,7 @@
 package dev.angelcorzo.neoparking.usecase.acceptinvitation;
 
+import dev.angelcorzo.neoparking.model.tenants.Tenants;
+import dev.angelcorzo.neoparking.model.tenants.gateways.TenantsRepository;
 import dev.angelcorzo.neoparking.model.userinvitations.InvitationNotFoundException;
 import dev.angelcorzo.neoparking.model.userinvitations.UserInvitationStatus;
 import dev.angelcorzo.neoparking.model.userinvitations.UserInvitations;
@@ -37,12 +39,12 @@ public final class AcceptInvitationUseCase {
 
     private void updateUserFromInvitation(final Users user, final UserInvitations invitation) {
         user.setEmail(invitation.getInvitedEmail());
-        user.setTenantId(invitation.getTenantId());
+        user.setTenant(invitation.getTenant());
         user.setRole(invitation.getRole());
     }
 
     private void validateInvitation(final UserInvitations invitation) {
-        if (this.usersRepository.existsByEmailAndTenantId(invitation.getInvitedEmail(), invitation.getTenantId())) {
+        if (this.usersRepository.existsByEmailAndTenantId(invitation.getInvitedEmail(), invitation.getTenant().getId())) {
             throw new UserAlreadyExistsInTenantException(invitation.getInvitedEmail());
         }
         if (invitation.getStatus() == UserInvitationStatus.ACCEPTED) {
