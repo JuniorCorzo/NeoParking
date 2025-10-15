@@ -8,7 +8,9 @@ public enum ErrorMessagesModel {
     USER_NOT_EXIST_ID("El usuario con ID %s no existe"),
     USER_NOT_EXIST_IN_TENANT("El usuario no esta asociado al tenant"),
     USER_ALREADY_DEACTIVATED("El usuario %s ya fue desactivado"),
-    LAST_OWNER_CANNOT_BE_DEACTIVATED("El ultimo dueño no puede ser desactivado"),;
+    LAST_OWNER_CANNOT_BE_DEACTIVATED("El ultimo dueño no puede ser desactivado"),
+    TENANT_NOT_EXISTS("El inquilino con ID %s no esta registrado")
+    ;
 
     private final String template;
     ErrorMessagesModel(String template) {
