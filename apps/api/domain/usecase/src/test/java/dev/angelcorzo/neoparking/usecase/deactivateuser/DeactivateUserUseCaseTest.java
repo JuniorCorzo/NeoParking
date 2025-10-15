@@ -1,13 +1,21 @@
 package dev.angelcorzo.neoparking.usecase.deactivateuser;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import dev.angelcorzo.neoparking.model.exceptions.ErrorMessagesModel;
+import dev.angelcorzo.neoparking.model.tenants.Tenants;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
-import dev.angelcorzo.neoparking.model.users.exceptions.UserNotExistsException;
-import dev.angelcorzo.neoparking.model.users.exceptions.UserAlreadyDeactivatedException;
-import dev.angelcorzo.neoparking.model.users.exceptions.UserNotExistsInTenantException;
 import dev.angelcorzo.neoparking.model.users.exceptions.LastOwnerCannotBeDeactivatedException;
+import dev.angelcorzo.neoparking.model.users.exceptions.UserAlreadyDeactivatedException;
+import dev.angelcorzo.neoparking.model.users.exceptions.UserNotExistsException;
+import dev.angelcorzo.neoparking.model.users.exceptions.UserNotExistsInTenantException;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
+import java.time.OffsetDateTime;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,14 +23,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.OffsetDateTime;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("DeactivateUserUseCase - Unit Tests")
@@ -45,12 +45,17 @@ class DeactivateUserUseCaseTest {
         final UUID tenantId = UUID.randomUUID();
         final OffsetDateTime beforeDeactivation = OffsetDateTime.now();
 
+        Tenants tenant = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Company")
+                .build();
+
         Users userToDeactivate = Users.builder()
                 .id(userToDeactivateId)
                 .email("operator@example.com")
                 .fullName("Operator User")
                 .role(Roles.OPERATOR)
-                .tenantId(tenantId)
+                .tenant(tenant)
                 .createdAt(OffsetDateTime.now().minusDays(10))
                 .deletedAt(null) // Usuario activo
                 .build();
@@ -104,11 +109,16 @@ class DeactivateUserUseCaseTest {
         final UUID deactivatedById = UUID.randomUUID();
         final UUID tenantId = UUID.randomUUID();
 
+        Tenants tenant = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Company")
+                .build();
+
         Users ownerToDeactivate = Users.builder()
                 .id(ownerToDeactivateId)
                 .email("owner1@example.com")
                 .role(Roles.OWNER)
-                .tenantId(tenantId)
+                .tenant(tenant)
                 .deletedAt(null)
                 .build();
 
@@ -146,12 +156,16 @@ class DeactivateUserUseCaseTest {
         final UUID lastOwnerId = UUID.randomUUID();
         final UUID deactivatedById = UUID.randomUUID();
         final UUID tenantId = UUID.randomUUID();
+        final Tenants tenant = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Company")
+                .build();
 
         Users lastOwner = Users.builder()
                 .id(lastOwnerId)
                 .email("lastowner@example.com")
                 .role(Roles.OWNER)
-                .tenantId(tenantId)
+                .tenant(tenant)
                 .deletedAt(null)
                 .build();
 
@@ -170,9 +184,7 @@ class DeactivateUserUseCaseTest {
 
         // When & Then
         LastOwnerCannotBeDeactivatedException exception = 
-            assertThrows(LastOwnerCannotBeDeactivatedException.class, () -> {
-                deactivateUserUseCase.deactivate(command);
-            });
+            assertThrows(LastOwnerCannotBeDeactivatedException.class, () -> deactivateUserUseCase.deactivate(command));
 
         assertEquals(ErrorMessagesModel.LAST_OWNER_CANNOT_BE_DEACTIVATED.toString(),
                      exception.getMessage());
@@ -187,11 +199,16 @@ class DeactivateUserUseCaseTest {
         final UUID deactivatedById = UUID.randomUUID();
         final UUID tenantId = UUID.randomUUID();
 
+        final Tenants tenant = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Company")
+                .build();
+
         Users alreadyDeactivatedUser = Users.builder()
                 .id(userId)
                 .email("deactivated@example.com")
                 .role(Roles.MANAGER)
-                .tenantId(tenantId)
+                .tenant(tenant)
                 .deletedAt(OffsetDateTime.now().minusDays(5)) // Ya desactivado
                 .build();
 
@@ -208,9 +225,7 @@ class DeactivateUserUseCaseTest {
 
         // When & Then
         UserAlreadyDeactivatedException exception = 
-            assertThrows(UserAlreadyDeactivatedException.class, () -> {
-                deactivateUserUseCase.deactivate(command);
-            });
+            assertThrows(UserAlreadyDeactivatedException.class, () -> deactivateUserUseCase.deactivate(command));
 
         assertEquals(ErrorMessagesModel.USER_ALREADY_DEACTIVATED.format(userId),
                      exception.getMessage());
@@ -241,9 +256,7 @@ class DeactivateUserUseCaseTest {
 
         // When & Then
         UserNotExistsException exception = 
-            assertThrows(UserNotExistsException.class, () -> {
-                deactivateUserUseCase.deactivate(command);
-            });
+            assertThrows(UserNotExistsException.class, () -> deactivateUserUseCase.deactivate(command));
 
         assertEquals(ErrorMessagesModel.USER_NOT_EXIST_ID.format(nonExistentUserId),
                      exception.getMessage());
@@ -272,9 +285,7 @@ class DeactivateUserUseCaseTest {
 
         // When & Then
         UserNotExistsInTenantException exception = 
-            assertThrows(UserNotExistsInTenantException.class, () -> {
-                deactivateUserUseCase.deactivate(command);
-            });
+            assertThrows(UserNotExistsInTenantException.class, () -> deactivateUserUseCase.deactivate(command));
 
         assertEquals(ErrorMessagesModel.USER_NOT_EXIST_IN_TENANT.format(userId),
                      exception.getMessage());
@@ -288,11 +299,15 @@ class DeactivateUserUseCaseTest {
         final UUID userId = UUID.randomUUID();
         final UUID nonExistentDeactivatorId = UUID.randomUUID();
         final UUID tenantId = UUID.randomUUID();
+        final Tenants tenant = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Company")
+                .build();
 
         Users user = Users.builder()
                 .id(userId)
                 .role(Roles.OPERATOR)
-                .tenantId(tenantId)
+                .tenant(tenant)
                 .deletedAt(null)
                 .build();
 
@@ -307,9 +322,7 @@ class DeactivateUserUseCaseTest {
 
         // When & Then
         UserNotExistsException exception = 
-            assertThrows(UserNotExistsException.class, () -> {
-                deactivateUserUseCase.deactivate(command);
-            });
+            assertThrows(UserNotExistsException.class, () -> deactivateUserUseCase.deactivate(command));
 
         assertEquals(ErrorMessagesModel.USER_NOT_EXIST_ID.format(nonExistentDeactivatorId),
                      exception.getMessage());
@@ -324,19 +337,23 @@ class DeactivateUserUseCaseTest {
         // Given
         final UUID ownerId = UUID.randomUUID();
         final UUID tenantId = UUID.randomUUID();
+        final Tenants tenant = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Company")
+                .build();
 
         Users owner = Users.builder()
                 .id(ownerId)
                 .email("owner@example.com")
                 .role(Roles.OWNER)
-                .tenantId(tenantId)
+                .tenant(tenant)
                 .deletedAt(null)
                 .build();
 
         DeactivateUserUseCase.DeactivateUserCommand command = 
             DeactivateUserUseCase.DeactivateUserCommand.builder()
                 .userIdToDeactivate(ownerId)
-                .deactivatedBy(ownerId) // Auto-desactivación
+                .deactivatedBy(ownerId) // Autodesactivación
                 .tenantId(tenantId)
                 .build();
 
@@ -367,11 +384,15 @@ class DeactivateUserUseCaseTest {
         final UUID deactivatedById = UUID.randomUUID();
         final UUID tenantId = UUID.randomUUID();
         final OffsetDateTime originalUpdatedAt = OffsetDateTime.now().minusDays(5);
+        final Tenants tenant = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Company")
+                .build();
 
         Users user = Users.builder()
                 .id(userId)
                 .role(Roles.DRIVER)
-                .tenantId(tenantId)
+                .tenant(tenant)
                 .updatedAt(originalUpdatedAt)
                 .deletedAt(null)
                 .build();

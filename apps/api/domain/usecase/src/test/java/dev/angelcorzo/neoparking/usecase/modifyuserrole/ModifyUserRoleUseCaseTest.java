@@ -1,6 +1,7 @@
 package dev.angelcorzo.neoparking.usecase.modifyuserrole;
 
 import dev.angelcorzo.neoparking.model.exceptions.ErrorMessagesModel;
+import dev.angelcorzo.neoparking.model.tenants.Tenants;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.exceptions.UserNotExistsException;
@@ -40,12 +41,17 @@ class ModifyUserRoleUseCaseTest {
         final Roles currentRole = Roles.OPERATOR;
         final Roles newRole = Roles.MANAGER;
 
+        Tenants tenant = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Company")
+                .build();
+
         Users existingUser = Users.builder()
                 .id(userId)
                 .email("user@example.com")
                 .fullName("Test User")
                 .role(currentRole)
-                .tenantId(tenantId)
+                .tenant(tenant)
                 .createdAt(OffsetDateTime.now())
                 .build();
 
@@ -69,7 +75,8 @@ class ModifyUserRoleUseCaseTest {
         assertNotNull(capturedUser);
         assertEquals(newRole, capturedUser.getRole());
         assertEquals(userId, capturedUser.getId());
-        assertEquals(tenantId, capturedUser.getTenantId());
+        assertEquals(tenant, capturedUser.getTenant());
+        assertEquals(tenantId, capturedUser.getTenant().getId());
 
         verify(usersRepository, times(1)).findByIdAndTenantId(userId, tenantId);
         verify(usersRepository, times(1)).save(any(Users.class));
@@ -107,11 +114,16 @@ class ModifyUserRoleUseCaseTest {
         final UUID tenantId = UUID.randomUUID();
         final Roles notAllowedRole = Roles.OWNER;
 
+        Tenants tenant = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Company")
+                .build();
+
         Users existingUser = Users.builder()
                 .id(userId)
                 .email("user@example.com")
                 .role(Roles.OPERATOR)
-                .tenantId(tenantId)
+                .tenant(tenant)
                 .build();
 
         ModifyUserRoleUseCase.ModifyUserRole modifyUserRole = ModifyUserRoleUseCase.ModifyUserRole.builder()
@@ -139,11 +151,16 @@ class ModifyUserRoleUseCaseTest {
         final UUID tenantId = UUID.randomUUID();
         final Roles notAllowedRole = Roles.SUPERADMIN;
 
+        Tenants tenant = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Company")
+                .build();
+
         Users existingUser = Users.builder()
                 .id(userId)
                 .email("user@example.com")
                 .role(Roles.MANAGER)
-                .tenantId(tenantId)
+                .tenant(tenant)
                 .build();
 
         ModifyUserRoleUseCase.ModifyUserRole modifyUserRole = ModifyUserRoleUseCase.ModifyUserRole.builder()
@@ -170,11 +187,16 @@ class ModifyUserRoleUseCaseTest {
         final UUID userId = UUID.randomUUID();
         final UUID tenantId = UUID.randomUUID();
 
+        Tenants tenant = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Company")
+                .build();
+
         Users existingUser = Users.builder()
                 .id(userId)
                 .email("driver@example.com")
                 .role(Roles.DRIVER)
-                .tenantId(tenantId)
+                .tenant(tenant)
                 .build();
 
         ModifyUserRoleUseCase.ModifyUserRole modifyUserRole = ModifyUserRoleUseCase.ModifyUserRole.builder()
