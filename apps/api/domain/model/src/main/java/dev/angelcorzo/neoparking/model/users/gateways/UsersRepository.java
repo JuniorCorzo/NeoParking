@@ -14,6 +14,6 @@ public interface UsersRepository {
     Boolean existsByEmail(String email);
     Boolean existsByEmailAndTenantId(String email, UUID tenantId);
     Users save(Users users);
-    Users assignTenant(UUID userId, UUID tenantId);
+    int assignTenant(UUID userId, UUID tenantId);
     void deleteById(UUID id);
 }

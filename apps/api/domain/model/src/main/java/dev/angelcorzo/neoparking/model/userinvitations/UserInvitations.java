@@ -1,4 +1,6 @@
 package dev.angelcorzo.neoparking.model.userinvitations;
+import dev.angelcorzo.neoparking.model.tenants.Tenants;
+import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import lombok.Builder;
 import lombok.AllArgsConstructor;
@@ -14,12 +16,12 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 public class UserInvitations {
     private UUID id;
-    private UUID tenantId;
+    private Tenants tenant;
     private String invitedEmail;
     private Roles role;
     private UUID token;
     private UserInvitationStatus status;
-    private UUID invitedBy;
+    private Users invitedBy;
     private OffsetDateTime createdAt;
     private OffsetDateTime acceptedAt;
     private OffsetDateTime expiredAt;

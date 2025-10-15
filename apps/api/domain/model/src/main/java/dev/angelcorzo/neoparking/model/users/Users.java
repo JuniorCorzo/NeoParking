@@ -1,5 +1,6 @@
 package dev.angelcorzo.neoparking.model.users;
 
+import dev.angelcorzo.neoparking.model.tenants.Tenants;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import lombok.Builder;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ public class Users {
     private String email;
     private String password;
     private Roles role;
-    private UUID tenantId;
+    private Tenants tenant;
     private String contactInfo;
     private UUID deletedBy;
     private OffsetDateTime createdAt;
