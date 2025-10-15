@@ -1,9 +1,14 @@
 package dev.angelcorzo.neoparking.usecase.inviteuserwithrol;
 
+import dev.angelcorzo.neoparking.model.exceptions.ErrorMessagesModel;
+import dev.angelcorzo.neoparking.model.tenants.Tenants;
+import dev.angelcorzo.neoparking.model.tenants.exceptions.TenantNotExistsException;
+import dev.angelcorzo.neoparking.model.tenants.gateways.TenantsRepository;
 import dev.angelcorzo.neoparking.model.userinvitations.UserInvitationStatus;
 import dev.angelcorzo.neoparking.model.userinvitations.UserInvitations;
 import dev.angelcorzo.neoparking.usecase.acceptinvitation.exceptions.InvalidRoleException;
 import dev.angelcorzo.neoparking.model.userinvitations.gateways.UserInvitationsRepository;
+import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.exceptions.UserAlreadyExistsInTenantException;
 import dev.angelcorzo.neoparking.model.users.exceptions.UserNotExistsException;
@@ -17,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,6 +37,9 @@ class InviteUserWithRoleUseCaseTest {
     @Mock
     private UserInvitationsRepository userInvitationsRepository;
 
+    @Mock
+    private TenantsRepository tenantsRepository;
+
     @InjectMocks
     private InviteUserWithRolUseCase inviteUserWithRoleUseCase;
 
@@ -43,6 +52,17 @@ class InviteUserWithRoleUseCaseTest {
         final String email = "new.user@example.com";
         final Roles role = Roles.MANAGER;
 
+        final Tenants tenant = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Company")
+                .build();
+
+        final Users invitedByUser = Users.builder()
+                .id(inviteBy)
+                .fullName("Inviter User")
+                .email("inviter@example.com")
+                .build();
+
         InviteUserWithRolUseCase.InviteUserWithRole inviteUserWithRole = InviteUserWithRolUseCase.InviteUserWithRole.builder()
                 .tenantId(tenantId)
                 .role(role)
@@ -52,6 +72,8 @@ class InviteUserWithRoleUseCaseTest {
 
         when(usersRepository.existsByEmailAndTenantId(email, tenantId)).thenReturn(false);
         when(usersRepository.existsById(inviteBy)).thenReturn(true);
+        when(tenantsRepository.findById(tenantId)).thenReturn(Optional.of(tenant));
+        when(usersRepository.findById(inviteBy)).thenReturn(Optional.of(invitedByUser));
         when(userInvitationsRepository.save(any(UserInvitations.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -64,10 +86,12 @@ class InviteUserWithRoleUseCaseTest {
         UserInvitations capturedInvitation = invitationCaptor.getValue();
 
         assertNotNull(capturedInvitation);
-        assertEquals(tenantId, capturedInvitation.getTenantId());
+        assertEquals(tenant, capturedInvitation.getTenant());
+        assertEquals(tenantId, capturedInvitation.getTenant().getId());
         assertEquals(email, capturedInvitation.getInvitedEmail());
         assertEquals(role, capturedInvitation.getRole());
         assertEquals(UserInvitationStatus.PENDING, capturedInvitation.getStatus());
+        assertEquals(invitedByUser, capturedInvitation.getInvitedBy());
         assertNotNull(capturedInvitation.getToken());
         assertNotNull(capturedInvitation.getCreatedAt());
         assertNotNull(capturedInvitation.getExpiredAt());
@@ -77,6 +101,8 @@ class InviteUserWithRoleUseCaseTest {
 
         verify(usersRepository, times(1)).existsByEmailAndTenantId(email, tenantId);
         verify(usersRepository, times(1)).existsById(inviteBy);
+        verify(tenantsRepository, times(1)).findById(tenantId);
+        verify(usersRepository, times(1)).findById(inviteBy);
         verify(userInvitationsRepository, times(1)).save(any(UserInvitations.class));
     }
 
@@ -138,6 +164,10 @@ class InviteUserWithRoleUseCaseTest {
         final UUID nonExistentInviteBy = UUID.randomUUID();
         final String email = "new.user@example.com";
         final Roles role = Roles.MANAGER;
+        final Tenants tenant = Tenants.builder()
+                .id(tenantId)
+                .companyName("Test Company")
+                .build();
 
         InviteUserWithRolUseCase.InviteUserWithRole inviteUserWithRole = InviteUserWithRolUseCase.InviteUserWithRole.builder()
                 .tenantId(tenantId)
@@ -147,7 +177,8 @@ class InviteUserWithRoleUseCaseTest {
                 .build();
 
         when(usersRepository.existsByEmailAndTenantId(email, tenantId)).thenReturn(false);
-        when(usersRepository.existsById(nonExistentInviteBy)).thenReturn(false);
+        when(usersRepository.existsById(nonExistentInviteBy)).thenReturn(true);
+        when(tenantsRepository.findById(tenantId)).thenReturn(Optional.of(tenant));
 
         // When & Then
         UserNotExistsException exception = assertThrows(UserNotExistsException.class, () -> {
@@ -155,6 +186,33 @@ class InviteUserWithRoleUseCaseTest {
         });
 
         assertEquals(String.format("El usuario con ID %s no existe", nonExistentInviteBy), exception.getMessage());
+        verify(userInvitationsRepository, never()).save(any(UserInvitations.class));
+    }
+
+    @Test
+    @DisplayName("Given a non-existing tenant, when registerInvitation is called, then TenantNotExistsException should be thrown")
+    void shouldThrowException_whenTenantDoesNotExist() {
+        // Given
+        final UUID tenantId = UUID.randomUUID();
+        final UUID inviteBy = UUID.randomUUID();
+        final String email = "new.user@example.com";
+        final Roles role = Roles.MANAGER;
+
+        InviteUserWithRolUseCase.InviteUserWithRole inviteUserWithRole = InviteUserWithRolUseCase.InviteUserWithRole.builder()
+                .tenantId(tenantId)
+                .role(role)
+                .email(email)
+                .inviteBy(inviteBy)
+                .build();
+
+        when(usersRepository.existsByEmailAndTenantId(email, tenantId)).thenReturn(false);
+        when(usersRepository.existsById(inviteBy)).thenReturn(true);
+        when(tenantsRepository.findById(tenantId)).thenReturn(Optional.empty());
+
+        // When & Then
+        TenantNotExistsException exception = assertThrows(TenantNotExistsException.class, () -> inviteUserWithRoleUseCase.registerInvitation(inviteUserWithRole));
+
+        assertEquals(ErrorMessagesModel.TENANT_NOT_EXISTS.format(tenantId), exception.getMessage());
         verify(userInvitationsRepository, never()).save(any(UserInvitations.class));
     }
 }
