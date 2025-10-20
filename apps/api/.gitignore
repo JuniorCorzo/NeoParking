@@ -335,5 +335,6 @@ gradle-app.setting
 *.hprof
 build-cache
 
-**/resources/application-dev.yaml
-**/resources/application-test.yaml
+applications/app-service/src/main/resources/application-dev.yaml
+applications/app-service/src/main/resources/application-test.yaml
+infrastructure/driven-adapters/jpa-repository/src/test/resources/application-test.yaml
