@@ -18,6 +18,22 @@ import java.util.UUID;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Use case for inviting a new user to a tenant with a specific role.
+ *
+ * <p>This class handles the business logic for creating and registering a user invitation,
+ * including validation of the tenant, inviter, and the role being assigned.</p>
+ *
+ * <p><strong>Layer:</strong> Application (Use Case)</p>
+ * <p><strong>Responsibility:</strong> To manage the process of inviting users to a tenant.</p>
+ *
+ * @author Angel Corzo
+ * @since 1.0.0
+ * @see UserInvitations
+ * @see Users
+ * @see Tenants
+ * @see Roles
+ */
 @RequiredArgsConstructor
 public class InviteUserWithRolUseCase {
   private static final int EXPIRATION_DAYS = 3;
@@ -25,6 +41,16 @@ public class InviteUserWithRolUseCase {
   private final UserInvitationsRepository userInvitationsRepository;
   private final TenantsRepository tenantsRepository;
 
+  /**
+   * Registers a new user invitation.
+   *
+   * @param inviteUserWithRole The command containing details for the invitation (email, role, tenant ID, inviter ID).
+   * @return The created {@link UserInvitations} object.
+   * @throws UserAlreadyExistsInTenantException if the invited email already exists within the tenant.
+   * @throws InvalidRoleException if the specified role is not permitted for invitations (e.g., OWNER, SUPERADMIN).
+   * @throws UserNotExistsException if the inviter user does not exist.
+   * @throws TenantNotExistsException if the specified tenant does not exist.
+   */
   public UserInvitations registerInvitation(final InviteUserWithRole inviteUserWithRole) {
     this.validateInvitation(inviteUserWithRole);
     final Tenants tenant =
@@ -52,6 +78,14 @@ public class InviteUserWithRolUseCase {
     return this.userInvitationsRepository.save(userInvitations);
   }
 
+  /**
+   * Validates the invitation details against business rules before registration.
+   *
+   * @param invitation The invitation command to validate.
+   * @throws UserAlreadyExistsInTenantException if the invited email already exists within the tenant.
+   * @throws InvalidRoleException if the specified role is not permitted.
+   * @throws UserNotExistsException if the inviter user does not exist.
+   */
   private void validateInvitation(final InviteUserWithRole invitation) {
     final UUID inviteBy = invitation.inviteBy();
     final UUID tenantId = invitation.tenantId();
@@ -69,11 +103,26 @@ public class InviteUserWithRolUseCase {
     }
   }
 
+  /**
+   * Validates if the role specified in the invitation is permitted.
+   * Certain roles (like OWNER, SUPERADMIN) might not be assignable via invitation.
+   *
+   * @param rol The role to validate.
+   * @throws InvalidRoleException if the role is not permitted.
+   */
   private void validateRolePermitted(Roles rol) {
     final Set<Roles> rolesNotPermitted = Set.of(Roles.OWNER, Roles.SUPERADMIN);
     if (rolesNotPermitted.contains(rol)) throw new InvalidRoleException(rol);
   }
 
+  /**
+   * Command object for the {@link InviteUserWithRolUseCase}.
+   *
+   * @param email The email address of the user to invite.
+   * @param role The role to assign to the invited user.
+   * @param tenantId The ID of the tenant to which the user is invited.
+   * @param inviteBy The ID of the user who is sending the invitation.
+   */
   @Builder(toBuilder = true)
   public record InviteUserWithRole(String email, Roles role, UUID tenantId, UUID inviteBy) {}
 }
