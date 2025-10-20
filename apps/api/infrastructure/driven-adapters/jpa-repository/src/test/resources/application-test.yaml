@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/neo-parking_db?currentSchema=test_scheme"
+    username: postgres
+    password: angel2003
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
