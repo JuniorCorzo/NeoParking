@@ -13,8 +13,13 @@ package dev.angelcorzo.neoparking.model.users.enums;
  */
 public enum Roles {
     /**
-     * The highest-level role. Has full control over the tenant and its resources.
-     * Can manage users, parking lots, and billing.
+     * The highest-level administrative role. Has full control over the entire system,
+     * including all tenants and their resources.
+     */
+    SUPERADMIN,
+    /**
+     * The highest-level role within a specific tenant. Has full control over the tenant and its resources.
+     * Can manage users, parking lots, and billing within their tenant.
      */
     OWNER,
     /**
