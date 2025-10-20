@@ -30,3 +30,5 @@ replay_pid*
 
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
+
+**/application-dev.yaml

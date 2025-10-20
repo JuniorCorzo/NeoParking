@@ -7,33 +7,40 @@ SET search_path TO neo_parking;
 CREATE TABLE IF NOT EXISTS tenants (
     id UUID PRIMARY KEY,
     company_name VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITH TIME ZONE
 );
 
 -- Tabla de usuarios con roles y referencia al inquilino
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(100) NOT NULL,
     password VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL CHECK (role IN ('SUPERADMIN', 'OWNER', 'MANAGER', 'OPERATOR', 'DRIVER', 'AUDITOR')),
     tenant_id UUID REFERENCES tenants(id) ON DELETE RESTRICT, -- Un usuario puede no pertenecer a un inquilino (ej. Superadmin, Driver)
     contact_info TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    deleted_by UUID REFERENCES users(id) ON DELETE RESTRICT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITH TIME ZONE
 );
 
 CREATE TABLE IF NOT EXISTS user_invitations(
     id UUID PRIMARY KEY,
-    tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE, 
-    invited_email TEXT NOT NULL
-    role NOT NULL CHECK (role IN ('MANAGER', 'OPERATOR', 'DRIVER', 'AUDITOR')),
+    tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
+    invited_email TEXT NOT NULL,
+    role VARCHAR(20) NOT NULL CHECK (role IN ('MANAGER', 'OPERATOR', 'DRIVER', 'AUDITOR')),
     token UUID NOT NULL,
-    status  DEFAULT "PENDING" CHECK (status IN ('PENDING', 'ACCEPTED', 'EXPIRED', 'REVOKED')),
-    invite_by UUID REFERENCES users(id)  ON DELETE RESTRICT, -- User ID of who send invitantion
-    create_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'ACCEPTED', 'EXPIRED', 'REVOKED')),
+    invite_by UUID REFERENCES users(id) ON DELETE RESTRICT, -- User ID of who send invitantion
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     accepted_at TIMESTAMP WITH TIME ZONE,
-    expired_at TIMESTAMP WITH TIME ZONE
-)
+    expired_at TIMESTAMP WITH TIME ZONE,
+    deleted_at TIMESTAMP WITH TIME ZONE
+);
 
 DO $$ 
 BEGIN
@@ -69,7 +76,10 @@ CREATE TABLE IF NOT EXISTS parking_lots (
     tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
     timezone VARCHAR(50) DEFAULT 'UTC-5',
     currency VARCHAR(10) DEFAULT 'COP',
-    operating_hours operating_hours_t
+    operating_hours operating_hours_t,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITH TIME ZONE
 );
 
 -- Tabla de plazas (slots) de cada parqueadero
@@ -81,6 +91,9 @@ CREATE TABLE slots (
     type VARCHAR(50) DEFAULT 'car', -- car, motorcycle, ev, disabled
     zone VARCHAR(50),
     status VARCHAR(20) DEFAULT 'AVAILABLE' CHECK (status IN ('AVAILABLE', 'OCCUPIED', 'RESERVED', 'MAINTENANCE')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITH TIME ZONE,
     UNIQUE (parking_lot_id, slot_number)
 );
 
@@ -92,7 +105,7 @@ BEGIN
             name TEXT,
             modifies VARCHAR(6),
             operation VARCHAR(11),
-            value_to_modify INTEGER DEFAULT 0
+            value_to_modify INTEGER
         );
     END IF;
 END $$;
@@ -108,7 +121,10 @@ CREATE TABLE IF NOT EXISTS rates (
     time_unit VARCHAR(20) NOT NULL CHECK (time_unit IN ('MINUTE', 'HOUR', 'DAY')),
     min_charge_time_minutes INTEGER DEFAULT 0,
     vehicle_type VARCHAR(50) NOT NULL CHECK(vehicle_type IN ('CART', 'MOTORCYCLE')),
-    special_policies special_policies_t
+    special_policies special_policies_t,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITH TIME ZONE
 );
 
 -- Tabla de reservas
@@ -122,7 +138,9 @@ CREATE TABLE IF NOT EXISTS reservations (
     status VARCHAR(20) DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'CANCELLED', 'COMPLETED')),
     payment_method VARCHAR(50),
     reservation_code VARCHAR(50) UNIQUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITH TIME ZONE
 );
 
 -- Tabla de tickets de estacionamiento
@@ -139,7 +157,10 @@ CREATE TABLE IF NOT EXISTS parking_tickets (
     total_to_charge DECIMAL(10, 2),
     status VARCHAR(20) DEFAULT 'OPEN' CHECK (status IN ('OPEN', 'CLOSED', 'LOST')),
     payment_method VARCHAR(50),
-    transaction_reference VARCHAR(255)
+    transaction_reference VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITH TIME ZONE
 );
 
 -- Tabla de pagos/transacciones
@@ -150,7 +171,10 @@ CREATE TABLE IF NOT EXISTS payments (
     tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
     amount DECIMAL(10, 2) NOT NULL,
     payment_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    payment_method VARCHAR(50) NOT NULL CHECK(payment_method IN ('CARD', 'EFFECTIVE')), 
+    payment_method VARCHAR(50) NOT NULL CHECK(payment_method IN ('CARD', 'EFFECTIVE')),
     status VARCHAR(20) DEFAULT 'COMPLETED' CHECK (status IN ('PENDING', 'COMPLETED', 'FAILED')),
-    provider_details TEXT -- Ej. ID de transacción de Stripe/PayPal
+    provider_metadata JSONB CHECK (jsonb_typeof(provider_metadata) = 'object'), -- Ej. ID de transacción de Stripe/PayPal
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITH TIME ZONE
 );

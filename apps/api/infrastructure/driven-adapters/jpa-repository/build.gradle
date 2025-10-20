@@ -1,0 +1,14 @@
+dependencies {
+    implementation project(':model')
+
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.reactivecommons.utils:object-mapper-api:0.1.0'
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+    implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+
+    runtimeOnly 'org.postgresql:postgresql'
+
+    testImplementation 'org.reactivecommons.utils:object-mapper:0.1.0'
+}

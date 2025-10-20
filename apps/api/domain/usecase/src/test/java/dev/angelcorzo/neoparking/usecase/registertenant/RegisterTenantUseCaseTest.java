@@ -64,6 +64,8 @@ class RegisterTenantUseCaseTest {
     @DisplayName("Should successfully register a tenant and a user")
     void shouldRegisterTenantAndUserSuccessfully() {
         // Arrange
+        Users userReturn = userToRegister;
+        userReturn.setTenant(tenant);
 
         // 1. When checking if email exists, return false (does not exist)
         when(usersRepository.existsByEmail(userToRegister.getEmail())).thenReturn(false);
@@ -72,19 +74,19 @@ class RegisterTenantUseCaseTest {
         when(tenantsRepository.save(any(Tenants.class))).thenReturn(tenantToRegister);
 
         // 3. When saving the user, return the same user
-        when(usersRepository.save(any(Users.class))).thenReturn(userToRegister);
+        when(usersRepository.save(any(Users.class))).thenReturn(userReturn);
 
         // Act
-        RegisterTenantUseCase.RegisterTenantResponse response = registerTenantUseCase.register(userToRegister, tenantToRegister);
+        Users response = registerTenantUseCase.register(userToRegister, tenantToRegister);
 
         // Assert
 
         // Verify that the response is not null and contains the expected data
         assertNotNull(response);
+        assertEquals(response, userReturn);
         assertEquals(tenantToRegister, response.getTenant());
-        assertEquals(userId, response.getUser().getId());
-        assertEquals(Roles.OWNER, response.getUser().getRole());
-
+        assertEquals(userId, response.getId());
+        assertEquals(Roles.OWNER, response.getRole());
         // ArgumentCaptor to verify the state of the User object passed to the save method
         ArgumentCaptor<Users> userCaptor = ArgumentCaptor.forClass(Users.class);
 

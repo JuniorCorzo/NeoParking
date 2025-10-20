@@ -1,6 +1,6 @@
 package dev.angelcorzo.neoparking;
 
-import static org.junit.jupiter.api.Assertions.*;
-class MainApplicationTest {
-  
-}
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest(classes = MainApplication.class)
+class MainApplicationTest {}
