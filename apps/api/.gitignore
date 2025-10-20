@@ -334,3 +334,6 @@ gradle-app.setting
 # -----
 *.hprof
 build-cache
+
+**/resources/application-dev.yaml
+**/resources/application-test.yaml
