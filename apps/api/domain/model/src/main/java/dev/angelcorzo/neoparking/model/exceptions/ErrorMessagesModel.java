@@ -1,5 +1,14 @@
 package dev.angelcorzo.neoparking.model.exceptions;
 
+/**
+ * Enum to standardize error message templates across the domain layer.
+ *
+ * <p><strong>Layer:</strong> Domain</p>
+ * <p><strong>Responsibility:</strong> To provide a single source of truth for error message formats.</p>
+ *
+ * @author Angel Corzo
+ * @since 1.0.0
+ */
 public enum ErrorMessagesModel {
     INVITATION_NOT_FOUND("Invitación no encontrada"),
     INVITATION_EXPIRED("La invitación expiro"),
