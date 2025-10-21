@@ -1,14 +1,9 @@
 package dev.angelcorzo.neoparking.api.users.dto;
 
-import lombok.Builder;
-
+import jakarta.validation.constraints.NotEmpty;
 import java.util.UUID;
+import lombok.Builder;
 
 @Builder
 public record DeactivateUserDTO(
-        UUID userIdToDeactivate,
-        UUID deactivatedBy,
-        UUID tenantId,
-        String reason
-) {
-}
+    @NotEmpty UUID userId, @NotEmpty UUID deactivatedBy, @NotEmpty UUID tenantId, String reason) {}

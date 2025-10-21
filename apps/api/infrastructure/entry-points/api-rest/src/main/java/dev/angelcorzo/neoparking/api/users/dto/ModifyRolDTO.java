@@ -1,3 +1,11 @@
 package dev.angelcorzo.neoparking.api.users.dto;
 
-public record ModifyRolDTO() {}
+import dev.angelcorzo.neoparking.model.users.enums.Roles;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Builder;
+
+import java.util.UUID;
+
+@Builder(toBuilder = true)
+public record ModifyRolDTO(
+    @NotEmpty UUID userId, @NotEmpty Roles newRole, @NotEmpty UUID tenantId) {}

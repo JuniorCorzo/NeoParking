@@ -1,4 +1,4 @@
-package dev.angelcorzo.neoparking.api.config;
+package dev.angelcorzo.neoparking.api.commons.config;
 
 import org.mapstruct.Builder;
 import org.mapstruct.MapperConfig;
