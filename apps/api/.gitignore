@@ -327,7 +327,7 @@ gradle-app.setting
 
 **/application-dev.yaml
 **/application-test.yaml
-
+**/keys/
 ### Gradle Patch ###
 **/build/
 
