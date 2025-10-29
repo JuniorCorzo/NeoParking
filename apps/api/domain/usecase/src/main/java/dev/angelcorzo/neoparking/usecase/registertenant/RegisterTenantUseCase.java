@@ -5,6 +5,7 @@ import dev.angelcorzo.neoparking.model.tenants.gateways.TenantsRepository;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.exceptions.EmailAlreadyExistsException;
+import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncode;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public final class RegisterTenantUseCase {
   private final UsersRepository usersRepository;
   private final TenantsRepository tenantsRepository;
+  private final PasswordEncode passwordEncode;
 
   /**
    * Registers a new tenant and creates an associated owner user.
@@ -39,8 +41,11 @@ public final class RegisterTenantUseCase {
     this.validateEmailExists(user);
 
     final Tenants tenantCreated = this.tenantsRepository.save(tenant);
+
+    final String passwordEncrypted = this.passwordEncode.encrypt(user.getPassword());
     user.setTenant(tenantCreated);
     user.setRole(Roles.OWNER);
+    user.setPassword(passwordEncrypted);
 
     final Users userCreated = this.usersRepository.save(user);
     userCreated.setTenant(tenantCreated); // Ensure the returned user has the created tenant set
