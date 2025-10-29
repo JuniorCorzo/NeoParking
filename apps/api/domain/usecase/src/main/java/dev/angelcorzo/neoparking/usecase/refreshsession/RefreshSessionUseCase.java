@@ -41,8 +41,7 @@ public class RefreshSessionUseCase {
         this.validate(refreshToken);
 
         final Map<String, String> claims = this.authenticationGateway.extractTokenClaims(refreshToken);
-        final UUID userId = UUID.fromString(claims.get("sub
-        "));
+        final UUID userId = UUID.fromString(claims.get("sub"));
         final UUID tenantId = UUID.fromString(claims.get("tenantId"));
 
         final Users user =
