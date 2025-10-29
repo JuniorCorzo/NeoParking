@@ -29,7 +29,6 @@ import org.springframework.context.annotation.Configuration;
 public class JwtProvider implements AuthenticationGateway {
   private final JwtProperties jwtProperties;
   private final RSAProperties rsaProperties;
-  private final UsersRepository usersRepository;
   private final RSAPrivateKey privateKey;
   private final RSAPublicKey publicKey;
 
