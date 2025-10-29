@@ -161,16 +161,15 @@ class UserControllerTest {
             .reason(requestDto.reason())
             .build();
 
-    DeactivateUserUseCase.DeactivationResult deactivationResult =
-        DeactivateUserUseCase.DeactivationResult.builder()
-            .userId(userModel.getId())
-            .deactivatedBy(requestDto.deactivatedBy())
-            .deactivatedAt(OffsetDateTime.now())
-            .build();
+    Users deactivatedUser = Users.builder()
+        .id(userModel.getId())
+        .deletedBy(requestDto.deactivatedBy())
+        .deletedAt(OffsetDateTime.now())
+        .build();
 
     when(userMapper.toModel(any(DeactivateUserDTO.class))).thenReturn(deactivateCommand);
     when(deactivateUserUseCase.deactivate(any(DeactivateUserUseCase.DeactivateUserCommand.class)))
-        .thenReturn(deactivationResult);
+        .thenReturn(deactivatedUser);
 
     // Act & Assert
     mockMvc

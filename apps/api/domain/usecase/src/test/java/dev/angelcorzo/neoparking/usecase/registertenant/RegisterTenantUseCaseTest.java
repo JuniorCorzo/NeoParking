@@ -5,6 +5,7 @@ import dev.angelcorzo.neoparking.model.tenants.gateways.TenantsRepository;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.exceptions.EmailAlreadyExistsException;
+import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncode;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +32,9 @@ class RegisterTenantUseCaseTest {
     private UsersRepository usersRepository;
     @Mock
     private TenantsRepository tenantsRepository;
-    // Injects mocks into the class under test
+    @Mock
+    private PasswordEncode passwordEncode;
+
     @InjectMocks
     private RegisterTenantUseCase registerTenantUseCase;
     private Users userToRegister;
@@ -69,6 +72,8 @@ class RegisterTenantUseCaseTest {
 
         // 1. When checking if email exists, return false (does not exist)
         when(usersRepository.existsByEmail(userToRegister.getEmail())).thenReturn(false);
+
+        when(passwordEncode.encrypt(anyString())).thenReturn("encryptedPassword");
 
         // 2. When saving the tenant, return the same tenant (simulating save)
         when(tenantsRepository.save(any(Tenants.class))).thenReturn(tenantToRegister);

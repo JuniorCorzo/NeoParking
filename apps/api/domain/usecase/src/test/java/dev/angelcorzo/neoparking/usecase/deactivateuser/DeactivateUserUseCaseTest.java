@@ -75,7 +75,7 @@ class DeactivateUserUseCaseTest {
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
-        DeactivateUserUseCase.DeactivationResult result = 
+        Users result = 
             deactivateUserUseCase.deactivate(command);
 
         // Then
@@ -91,9 +91,9 @@ class DeactivateUserUseCaseTest {
         );
         assertNotNull(capturedUser.getUpdatedAt());
         
-        assertEquals(userToDeactivateId, result.userId());
-        assertEquals(deactivatedById, result.deactivatedBy());
-        assertNotNull(result.deactivatedAt());
+        assertEquals(userToDeactivateId, result.getId());
+        assertEquals(deactivatedById, result.getDeletedBy());
+        assertNotNull(result.getDeletedAt());
 
         verify(usersRepository, times(1))
             .findByIdAndTenantId(userToDeactivateId, tenantId);
@@ -138,7 +138,7 @@ class DeactivateUserUseCaseTest {
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
-        DeactivateUserUseCase.DeactivationResult result = 
+        Users result =
             deactivateUserUseCase.deactivate(command);
 
         // Then
@@ -366,13 +366,13 @@ class DeactivateUserUseCaseTest {
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
-        DeactivateUserUseCase.DeactivationResult result = 
+        Users result =
             deactivateUserUseCase.deactivate(command);
 
         // Then
         assertNotNull(result);
-        assertEquals(ownerId, result.userId());
-        assertEquals(ownerId, result.deactivatedBy());
+        assertEquals(ownerId, result.getId());
+        assertEquals(ownerId, result.getDeletedBy());
         verify(usersRepository).save(any(Users.class));
     }
 

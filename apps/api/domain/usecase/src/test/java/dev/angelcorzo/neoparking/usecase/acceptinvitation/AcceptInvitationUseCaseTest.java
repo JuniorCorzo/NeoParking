@@ -8,6 +8,7 @@ import dev.angelcorzo.neoparking.model.userinvitations.gateways.UserInvitationsR
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.exceptions.UserAlreadyExistsInTenantException;
+import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncode;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
 import dev.angelcorzo.neoparking.usecase.acceptinvitation.exceptions.InvitationAlreadyAcceptedException;
 import dev.angelcorzo.neoparking.usecase.acceptinvitation.exceptions.InvitationExpiredException;
@@ -25,6 +26,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,6 +35,7 @@ class AcceptInvitationUseCaseTest {
 
   @Mock private UserInvitationsRepository invitationsRepository;
   @Mock private UsersRepository usersRepository;
+  @Mock private PasswordEncode passwordEncode;
 
   @InjectMocks private AcceptInvitationUseCase useCase;
 
@@ -60,6 +63,7 @@ class AcceptInvitationUseCaseTest {
     when(invitationsRepository.findByToken(any())).thenReturn(Optional.of(pendingInvitation));
     when(usersRepository.existsByEmailAndTenantId("test@example.com", tenantId)).thenReturn(false);
     when(usersRepository.findByEmail("test@example.com")).thenReturn(Optional.empty());
+    when(passwordEncode.encrypt(anyString())).thenReturn("encryptedPassword");
 
     // When
     useCase.accept(new AcceptInvitationUseCase.Accept(newUser, token));
