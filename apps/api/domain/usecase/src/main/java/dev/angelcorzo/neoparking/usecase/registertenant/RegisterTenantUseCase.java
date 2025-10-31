@@ -5,7 +5,7 @@ import dev.angelcorzo.neoparking.model.tenants.gateways.TenantsRepository;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.exceptions.EmailAlreadyExistsException;
-import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncode;
+import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncodeGateway;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 public final class RegisterTenantUseCase {
   private final UsersRepository usersRepository;
   private final TenantsRepository tenantsRepository;
-  private final PasswordEncode passwordEncode;
+  private final PasswordEncodeGateway passwordEncode;
 
   /**
    * Registers a new tenant and creates an associated owner user.

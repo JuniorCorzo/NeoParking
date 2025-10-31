@@ -2,7 +2,9 @@ dependencies {
     implementation project(':usecase')
     implementation project(':model')
 
-	implementation 'org.springframework.boot:spring-boot-starter-undertow'
+    implementation("org.springframework.security:spring-security-web")
+    implementation("org.springframework.security:spring-security-config")
+    implementation 'org.springframework.boot:spring-boot-starter-undertow'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
@@ -10,9 +12,11 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.6.3'
     implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+
+    testImplementation("org.springframework.security:spring-security-test")
 }
 
 
-configurations{
-	implementation.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+configurations {
+    implementation.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
 }

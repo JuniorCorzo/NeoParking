@@ -6,7 +6,7 @@ import dev.angelcorzo.neoparking.model.userinvitations.UserInvitations;
 import dev.angelcorzo.neoparking.model.userinvitations.gateways.UserInvitationsRepository;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.exceptions.UserAlreadyExistsInTenantException;
-import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncode;
+import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncodeGateway;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
 import dev.angelcorzo.neoparking.usecase.acceptinvitation.exceptions.InvitationAlreadyAcceptedException;
 import dev.angelcorzo.neoparking.usecase.acceptinvitation.exceptions.InvitationExpiredException;
@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 public final class AcceptInvitationUseCase {
   private final UserInvitationsRepository invitationsRepository;
   private final UsersRepository usersRepository;
-  private final PasswordEncode passwordEncode;
+  private final PasswordEncodeGateway passwordEncode;
 
   /**
    * Executes the process of accepting an invitation.

@@ -8,7 +8,7 @@ import dev.angelcorzo.neoparking.model.userinvitations.gateways.UserInvitationsR
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.exceptions.UserAlreadyExistsInTenantException;
-import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncode;
+import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncodeGateway;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
 import dev.angelcorzo.neoparking.usecase.acceptinvitation.exceptions.InvitationAlreadyAcceptedException;
 import dev.angelcorzo.neoparking.usecase.acceptinvitation.exceptions.InvitationExpiredException;
@@ -35,7 +35,7 @@ class AcceptInvitationUseCaseTest {
 
   @Mock private UserInvitationsRepository invitationsRepository;
   @Mock private UsersRepository usersRepository;
-  @Mock private PasswordEncode passwordEncode;
+  @Mock private PasswordEncodeGateway passwordEncode;
 
   @InjectMocks private AcceptInvitationUseCase useCase;
 

@@ -3,7 +3,7 @@ package dev.angelcorzo.neoparking.usecase.login;
 import dev.angelcorzo.neoparking.model.authentication.AuthResponse;
 import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationGateway;
 import dev.angelcorzo.neoparking.model.users.Users;
-import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncode;
+import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncodeGateway;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
 import dev.angelcorzo.neoparking.usecase.helpers.JwtClaimsFactory;
 import dev.angelcorzo.neoparking.usecase.registertenant.exceptions.BadCredentialsException;
@@ -27,7 +27,7 @@ public class LoginUseCase {
 
     private final UsersRepository userRepository;
     private final AuthenticationGateway authenticationGateway;
-    private final PasswordEncode passwordEncode;
+    private final PasswordEncodeGateway passwordEncode;
 
     /**
      * Authenticates a user and returns a set of authentication tokens.

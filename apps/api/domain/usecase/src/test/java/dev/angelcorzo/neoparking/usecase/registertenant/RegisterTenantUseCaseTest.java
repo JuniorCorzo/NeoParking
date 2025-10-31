@@ -5,7 +5,7 @@ import dev.angelcorzo.neoparking.model.tenants.gateways.TenantsRepository;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.exceptions.EmailAlreadyExistsException;
-import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncode;
+import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncodeGateway;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +33,7 @@ class RegisterTenantUseCaseTest {
     @Mock
     private TenantsRepository tenantsRepository;
     @Mock
-    private PasswordEncode passwordEncode;
+    private PasswordEncodeGateway passwordEncode;
 
     @InjectMocks
     private RegisterTenantUseCase registerTenantUseCase;

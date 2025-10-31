@@ -16,7 +16,7 @@ package dev.angelcorzo.neoparking.model.users.gateways;
  * @version 1.0
  * @since 2025-10-29
  */
-public interface PasswordEncode {
+public interface PasswordEncodeGateway {
 
     /**
      * Encodes the given raw password into a hash.

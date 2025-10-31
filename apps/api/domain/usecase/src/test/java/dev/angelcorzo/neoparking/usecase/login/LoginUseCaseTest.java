@@ -12,10 +12,10 @@ import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationGate
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
-import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncode;
+import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncodeGateway;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
 import dev.angelcorzo.neoparking.usecase.registertenant.exceptions.BadCredentialsException;
-import java.util.Map;
+
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,7 @@ class LoginUseCaseTest {
 
   private UsersRepository usersRepository;
   private AuthenticationGateway authenticationGateway;
-  private PasswordEncode passwordEncode;
+  private PasswordEncodeGateway passwordEncode;
 
   private LoginUseCase loginUseCase;
 
@@ -36,7 +36,7 @@ class LoginUseCaseTest {
   void setUp() {
     usersRepository = mock(UsersRepository.class);
     authenticationGateway = mock(AuthenticationGateway.class);
-    passwordEncode = mock(PasswordEncode.class);
+    passwordEncode = mock(PasswordEncodeGateway.class);
 
     loginUseCase = new LoginUseCase(usersRepository, authenticationGateway, passwordEncode);
   }
