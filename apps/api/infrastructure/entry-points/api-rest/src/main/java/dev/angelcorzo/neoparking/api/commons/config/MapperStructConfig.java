@@ -1,12 +1,13 @@
 package dev.angelcorzo.neoparking.api.commons.config;
 
-import org.mapstruct.Builder;
-import org.mapstruct.MapperConfig;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
 @MapperConfig(
-        componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        builder = @Builder
-)
+    componentModel = "spring",
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR,
+		implementationName = "<CLASS_NAME>RestImpl",
+    nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL,
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    unmappedSourcePolicy = ReportingPolicy.IGNORE,
+    builder = @Builder)
 public interface MapperStructConfig {}

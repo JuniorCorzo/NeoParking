@@ -1,8 +1,6 @@
 package dev.angelcorzo.neoparking.jpa.config;
 
-import org.mapstruct.Builder;
-import org.mapstruct.MapperConfig;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
 /**
  * Global configuration for MapStruct mappers within the JPA adapter layer.
@@ -18,8 +16,12 @@ import org.mapstruct.ReportingPolicy;
  * @since 1.0.0
  */
 @MapperConfig(
-        componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        builder = @Builder
-)
+		componentModel = "spring",
+		injectionStrategy = InjectionStrategy.CONSTRUCTOR,
+		implementationName = "<CLASS_NAME>JpaImpl",
+		nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL,
+		unmappedTargetPolicy = ReportingPolicy.IGNORE,
+		unmappedSourcePolicy = ReportingPolicy.IGNORE,
+		builder = @Builder)
+
 public interface MapperStructConfig {}
