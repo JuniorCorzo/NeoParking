@@ -2,10 +2,9 @@ package dev.angelcorzo.neoparking.jpa.users;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import dev.angelcorzo.neoparking.jpa.config.ObjectMapperTest;
 import dev.angelcorzo.neoparking.jpa.tenants.TenantsRepositoryAdapter;
-import dev.angelcorzo.neoparking.jpa.tenants.mappers.TenantsMapperImpl;
-import dev.angelcorzo.neoparking.jpa.users.mapper.UserMapperImpl;
+import dev.angelcorzo.neoparking.jpa.tenants.mappers.TenantsMapperJpaImpl;
+import dev.angelcorzo.neoparking.jpa.users.mapper.UserMapperJpaImpl;
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
@@ -29,8 +28,8 @@ import org.springframework.test.context.ActiveProfiles;
   UserRepositoryAdapter.class,
   TenantsRepositoryAdapter.class,
   TestEntityManager.class,
-  UserMapperImpl.class,
-  TenantsMapperImpl.class
+  UserMapperJpaImpl.class,
+  TenantsMapperJpaImpl.class
 })
 @AutoConfigureTestDatabase(
     replace = AutoConfigureTestDatabase.Replace.NONE,

@@ -2,12 +2,11 @@ package dev.angelcorzo.neoparking.jpa.userinvitation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import dev.angelcorzo.neoparking.jpa.config.ObjectMapperTest;
 import dev.angelcorzo.neoparking.jpa.tenants.TenantsRepositoryAdapter;
-import dev.angelcorzo.neoparking.jpa.tenants.mappers.TenantsMapperImpl;
-import dev.angelcorzo.neoparking.jpa.userinvitation.mapper.UserInvitationsMapperImpl;
+import dev.angelcorzo.neoparking.jpa.tenants.mappers.TenantsMapperJpaImpl;
+import dev.angelcorzo.neoparking.jpa.userinvitation.mapper.UserInvitationsMapperJpaImpl;
 import dev.angelcorzo.neoparking.jpa.users.UserRepositoryAdapter;
-import dev.angelcorzo.neoparking.jpa.users.mapper.UserMapperImpl;
+import dev.angelcorzo.neoparking.jpa.users.mapper.UserMapperJpaImpl;
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
 import dev.angelcorzo.neoparking.model.userinvitations.UserInvitationStatus;
 import dev.angelcorzo.neoparking.model.userinvitations.UserInvitations;
@@ -34,9 +33,9 @@ import org.springframework.test.context.ActiveProfiles;
   UserInvitationsRepositoryAdapter.class,
   UserRepositoryAdapter.class,
   TenantsRepositoryAdapter.class,
-  UserInvitationsMapperImpl.class,
-  UserMapperImpl.class,
-  TenantsMapperImpl.class
+  UserInvitationsMapperJpaImpl.class,
+  UserMapperJpaImpl.class,
+  TenantsMapperJpaImpl.class
 })
 @AutoConfigureTestDatabase(
     replace = AutoConfigureTestDatabase.Replace.NONE,
