@@ -1,10 +1,15 @@
 package dev.angelcorzo.neoparking.api.security.config;
 
+import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import java.security.interfaces.RSAPublicKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -54,6 +59,31 @@ public class SecurityChain {
                         jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)
                             .decoder(jwtDecoder())))
         .build();
+  }
+
+  @Bean
+  RoleHierarchy roleHierarchy() {
+    return RoleHierarchyImpl.withDefaultRolePrefix()
+        .role(Roles.SUPERADMIN.name())
+        .implies(Roles.OWNER.name())
+        .role(Roles.OWNER.name())
+        .implies(Roles.MANAGER.name())
+        .role(Roles.MANAGER.name())
+        .implies(Roles.OPERATOR.name())
+        .role(Roles.OPERATOR.name())
+        .implies(Roles.DRIVER.name())
+        .role(Roles.DRIVER.name())
+        .implies(Roles.AUDITOR.name())
+        .build();
+  }
+
+  @Bean
+  MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
+    DefaultMethodSecurityExpressionHandler expressionHandler =
+        new DefaultMethodSecurityExpressionHandler();
+    expressionHandler.setRoleHierarchy(roleHierarchy);
+
+    return expressionHandler;
   }
 
   @Bean
