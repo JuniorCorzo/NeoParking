@@ -4,7 +4,6 @@ import dev.angelcorzo.neoparking.model.authentication.exceptions.ExpiredTokenExc
 import dev.angelcorzo.neoparking.model.authentication.exceptions.MalformedTokenException;
 import dev.angelcorzo.neoparking.model.authentication.exceptions.TokenInvalidException;
 import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationGateway;
-import dev.angelcorzo.neoparking.model.exceptions.RepositoryException;
 import dev.angelcorzo.neoparking.model.exceptions.TokenErrorMessages;
 import dev.angelcorzo.neoparking.securitycore.jwt.config.JwtProperties;
 import dev.angelcorzo.neoparking.securitycore.jwt.config.RSAProperties;
@@ -25,14 +24,14 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * JWT provider implementing the AuthenticationGateway interface.
- * <p>
- * This class provides a concrete implementation for generating, validating, and extracting claims from JWT tokens.
- * It handles both signed (JWS) and encrypted (JWE) tokens, using RSA keys for cryptographic operations.
- * </p>
- * <p>
- * This provider is part of the infrastructure layer and depends on the domain layer through the
- * {@link AuthenticationGateway} interface, following the Dependency Inversion Principle of Clean Architecture.
- * </p>
+ *
+ * <p>This class provides a concrete implementation for generating, validating, and extracting
+ * claims from JWT tokens. It handles both signed (JWS) and encrypted (JWE) tokens, using RSA keys
+ * for cryptographic operations.
+ *
+ * <p>This provider is part of the infrastructure layer and depends on the domain layer through the
+ * {@link AuthenticationGateway} interface, following the Dependency Inversion Principle of Clean
+ * Architecture.
  *
  * @author Angel Corzo
  * @version 1.0
@@ -53,16 +52,13 @@ public class JwtProvider implements AuthenticationGateway {
 
   /**
    * {@inheritDoc}
-   * <p>
-   * This implementation generates a signed JWT (JWS) using the RS256 algorithm.
-   * The token includes standard claims such as issuer, expiration time, and issued-at,
-   * along with custom claims provided in the method argument.
-   * </p>
    *
-   * @throws RepositoryException if there is an error during token generation.
+   * <p>This implementation generates a signed JWT (JWS) using the RS256 algorithm. The token
+   * includes standard claims such as issuer, expiration time, and issued-at, along with custom
+   * claims provided in the method argument.
    */
   @Override
-  public String generateAccessToken(Map<String, Object> claims) {
+  public String generateAccessToken(Map<String, String> claims) {
     Instant expiredTime = Instant.now().plusSeconds(jwtProperties.getAccessTokenExpiration());
 
     return Jwts.builder()
@@ -81,15 +77,12 @@ public class JwtProvider implements AuthenticationGateway {
 
   /**
    * {@inheritDoc}
-   * <p>
-   * This implementation generates an encrypted JWT (JWE) using RSA-OAEP-256 for key encryption
-   * and A256GCM for content encryption. This ensures that the token's payload is confidential.
-   * </p>
    *
-   * @throws RepositoryException if there is an error during token generation.
+   * <p>This implementation generates an encrypted JWT (JWE) using RSA-OAEP-256 for key encryption
+   * and A256GCM for content encryption. This ensures that the token's payload is confidential.
    */
   @Override
-  public String generateRefreshToken(Map<String, Object> claims) {
+  public String generateRefreshToken(Map<String, String> claims) {
     final Date expiredTime =
         Date.from(Instant.now().plusSeconds(jwtProperties.getRefreshTokenExpiration()));
 
@@ -108,10 +101,9 @@ public class JwtProvider implements AuthenticationGateway {
 
   /**
    * {@inheritDoc}
-   * <p>
-   * This method determines whether the token is a JWS (3 parts) or a JWE (5 parts) and calls the
+   *
+   * <p>This method determines whether the token is a JWS (3 parts) or a JWE (5 parts) and calls the
    * appropriate private method to extract the claims.
-   * </p>
    *
    * @throws MalformedTokenException if the token format is invalid.
    */
@@ -126,17 +118,13 @@ public class JwtProvider implements AuthenticationGateway {
     };
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Optional<String> extractClaim(String token, String claimName) {
     return Optional.of(this.extractTokenClaims(token).get(claimName));
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Optional<String> extractEmail(String token) {
     return Optional.of(this.extractTokenClaims(token).get("email"));
@@ -144,11 +132,10 @@ public class JwtProvider implements AuthenticationGateway {
 
   /**
    * {@inheritDoc}
-   * <p>
-   * This implementation validates the signature of the access token and ensures that essential claims
-   * (subject, tenantId, role) are present. It handles various exceptions related to token validation,
-   * such as expiration or malformation, and wraps them in domain-specific exceptions.
-   * </p>
+   *
+   * <p>This implementation validates the signature of the access token and ensures that essential
+   * claims (subject, tenantId, role) are present. It handles various exceptions related to token
+   * validation, such as expiration or malformation, and wraps them in domain-specific exceptions.
    *
    * @throws ExpiredTokenException if the token has expired.
    * @throws MalformedTokenException if the token is structurally invalid.
@@ -159,17 +146,11 @@ public class JwtProvider implements AuthenticationGateway {
     try {
       final Map<String, String> claims = this.extractTokenClaims(accessToken);
 
-      Optional.ofNullable(claims.get("sub"))
-          .orElseThrow(
-              () -> new TokenInvalidException(TokenErrorMessages.INVALID_TOKEN.toString()));
-
-      Optional.ofNullable(claims.get("tenantId"))
-          .orElseThrow(
-              () -> new TokenInvalidException(TokenErrorMessages.INVALID_TOKEN.toString()));
-
-      Optional.ofNullable(claims.get("role"))
-          .orElseThrow(
-              () -> new TokenInvalidException(TokenErrorMessages.INVALID_TOKEN.toString()));
+      if (claims.isEmpty()
+          || claims.get("sub") == null
+          || claims.get("tenantId") == null
+          || (claims.get("purpose").equals("access-token") && claims.get("role") == null))
+        throw new TokenInvalidException(TokenErrorMessages.INVALID_TOKEN.toString());
 
     } catch (ExpiredJwtException e) {
       log.warn("Token expired: {}", e.getMessage());
@@ -210,7 +191,7 @@ public class JwtProvider implements AuthenticationGateway {
     return Jwts.parser()
         .decryptWith(privateKey)
         .build()
-        .parseSignedClaims(token)
+        .parseEncryptedClaims(token)
         .getPayload()
         .entrySet()
         .stream()

@@ -1,4 +1,6 @@
 package dev.angelcorzo.neoparking.api.security.dto;
 
-public record AuthenticationResponseDTO() {
-}
+import lombok.Builder;
+
+@Builder(toBuilder = true)
+public record AuthenticationResponseDTO(String accessToken, String refreshToken) {}
