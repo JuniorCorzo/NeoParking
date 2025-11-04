@@ -43,8 +43,8 @@ public class LoginUseCase {
                         .filter(u -> this.passwordEncode.matches(credentials.password(), u.getPassword()))
                         .orElseThrow(BadCredentialsException::new);
 
-        final Map<String, Object> accessTokenClaims = JwtClaimsFactory.buildAccessTokenClaims(user);
-        final Map<String, Object> refreshTokenClaims = JwtClaimsFactory.buildRefreshTokenClaims(user);
+        final Map<String, String> accessTokenClaims = JwtClaimsFactory.buildAccessTokenClaims(user);
+        final Map<String, String> refreshTokenClaims = JwtClaimsFactory.buildRefreshTokenClaims(user);
 
         final String accessToken = this.authenticationGateway.generateAccessToken(accessTokenClaims);
         final String refreshToken = this.authenticationGateway.generateRefreshToken(refreshTokenClaims);

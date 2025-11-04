@@ -5,9 +5,9 @@ import java.util.Optional;
 
 public interface AuthenticationGateway {
 
-  String generateAccessToken(Map<String, Object> claims);
+  String generateAccessToken(Map<String, String> claims);
 
-  String generateRefreshToken(Map<String, Object> claims);
+  String generateRefreshToken(Map<String, String> claims);
 
   Map<String, String> extractTokenClaims(String token);
 

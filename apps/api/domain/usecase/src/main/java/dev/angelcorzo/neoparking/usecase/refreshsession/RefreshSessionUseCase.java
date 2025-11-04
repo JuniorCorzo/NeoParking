@@ -49,8 +49,8 @@ public class RefreshSessionUseCase {
                         .findByIdAndTenantId(userId, tenantId)
                         .orElseThrow(UserNotExistsInTenantException::new);
 
-        final Map<String, Object> accessTokenClaims = JwtClaimsFactory.buildAccessTokenClaims(user);
-        final Map<String, Object> refreshTokenClaims = JwtClaimsFactory.buildRefreshTokenClaims(user);
+        final Map<String, String> accessTokenClaims = JwtClaimsFactory.buildAccessTokenClaims(user);
+        final Map<String, String> refreshTokenClaims = JwtClaimsFactory.buildRefreshTokenClaims(user);
 
         final String newAccessToken = this.authenticationGateway.generateAccessToken(accessTokenClaims);
         final String newRefreshToken =

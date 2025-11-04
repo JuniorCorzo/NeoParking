@@ -71,10 +71,10 @@ public class JwtClaimsFactory {
      * @param user the user for whom the token is being created.
      * @return a map of claims for the access token.
      */
-    public static Map<String, Object> buildAccessTokenClaims(Users user) {
-        Map<String, Object> claims = buildBaseClaims(user);
+    public static Map<String, String> buildAccessTokenClaims(Users user) {
+        Map<String, String> claims = buildBaseClaims(user);
         claims.put(FULL_NAME, user.getFullName());
-        claims.put(ROLE, user.getRole());
+        claims.put(ROLE, user.getRole().name());
         claims.put(PURPOSE, "access-token");
         return claims;
     }
@@ -89,8 +89,8 @@ public class JwtClaimsFactory {
      * @param user the user for whom the token is being created.
      * @return a map of claims for the refresh token.
      */
-    public static Map<String, Object> buildRefreshTokenClaims(Users user) {
-        Map<String, Object> claims = buildBaseClaims(user);
+    public static Map<String, String> buildRefreshTokenClaims(Users user) {
+        Map<String, String> claims = buildBaseClaims(user);
         claims.put(PURPOSE, "refresh-token");
         return claims;
     }
@@ -105,11 +105,11 @@ public class JwtClaimsFactory {
      * @param user the user for whom the token is being created.
      * @return a map of base claims.
      */
-    private static Map<String, Object> buildBaseClaims(Users user) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(JTI, UUID.randomUUID());
-        claims.put(SUB, user.getId());
-        claims.put(TENANT_ID, user.getTenant().getId());
+    private static Map<String, String> buildBaseClaims(Users user) {
+        Map<String, String> claims = new HashMap<>();
+        claims.put(JTI, UUID.randomUUID().toString());
+        claims.put(SUB, user.getId().toString());
+        claims.put(TENANT_ID, user.getTenant().getId().toString());
         claims.put(EMAIL, user.getEmail());
         return claims;
     }
