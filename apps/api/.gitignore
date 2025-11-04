@@ -325,6 +325,9 @@ gradle-app.setting
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
 
+**/application-dev.yaml
+**/application-test.yaml
+**/keys/
 ### Gradle Patch ###
 **/build/
 
@@ -334,3 +337,4 @@ gradle-app.setting
 # -----
 *.hprof
 build-cache
+
