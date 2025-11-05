@@ -62,6 +62,8 @@ public interface UsersRepository {
      */
     Boolean existsById(UUID id);
 
+    Boolean existsByIdAndTenantId(UUID id, UUID tenantId);
+
     /**
      * Checks if a user with the given email address exists.
      *

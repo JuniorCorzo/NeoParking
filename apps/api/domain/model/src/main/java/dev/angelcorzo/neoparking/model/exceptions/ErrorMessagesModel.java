@@ -19,8 +19,8 @@ public enum ErrorMessagesModel {
     USER_ALREADY_DEACTIVATED("El usuario %s ya fue desactivado"),
     USER_BAD_CREDENTIALS("Credenciales incorrectas"),
     LAST_OWNER_CANNOT_BE_DEACTIVATED("El ultimo dueño no puede ser desactivado"),
-    TENANT_NOT_EXISTS("El inquilino con ID %s no esta registrado")
-    ;
+    TENANT_NOT_EXISTS("El inquilino con ID %s no esta registrado"),
+    PARKING_NOT_EXISTS("El parking con ID %s no esta registrado");
 
     private final String template;
     ErrorMessagesModel(String template) {
