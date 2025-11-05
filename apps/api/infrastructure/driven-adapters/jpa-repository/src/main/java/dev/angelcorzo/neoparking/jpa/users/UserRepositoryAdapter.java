@@ -114,6 +114,11 @@ public class UserRepositoryAdapter
     return this.repository.existsById(id);
   }
 
+  @Override
+  public Boolean existsByIdAndTenantId(UUID id, UUID tenantId) {
+    return this.repository.existsByIdAndTenantId(id, tenantId);
+  }
+
   /**
    * Checks if a user with the given email address exists.
    *
