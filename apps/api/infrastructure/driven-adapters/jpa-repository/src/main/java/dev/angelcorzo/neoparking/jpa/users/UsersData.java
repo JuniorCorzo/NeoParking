@@ -1,11 +1,12 @@
 package dev.angelcorzo.neoparking.jpa.users;
 
+import dev.angelcorzo.neoparking.jpa.parkinglots.ParkingLotsData;
 import dev.angelcorzo.neoparking.jpa.tenants.TenantsData;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -110,4 +111,7 @@ public class UsersData {
      */
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
+
+    @OneToMany(mappedBy = "parking_lots", fetch = FetchType.LAZY, targetEntity = ParkingLotsData.class)
+    private List<ParkingLotsData> parkingLots;
 }
