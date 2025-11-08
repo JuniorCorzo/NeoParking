@@ -1,4 +1,4 @@
-package dev.angelcorzo.neoparking.model.parkinglots.gateways;
+package dev.angelcorzo.neoparking.model.parkinglots.exceptions;
 
 import dev.angelcorzo.neoparking.model.exceptions.ErrorMessagesModel;
 

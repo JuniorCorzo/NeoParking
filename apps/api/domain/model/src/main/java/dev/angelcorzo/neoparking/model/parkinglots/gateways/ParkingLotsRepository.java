@@ -2,6 +2,7 @@ package dev.angelcorzo.neoparking.model.parkinglots.gateways;
 
 import dev.angelcorzo.neoparking.model.parkinglots.ParkingLots;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -19,6 +20,8 @@ import java.util.UUID;
  * @since 1.0.0
  */
 public interface ParkingLotsRepository {
+
+  Optional<ParkingLots> findById(UUID id);
 
   /**
    * Finds all parking lots associated with a specific tenant.
