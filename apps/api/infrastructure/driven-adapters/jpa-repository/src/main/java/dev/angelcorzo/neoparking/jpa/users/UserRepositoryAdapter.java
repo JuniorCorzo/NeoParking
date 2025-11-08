@@ -7,7 +7,6 @@ import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Repository;
 
@@ -77,6 +76,11 @@ public class UserRepositoryAdapter
   @Override
   public Optional<Users> findByIdAndTenantId(UUID id, UUID tenantId) {
     return this.repository.findByIdAndTenant_Id(id, tenantId).map(super::toEntity);
+  }
+
+  @Override
+  public Users getReferenceById(UUID id) {
+    return super.mapper.toEntity(super.repository.getReferenceById(id));
   }
 
   /**

@@ -10,13 +10,15 @@ import org.springframework.stereotype.Repository;
 /**
  * JPA adapter for {@link TenantsRepository}.
  *
- * <p>This class implements the {@link TenantsRepository} interface, providing
- * concrete persistence operations for {@link Tenants} entities using Spring Data JPA.</p>
+ * <p>This class implements the {@link TenantsRepository} interface, providing concrete persistence
+ * operations for {@link Tenants} entities using Spring Data JPA.
  *
- * <p>It extends {@link AdapterOperations} to leverage common CRUD and mapping functionalities.</p>
+ * <p>It extends {@link AdapterOperations} to leverage common CRUD and mapping functionalities.
  *
- * <p><strong>Layer:</strong> Infrastructure (Driven Adapter - JPA)</p>
- * <p><strong>Responsibility:</strong> To provide persistence implementation for Tenant domain operations.</p>
+ * <p><strong>Layer:</strong> Infrastructure (Driven Adapter - JPA)
+ *
+ * <p><strong>Responsibility:</strong> To provide persistence implementation for Tenant domain
+ * operations.
  *
  * @author Angel Corzo
  * @since 1.0.0
@@ -38,6 +40,11 @@ public class TenantsRepositoryAdapter
    */
   protected TenantsRepositoryAdapter(TenantsRepositoryData repository, TenantsMapper mapper) {
     super(repository, mapper);
+  }
+
+  @Override
+  public Tenants getReferenceById(UUID id) {
+    return super.mapper.toEntity(super.repository.getReferenceById(id));
   }
 
   /**

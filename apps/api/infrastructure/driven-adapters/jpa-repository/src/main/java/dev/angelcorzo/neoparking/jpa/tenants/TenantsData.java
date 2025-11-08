@@ -1,18 +1,15 @@
 package dev.angelcorzo.neoparking.jpa.tenants;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import dev.angelcorzo.neoparking.jpa.parkinglots.ParkingLotsData;
 import dev.angelcorzo.neoparking.jpa.users.UsersData;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
+import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 /**
  * Represents the JPA data entity for a Tenant.
@@ -63,11 +60,14 @@ public class TenantsData {
    * "tenant" field in {@link UsersData}.
    */
   @OneToMany(mappedBy = "tenant", fetch = FetchType.LAZY, targetEntity = UsersData.class)
+  @JsonManagedReference("user-tenant")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private List<UsersData> users;
 
-  @OneToMany(
-      mappedBy = "parking_lots",
-      fetch = FetchType.LAZY,
-      targetEntity = ParkingLotsData.class)
+  @OneToMany(mappedBy = "tenant", fetch = FetchType.LAZY, targetEntity = ParkingLotsData.class)
+  @JsonManagedReference("parking-lot-tenant")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private List<ParkingLotsData> parkingLots;
 }

@@ -1,19 +1,14 @@
 package dev.angelcorzo.neoparking.jpa.parkinglots;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import dev.angelcorzo.neoparking.jpa.tenants.TenantsData;
 import dev.angelcorzo.neoparking.jpa.users.UsersData;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import lombok.*;
+import org.hibernate.annotations.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Builder(toBuilder = true)
@@ -43,10 +38,16 @@ public class ParkingLotsData {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
+  @JsonBackReference("parking-lot-owner")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private UsersData owner;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "tenant_id", referencedColumnName = "id", nullable = false)
+  @JsonBackReference("parking-lot-tenant")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private TenantsData tenant;
 
   @ColumnDefault("UTC-5")
@@ -57,18 +58,19 @@ public class ParkingLotsData {
   @Column(name = "currency")
   private String currency;
 
+  @Column(name = "operating_hours")
   @Embedded
   @AttributeOverrides({
     @AttributeOverride(name = "openTime", column = @Column(name = "open_time")),
     @AttributeOverride(name = "closeTime", column = @Column(name = "close_time"))
   })
-  private OperationHorusType operationHorus;
+  private OperatingHoursType operatingHours;
 
-  @CreatedDate
+  @CreationTimestamp
   @Column(name = "created_at")
   private OffsetDateTime createdAt;
 
-  @LastModifiedDate
+  @UpdateTimestamp
   @Column(name = "updated_at")
   private OffsetDateTime updatedAt;
 

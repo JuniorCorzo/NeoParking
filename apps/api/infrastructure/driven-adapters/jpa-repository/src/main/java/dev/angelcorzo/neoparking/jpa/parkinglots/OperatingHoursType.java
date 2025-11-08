@@ -1,6 +1,7 @@
 package dev.angelcorzo.neoparking.jpa.parkinglots;
 
 import jakarta.persistence.Embeddable;
+import java.time.OffsetTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,8 +11,8 @@ import org.hibernate.annotations.Struct;
 @AllArgsConstructor
 @NoArgsConstructor
 @Embeddable
-@Struct(name = "operation_horus_t")
-public class OperationHorusType {
-	private String openTime;
-	private String closeTime;
+@Struct(name = "operating_hours_t")
+public class OperatingHoursType {
+  private OffsetTime openTime;
+  private OffsetTime closeTime;
 }
