@@ -1,7 +1,6 @@
 package dev.angelcorzo.neoparking.model.tenants.gateways;
 
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
-
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,6 +26,8 @@ public interface TenantsRepository {
      * @return An {@link Optional} containing the found {@link Tenants} entity, or empty if not found.
      */
     Optional<Tenants> findById(UUID id);
+
+    Tenants getReferenceById(UUID id);
 
     /**
      * Checks if a tenant with the given ID exists.

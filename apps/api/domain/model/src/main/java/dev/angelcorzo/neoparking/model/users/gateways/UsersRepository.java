@@ -46,6 +46,8 @@ public interface UsersRepository {
      */
     Optional<Users> findByIdAndTenantId(UUID id, UUID tenantId);
 
+    Users getReferenceById(UUID id);
+
     /**
      * Counts the number of active users with the 'OWNER' role within a specific tenant.
      *
