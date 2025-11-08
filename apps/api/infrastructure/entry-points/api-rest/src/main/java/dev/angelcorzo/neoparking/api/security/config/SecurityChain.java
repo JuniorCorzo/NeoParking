@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -62,8 +63,13 @@ public class SecurityChain {
   }
 
   @Bean
+  GrantedAuthorityDefaults grantedAuthorityDefaults() {
+    return new GrantedAuthorityDefaults("ROLE_");
+  }
+
+  @Bean
   RoleHierarchy roleHierarchy() {
-    return RoleHierarchyImpl.withDefaultRolePrefix()
+    return RoleHierarchyImpl.withRolePrefix("ROLE_")
         .role(Roles.SUPERADMIN.name())
         .implies(Roles.OWNER.name())
         .role(Roles.OWNER.name())
@@ -78,7 +84,8 @@ public class SecurityChain {
   }
 
   @Bean
-  MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
+  public MethodSecurityExpressionHandler methodSecurityExpressionHandler(
+      RoleHierarchy roleHierarchy) {
     DefaultMethodSecurityExpressionHandler expressionHandler =
         new DefaultMethodSecurityExpressionHandler();
     expressionHandler.setRoleHierarchy(roleHierarchy);

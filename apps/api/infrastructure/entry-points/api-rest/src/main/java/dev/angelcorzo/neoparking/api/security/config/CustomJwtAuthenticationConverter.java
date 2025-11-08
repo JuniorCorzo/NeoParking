@@ -30,7 +30,7 @@ public class CustomJwtAuthenticationConverter
     String tenantId = source.getClaimAsString("tenantId");
     String role = source.getClaimAsString("role");
 
-    if (userId != null && tenantId != null && role != null)
+    if (userId == null || tenantId == null || role == null)
       throw new TokenInvalidException(TokenErrorMessages.INVALID_TOKEN.toString());
 
     List<SimpleGrantedAuthority> authority =
