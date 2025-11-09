@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import dev.angelcorzo.neoparking.model.exceptions.ErrorMessagesModel;
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
+import dev.angelcorzo.neoparking.model.tenants.valueobject.TenantReference;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.exceptions.LastOwnerCannotBeDeactivatedException;
@@ -45,7 +46,7 @@ class DeactivateUserUseCaseTest {
         final UUID tenantId = UUID.randomUUID();
         final OffsetDateTime beforeDeactivation = OffsetDateTime.now();
 
-        Tenants tenant = Tenants.builder()
+        TenantReference tenant = TenantReference.builder()
                 .id(tenantId)
                 .companyName("Test Company")
                 .build();
@@ -109,7 +110,7 @@ class DeactivateUserUseCaseTest {
         final UUID deactivatedById = UUID.randomUUID();
         final UUID tenantId = UUID.randomUUID();
 
-        Tenants tenant = Tenants.builder()
+        TenantReference tenant = TenantReference.builder()
                 .id(tenantId)
                 .companyName("Test Company")
                 .build();
@@ -156,7 +157,7 @@ class DeactivateUserUseCaseTest {
         final UUID lastOwnerId = UUID.randomUUID();
         final UUID deactivatedById = UUID.randomUUID();
         final UUID tenantId = UUID.randomUUID();
-        final Tenants tenant = Tenants.builder()
+        final TenantReference tenant = TenantReference.builder()
                 .id(tenantId)
                 .companyName("Test Company")
                 .build();
@@ -199,7 +200,7 @@ class DeactivateUserUseCaseTest {
         final UUID deactivatedById = UUID.randomUUID();
         final UUID tenantId = UUID.randomUUID();
 
-        final Tenants tenant = Tenants.builder()
+        final TenantReference tenant = TenantReference.builder()
                 .id(tenantId)
                 .companyName("Test Company")
                 .build();
@@ -299,7 +300,7 @@ class DeactivateUserUseCaseTest {
         final UUID userId = UUID.randomUUID();
         final UUID nonExistentDeactivatorId = UUID.randomUUID();
         final UUID tenantId = UUID.randomUUID();
-        final Tenants tenant = Tenants.builder()
+        final TenantReference tenant = TenantReference.builder()
                 .id(tenantId)
                 .companyName("Test Company")
                 .build();
@@ -337,7 +338,7 @@ class DeactivateUserUseCaseTest {
         // Given
         final UUID ownerId = UUID.randomUUID();
         final UUID tenantId = UUID.randomUUID();
-        final Tenants tenant = Tenants.builder()
+        final TenantReference tenant = TenantReference.builder()
                 .id(tenantId)
                 .companyName("Test Company")
                 .build();
@@ -384,7 +385,7 @@ class DeactivateUserUseCaseTest {
         final UUID deactivatedById = UUID.randomUUID();
         final UUID tenantId = UUID.randomUUID();
         final OffsetDateTime originalUpdatedAt = OffsetDateTime.now().minusDays(5);
-        final Tenants tenant = Tenants.builder()
+        final TenantReference tenant = TenantReference.builder()
                 .id(tenantId)
                 .companyName("Test Company")
                 .build();

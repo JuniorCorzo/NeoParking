@@ -1,6 +1,7 @@
 package dev.angelcorzo.neoparking.usecase.acceptinvitation;
 
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
+import dev.angelcorzo.neoparking.model.tenants.valueobject.TenantReference;
 import dev.angelcorzo.neoparking.model.userinvitations.InvitationNotFoundException;
 import dev.angelcorzo.neoparking.model.userinvitations.UserInvitationStatus;
 import dev.angelcorzo.neoparking.model.userinvitations.UserInvitations;
@@ -111,7 +112,7 @@ class AcceptInvitationUseCaseTest {
             .email("test@example.com")
             .fullName("Existing User")
             .password("oldPassword")
-            .tenant(differentTenant)
+            .tenant(TenantReference.of(differentTenant))
             .role(Roles.AUDITOR)
             .build();
 

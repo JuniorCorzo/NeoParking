@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import dev.angelcorzo.neoparking.model.authentication.AuthResponse;
 import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationGateway;
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
+import dev.angelcorzo.neoparking.model.tenants.valueobject.TenantReference;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.gateways.PasswordEncodeGateway;
@@ -56,7 +57,7 @@ class LoginUseCaseTest {
               .id(UUID.randomUUID())
               .email("test@example.com")
               .password("encodedPassword")
-              .tenant(Tenants.builder().id(UUID.randomUUID()).companyName("Test Company").build())
+              .tenant(TenantReference.builder().id(UUID.randomUUID()).companyName("Test Company").build())
               .role(Roles.OWNER)
               .build();
 
