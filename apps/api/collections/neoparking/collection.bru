@@ -3,5 +3,52 @@ auth {
 }
 
 auth:bearer {
-  token: eyJ0eXAiOiJKV1QiLCJraWQiOiJuZW9wYXJraW5nLWtleS0yMDI1LTAxIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpIiwiZXhwIjoxNzYyNjQzODE2LCJuYmYiOjE3NjI2NDIwMTYsImlhdCI6MTc2MjY0MjAxNiwic3ViIjoiMDQyMGI3Y2QtNDk0OS00Njg5LTk1OTItZWQ1ZjI2YzA5MDFhIiwicm9sZSI6IlJPTEVfT1dORVIiLCJwdXJwb3NlIjoiYWNjZXNzLXRva2VuIiwidGVuYW50SWQiOiJiYWI3ZjY5ZS03OTI4LTRiZjUtOTQwNC1hNDA1OWZhODM1NjUiLCJmdWxsTmFtZSI6IkFuZ2VsIENvcnpvIiwianRpIjoiZjFiNTc5YjEtNDZhMC00ODk2LThlMTEtMDE2OGQ3OTA3ZGIxIiwiZW1haWwiOiJ1c2VyQGV4YW1wbGUuY29tIn0.D0f_G3rUNKCUOyabeNP1933JhRR9QRkJwbEZb1veJuUY5-ZwCCEdApfgBRyI-4U1sc6hjMzlPCV0PLGZm9jmzqUGUB5Yn5f9bOzgiOkg3xztDmcMAE-jg0l4zHZdUCbHPk9hrTuG2ktQ56lU_Wx8cEL1H3T3N5NF_hapl72IVxdVYNtGruiiG3ykWc9hzDn11h_BJp6B4gTTWqoscumscR5o5SBGRucVVM8ZU8QL4PRPxw0Utt3vpQOLP-Vvu2NsVeitER9nsxsfQJlXzr6pyL71JM1HAxqpd_QrqzWzMyPN4dxCndg8R9wvNG32T7T1-OMiYxnCmxn-8t_y-dSuSA
+  token: {{ACCESS_TOKEN}}
+}
+
+script:pre-request {
+  const accessToken = bru.getEnvVar("ACCESS_TOKEN")
+  const refreshToken = bru.getEnvVar("REFRESH_TOKEN")
+  const baseUrl = bru.getEnvVar("BASE_URL")
+  const email = bru.getEnvVar("EMAIL")
+  const password = bru.getEnvVar("PASSWORD")
+  
+  if (!refreshToken) {
+    await bru.sendRequest({
+      method: "POST",
+      url: `${baseUrl}/auth/login`,
+      data: {
+        email: email,
+        password: password
+      }
+    }, function (err, res) {
+       if (err) {
+        console.error(err)
+         return
+      }
+      
+      const {accessToken, refreshToken} = res.data.data
+      bru.setEnvVar("ACCESS_TOKEN", accessToken)
+      bru.setEnvVar("REFRESH_TOKEN", refreshToken)
+    })
+    return;
+  } 
+  
+    await bru.sendRequest({
+      method: "POST",
+      url: `${baseUrl}/auth/refresh/${refreshToken}`,
+      data: {
+        email: email,
+        password: password
+      }
+    }, function (err, res) {
+      if (err) {
+        console.error(err)
+        return
+      }
+      const {accessToken, refreshToken} = res.data.data
+      bru.setEnvVar("ACCESS_TOKEN", accessToken)
+      bru.setEnvVar("REFRESH_TOKEN", refreshToken)
+    })
+  
 }
