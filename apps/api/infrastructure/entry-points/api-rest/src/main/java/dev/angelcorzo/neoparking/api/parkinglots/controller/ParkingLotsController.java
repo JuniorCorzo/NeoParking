@@ -3,6 +3,7 @@ package dev.angelcorzo.neoparking.api.parkinglots.controller;
 import dev.angelcorzo.neoparking.api.commons.dto.Response;
 import dev.angelcorzo.neoparking.api.parkinglots.dto.ParkingLotsResponse;
 import dev.angelcorzo.neoparking.api.parkinglots.dto.UpsertParkingLotsRequest;
+import dev.angelcorzo.neoparking.api.parkinglots.enums.ParkingLotsMessages;
 import dev.angelcorzo.neoparking.api.parkinglots.mappers.ParkingLotsMapper;
 import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationGateway;
 import dev.angelcorzo.neoparking.model.parkinglots.ParkingLots;
@@ -11,6 +12,7 @@ import dev.angelcorzo.neoparking.usecase.createparking.CreateParkingUseCase;
 import dev.angelcorzo.neoparking.usecase.listparkinglots.ListParkingLotsUseCase;
 import dev.angelcorzo.neoparking.usecase.updateparking.UpdateParkingLotsUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class ParkingLotsController {
   private final ParkingLotsMapper parkingLotsMapper;
 
   @GetMapping("/list")
+  @PreAuthorize("hasRole('MANAGER')")
   public Response<List<ParkingLotsResponse>> listParkingLots(
       @RequestHeader("Authorization") String accessToken) {
     final UUID tenantId = this.extractTenantId(accessToken);
@@ -40,14 +43,14 @@ public class ParkingLotsController {
             .map(parkingLotsMapper::toDTO)
             .toList();
 
-    return Response.ok(parkingLots, "");
+    return Response.ok(parkingLots, ParkingLotsMessages.PARKING_LOTS_LIST.format());
   }
 
   @PostMapping("/create")
   @PreAuthorize("hasRole('MANAGER')")
   @Transactional
   public Response<ParkingLotsResponse> createParkingLots(
-      @RequestBody UpsertParkingLotsRequest parkingLots,
+      @Valid @RequestBody UpsertParkingLotsRequest parkingLots,
       @RequestHeader("Authorization") String accessToken) {
 
     final UpsertParkingLotsDTO newParkingLots =
@@ -58,14 +61,15 @@ public class ParkingLotsController {
     final ParkingLots parkingLotsCreated = this.createParkingUseCase.created(newParkingLots);
 
     return Response.ok(
-        this.parkingLotsMapper.toDTO(parkingLotsCreated), "Parking Lot created successfully");
+        this.parkingLotsMapper.toDTO(parkingLotsCreated),
+        ParkingLotsMessages.PARKING_LOT_CREATED.format());
   }
 
   @PutMapping("/update")
   @PreAuthorize("hasRole('MANAGER')")
   @Transactional
   public Response<ParkingLotsResponse> updateParkingLots(
-      @RequestBody UpsertParkingLotsRequest parkingLots,
+      @Valid @RequestBody UpsertParkingLotsRequest parkingLots,
       @RequestHeader("Authorization") String accessToken) {
     final UpsertParkingLotsDTO updateParkingLots =
         this.parkingLotsMapper.toModel(parkingLots).toBuilder()
@@ -73,7 +77,8 @@ public class ParkingLotsController {
             .build();
 
     return Response.ok(
-        this.parkingLotsMapper.toDTO(this.updateParkingLotsUseCase.update(updateParkingLots)), "");
+        this.parkingLotsMapper.toDTO(this.updateParkingLotsUseCase.update(updateParkingLots)),
+        ParkingLotsMessages.PARKING_LOTS_UPDATED.format());
   }
 
   private UUID extractTenantId(String accessToken) {

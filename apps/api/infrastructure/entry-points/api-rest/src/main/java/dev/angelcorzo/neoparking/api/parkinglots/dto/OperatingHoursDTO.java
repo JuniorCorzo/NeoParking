@@ -1,5 +1,7 @@
 package dev.angelcorzo.neoparking.api.parkinglots.dto;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.OffsetTime;
 
-public record OperatingHoursDTO(OffsetTime openTime, OffsetTime closeTime) {}
+public record OperatingHoursDTO(
+		@NotNull OffsetTime openTime, @NotNull OffsetTime closeTime) {}
