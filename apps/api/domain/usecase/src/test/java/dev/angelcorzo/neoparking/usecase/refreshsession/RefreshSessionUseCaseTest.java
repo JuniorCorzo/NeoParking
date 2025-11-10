@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 import dev.angelcorzo.neoparking.model.authentication.AuthResponse;
 import dev.angelcorzo.neoparking.model.authentication.exceptions.TokenInvalidException;
 import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationGateway;
-import dev.angelcorzo.neoparking.model.tenants.Tenants;
+import dev.angelcorzo.neoparking.model.tenants.valueobject.TenantReference;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.exceptions.UserNotExistsInTenantException;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
@@ -52,7 +52,7 @@ class RefreshSessionUseCaseTest {
       Users mockUser =
           Users.builder()
               .id(userId)
-              .tenant(Tenants.builder().id(UUID.randomUUID()).companyName("test company").build())
+              .tenant(TenantReference.builder().id(UUID.randomUUID()).companyName("test company").build())
               .build();
 
       doNothing().when(authenticationGateway).validateToken(validRefreshToken);

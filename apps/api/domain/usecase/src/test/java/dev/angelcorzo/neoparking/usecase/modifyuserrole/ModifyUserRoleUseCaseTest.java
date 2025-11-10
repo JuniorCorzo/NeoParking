@@ -2,6 +2,7 @@ package dev.angelcorzo.neoparking.usecase.modifyuserrole;
 
 import dev.angelcorzo.neoparking.model.exceptions.ErrorMessagesModel;
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
+import dev.angelcorzo.neoparking.model.tenants.valueobject.TenantReference;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.exceptions.UserNotExistsException;
@@ -41,7 +42,7 @@ class ModifyUserRoleUseCaseTest {
         final Roles currentRole = Roles.OPERATOR;
         final Roles newRole = Roles.MANAGER;
 
-        Tenants tenant = Tenants.builder()
+        TenantReference tenant = TenantReference.builder()
                 .id(tenantId)
                 .companyName("Test Company")
                 .build();
@@ -76,7 +77,7 @@ class ModifyUserRoleUseCaseTest {
         assertEquals(newRole, capturedUser.getRole());
         assertEquals(userId, capturedUser.getId());
         assertEquals(tenant, capturedUser.getTenant());
-        assertEquals(tenantId, capturedUser.getTenant().getId());
+        assertEquals(tenantId, capturedUser.getTenant().id());
 
         verify(usersRepository, times(1)).findByIdAndTenantId(userId, tenantId);
         verify(usersRepository, times(1)).save(any(Users.class));
@@ -114,7 +115,7 @@ class ModifyUserRoleUseCaseTest {
         final UUID tenantId = UUID.randomUUID();
         final Roles notAllowedRole = Roles.OWNER;
 
-        Tenants tenant = Tenants.builder()
+        TenantReference tenant = TenantReference.builder()
                 .id(tenantId)
                 .companyName("Test Company")
                 .build();
@@ -151,7 +152,7 @@ class ModifyUserRoleUseCaseTest {
         final UUID tenantId = UUID.randomUUID();
         final Roles notAllowedRole = Roles.SUPERADMIN;
 
-        Tenants tenant = Tenants.builder()
+        TenantReference tenant = TenantReference.builder()
                 .id(tenantId)
                 .companyName("Test Company")
                 .build();
@@ -187,7 +188,7 @@ class ModifyUserRoleUseCaseTest {
         final UUID userId = UUID.randomUUID();
         final UUID tenantId = UUID.randomUUID();
 
-        Tenants tenant = Tenants.builder()
+        TenantReference tenant = TenantReference.builder()
                 .id(tenantId)
                 .companyName("Test Company")
                 .build();
