@@ -7,7 +7,6 @@ import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Repository;
 
@@ -79,6 +78,11 @@ public class UserRepositoryAdapter
     return this.repository.findByIdAndTenant_Id(id, tenantId).map(super::toEntity);
   }
 
+  @Override
+  public Users getReferenceById(UUID id) {
+    return super.mapper.toEntity(super.repository.getReferenceById(id));
+  }
+
   /**
    * Saves (creates or updates) a user entity.
    * After saving, it re-fetches the user to ensure the associated tenant is loaded.
@@ -112,6 +116,11 @@ public class UserRepositoryAdapter
   @Override
   public Boolean existsById(UUID id) {
     return this.repository.existsById(id);
+  }
+
+  @Override
+  public Boolean existsByIdAndTenantId(UUID id, UUID tenantId) {
+    return this.repository.existsByIdAndTenantId(id, tenantId);
   }
 
   /**

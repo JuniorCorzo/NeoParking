@@ -46,6 +46,8 @@ public interface UsersRepository {
      */
     Optional<Users> findByIdAndTenantId(UUID id, UUID tenantId);
 
+    Users getReferenceById(UUID id);
+
     /**
      * Counts the number of active users with the 'OWNER' role within a specific tenant.
      *
@@ -61,6 +63,8 @@ public interface UsersRepository {
      * @return {@code true} if a user with the specified ID exists, {@code false} otherwise.
      */
     Boolean existsById(UUID id);
+
+    Boolean existsByIdAndTenantId(UUID id, UUID tenantId);
 
     /**
      * Checks if a user with the given email address exists.

@@ -5,15 +5,19 @@ import dev.angelcorzo.neoparking.jpa.mappers.BaseMapper;
 import dev.angelcorzo.neoparking.jpa.users.UsersData;
 import dev.angelcorzo.neoparking.model.users.Users;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
- * MapStruct mapper for converting between {@link Users} domain entity and {@link UsersData} JPA entity.
+ * MapStruct mapper for converting between {@link Users} domain entity and {@link UsersData} JPA
+ * entity.
  *
- * <p>This interface extends {@link BaseMapper} to provide generic mapping methods
- * and is configured with {@link MapperStructConfig} for consistent behavior.</p>
+ * <p>This interface extends {@link BaseMapper} to provide generic mapping methods and is configured
+ * with {@link MapperStructConfig} for consistent behavior.
  *
- * <p><strong>Layer:</strong> Infrastructure (Driven Adapter - Mapper)</p>
- * <p><strong>Responsibility:</strong> To facilitate data transfer between the domain and persistence layers for Users.</p>
+ * <p><strong>Layer:</strong> Infrastructure (Driven Adapter - Mapper)
+ *
+ * <p><strong>Responsibility:</strong> To facilitate data transfer between the domain and
+ * persistence layers for Users.
  *
  * @author Angel Corzo
  * @since 1.0.0

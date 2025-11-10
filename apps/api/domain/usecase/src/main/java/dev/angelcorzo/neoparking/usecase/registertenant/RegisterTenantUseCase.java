@@ -2,6 +2,7 @@ package dev.angelcorzo.neoparking.usecase.registertenant;
 
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
 import dev.angelcorzo.neoparking.model.tenants.gateways.TenantsRepository;
+import dev.angelcorzo.neoparking.model.tenants.valueobject.TenantReference;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.exceptions.EmailAlreadyExistsException;
@@ -12,11 +13,12 @@ import lombok.RequiredArgsConstructor;
 /**
  * Use case for registering a new tenant and an initial owner user.
  *
- * <p>This class handles the business logic for creating a new tenant,
- * associating an owner user with it, and ensuring data integrity.</p>
+ * <p>This class handles the business logic for creating a new tenant, associating an owner user
+ * with it, and ensuring data integrity.
  *
- * <p><strong>Layer:</strong> Application (Use Case)</p>
- * <p><strong>Responsibility:</strong> To manage the registration process of a new tenant.</p>
+ * <p><strong>Layer:</strong> Application (Use Case)
+ *
+ * <p><strong>Responsibility:</strong> To manage the registration process of a new tenant.
  *
  * @author Angel Corzo
  * @since 1.0.0
@@ -34,8 +36,10 @@ public final class RegisterTenantUseCase {
    *
    * @param user The initial {@link Users} object for the tenant owner.
    * @param tenant The {@link Tenants} object representing the new tenant.
-   * @return The newly created {@link Users} object for the tenant owner, now associated with the tenant.
-   * @throws EmailAlreadyExistsException if the email of the provided user already exists in the system.
+   * @return The newly created {@link Users} object for the tenant owner, now associated with the
+   *     tenant.
+   * @throws EmailAlreadyExistsException if the email of the provided user already exists in the
+   *     system.
    */
   public Users register(final Users user, final Tenants tenant) {
     this.validateEmailExists(user);
@@ -43,14 +47,12 @@ public final class RegisterTenantUseCase {
     final Tenants tenantCreated = this.tenantsRepository.save(tenant);
 
     final String passwordEncrypted = this.passwordEncode.encrypt(user.getPassword());
-    user.setTenant(tenantCreated);
+    user.setTenant(
+        TenantReference.of(this.tenantsRepository.getReferenceById(tenantCreated.getId())));
     user.setRole(Roles.OWNER);
     user.setPassword(passwordEncrypted);
 
-    final Users userCreated = this.usersRepository.save(user);
-    userCreated.setTenant(tenantCreated); // Ensure the returned user has the created tenant set
-
-    return userCreated;
+    return this.usersRepository.save(user);
   }
 
   /**

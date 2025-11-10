@@ -8,6 +8,7 @@ import dev.angelcorzo.neoparking.jpa.userinvitation.mapper.UserInvitationsMapper
 import dev.angelcorzo.neoparking.jpa.users.UserRepositoryAdapter;
 import dev.angelcorzo.neoparking.jpa.users.mapper.UserMapperJpaImpl;
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
+import dev.angelcorzo.neoparking.model.tenants.valueobject.TenantReference;
 import dev.angelcorzo.neoparking.model.userinvitations.UserInvitationStatus;
 import dev.angelcorzo.neoparking.model.userinvitations.UserInvitations;
 import dev.angelcorzo.neoparking.model.users.Users;
@@ -16,6 +17,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import dev.angelcorzo.neoparking.model.users.valueobject.UserReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -49,7 +52,7 @@ class UserInvitationsRepositoryAdapterTest {
           .email("inviter@test.com")
           .password("pass")
           .role(Roles.OWNER)
-          .tenant(tenantDomain)
+          .tenant(TenantReference.of(tenantDomain))
           .build();
   @Autowired private UserInvitationsRepositoryAdapter userInvitationsRepositoryAdapter;
   @Autowired private UserRepositoryAdapter userRepositoryAdapter;
@@ -69,7 +72,7 @@ class UserInvitationsRepositoryAdapterTest {
                 .email("inviter@test.com")
                 .password("pass")
                 .role(Roles.OWNER)
-                .tenant(savedTenant)
+                .tenant(TenantReference.of(savedTenant))
                 .build());
 
     invitation1 =
@@ -80,7 +83,7 @@ class UserInvitationsRepositoryAdapterTest {
                 .role(Roles.SUPERADMIN)
                 .token(UUID.randomUUID())
                 .status(UserInvitationStatus.PENDING)
-                .invitedBy(invitingUser)
+                .invitedBy(UserReference.of(invitingUser))
                 .expiredAt(OffsetDateTime.now().plusDays(7))
                 .build());
   }
@@ -101,7 +104,7 @@ class UserInvitationsRepositoryAdapterTest {
               .role(Roles.OPERATOR)
               .token(UUID.randomUUID())
               .status(UserInvitationStatus.PENDING)
-              .invitedBy(invitingUserDomain)
+              .invitedBy(UserReference.of(invitingUserDomain))
               .expiredAt(OffsetDateTime.now().plusDays(7))
               .build();
 

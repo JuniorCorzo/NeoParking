@@ -1,9 +1,13 @@
 package dev.angelcorzo.neoparking.model.tenants;
 
-import lombok.*;
-
+import dev.angelcorzo.neoparking.model.parkinglots.valueobject.ParkingLotsReference;
+import dev.angelcorzo.neoparking.model.users.Users;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
+
+import dev.angelcorzo.neoparking.model.users.valueobject.UserReference;
+import lombok.*;
 
 /**
  * Represents a Tenant, which is a top-level customer entity in this multi-tenant system.
@@ -32,6 +36,9 @@ public class Tenants {
      * The legal or commercial name of the company representing the Tenant.
      */
     private String companyName;
+
+    private List<UserReference> users;
+
     /**
      * The timestamp when the Tenant was created in the system.
      */
@@ -44,4 +51,6 @@ public class Tenants {
      * The timestamp when the Tenant was soft-deleted. A non-null value indicates the Tenant is considered deleted.
      */
     private OffsetDateTime deletedAt;
+
+    private List<ParkingLotsReference> parkingLots;
 }

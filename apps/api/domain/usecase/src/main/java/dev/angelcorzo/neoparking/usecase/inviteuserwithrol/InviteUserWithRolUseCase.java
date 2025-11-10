@@ -11,6 +11,7 @@ import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.exceptions.UserAlreadyExistsInTenantException;
 import dev.angelcorzo.neoparking.model.users.exceptions.UserNotExistsException;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
+import dev.angelcorzo.neoparking.model.users.valueobject.UserReference;
 import dev.angelcorzo.neoparking.usecase.acceptinvitation.exceptions.InvalidRoleException;
 import java.time.OffsetDateTime;
 import java.util.Set;
@@ -70,7 +71,7 @@ public class InviteUserWithRolUseCase {
             .role(inviteUserWithRole.role())
             .token(UUID.randomUUID())
             .status(UserInvitationStatus.PENDING)
-            .invitedBy(invitedBy)
+            .invitedBy(UserReference.of(invitedBy))
             .createdAt(OffsetDateTime.now())
             .expiredAt(OffsetDateTime.now().plusDays(EXPIRATION_DAYS))
             .build();

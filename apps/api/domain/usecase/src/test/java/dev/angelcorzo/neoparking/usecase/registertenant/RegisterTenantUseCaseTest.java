@@ -2,6 +2,7 @@ package dev.angelcorzo.neoparking.usecase.registertenant;
 
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
 import dev.angelcorzo.neoparking.model.tenants.gateways.TenantsRepository;
+import dev.angelcorzo.neoparking.model.tenants.valueobject.TenantReference;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.model.users.exceptions.EmailAlreadyExistsException;
@@ -68,7 +69,7 @@ class RegisterTenantUseCaseTest {
     void shouldRegisterTenantAndUserSuccessfully() {
         // Arrange
         Users userReturn = userToRegister;
-        userReturn.setTenant(tenant);
+        userReturn.setTenant(TenantReference.of(tenant));
 
         // 1. When checking if email exists, return false (does not exist)
         when(usersRepository.existsByEmail(userToRegister.getEmail())).thenReturn(false);
@@ -102,7 +103,7 @@ class RegisterTenantUseCaseTest {
 
         // Verify that the tenant was correctly assigned to the user before saving
         assertEquals(tenant, userCaptor.getValue().getTenant());
-        assertEquals(tenantId, userCaptor.getValue().getTenant().getId());
+        assertEquals(tenantId, userCaptor.getValue().getTenant().id());
     }
 
     @Test

@@ -2,6 +2,7 @@ package dev.angelcorzo.neoparking.model.userinvitations;
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
+import dev.angelcorzo.neoparking.model.users.valueobject.UserReference;
 import lombok.Builder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -58,7 +59,7 @@ public class UserInvitations {
     /**
      * The user who sent the invitation.
      */
-    private Users invitedBy;
+    private UserReference invitedBy;
     /**
      * The timestamp when the invitation was created.
      */

@@ -1,15 +1,16 @@
 package dev.angelcorzo.neoparking.jpa.users;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import dev.angelcorzo.neoparking.jpa.parkinglots.ParkingLotsData;
 import dev.angelcorzo.neoparking.jpa.tenants.TenantsData;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
@@ -77,6 +78,9 @@ public class UsersData {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id",  referencedColumnName = "id",foreignKey = @ForeignKey(name = "users_tenant_id_fkey"))
+    @JsonBackReference("user-tenant")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private TenantsData tenant;
 
     /**
@@ -110,4 +114,10 @@ public class UsersData {
      */
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
+
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, targetEntity = ParkingLotsData.class)
+    @JsonManagedReference("parking-lot-owner")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<ParkingLotsData> parkingLots;
 }

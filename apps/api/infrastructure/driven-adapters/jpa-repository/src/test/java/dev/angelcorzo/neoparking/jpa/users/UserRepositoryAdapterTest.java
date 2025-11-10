@@ -6,6 +6,7 @@ import dev.angelcorzo.neoparking.jpa.tenants.TenantsRepositoryAdapter;
 import dev.angelcorzo.neoparking.jpa.tenants.mappers.TenantsMapperJpaImpl;
 import dev.angelcorzo.neoparking.jpa.users.mapper.UserMapperJpaImpl;
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
+import dev.angelcorzo.neoparking.model.tenants.valueobject.TenantReference;
 import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import java.util.Optional;
@@ -65,13 +66,13 @@ class UserRepositoryAdapterTest {
             .email(email)
             .password("password123")
             .role(role)
-            .tenant(tenant)
+            .tenant(TenantReference.of(tenant))
             .build();
     return userRepositoryAdapter.save(user);
   }
 
   private Users buildUserModel() {
-    Tenants domainTenant = Tenants.builder().id(testTenant.getId()).build();
+    TenantReference domainTenant = TenantReference.builder().id(testTenant.getId()).build();
 
     return Users.builder()
         .fullName("Alice Smith")
@@ -299,7 +300,7 @@ class UserRepositoryAdapterTest {
       Optional<Users> updatedUser = userRepositoryAdapter.findById(userWithoutTenant.getId());
       assertThat(updatedUser).isPresent();
       assertThat(updatedUser.get().getTenant()).isNotNull();
-      assertThat(updatedUser.get().getTenant().getId()).isEqualTo(newTenant.getId());
+      assertThat(updatedUser.get().getTenant().id()).isEqualTo(newTenant.getId());
     }
   }
 

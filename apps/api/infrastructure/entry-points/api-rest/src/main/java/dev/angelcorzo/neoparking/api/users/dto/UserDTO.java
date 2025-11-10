@@ -1,6 +1,7 @@
 package dev.angelcorzo.neoparking.api.users.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import dev.angelcorzo.neoparking.api.tenants.dto.TenantInfo;
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import java.time.OffsetDateTime;
@@ -15,7 +16,7 @@ public record UserDTO(
     String email,
     String password,
     Roles role,
-    Tenants tenant,
+    TenantInfo tenant,
     String contactInfo,
     UUID deletedBy,
     OffsetDateTime createdAt,
