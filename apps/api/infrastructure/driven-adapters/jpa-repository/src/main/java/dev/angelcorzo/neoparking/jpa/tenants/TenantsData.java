@@ -2,6 +2,7 @@ package dev.angelcorzo.neoparking.jpa.tenants;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import dev.angelcorzo.neoparking.jpa.parkinglots.ParkingLotsData;
+import dev.angelcorzo.neoparking.jpa.slot.SlotsData;
 import dev.angelcorzo.neoparking.jpa.users.UsersData;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
@@ -70,4 +71,9 @@ public class TenantsData {
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   private List<ParkingLotsData> parkingLots;
+
+  @OneToMany(mappedBy = "tenant", fetch = FetchType.LAZY)
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  private List<SlotsData> slots;
 }

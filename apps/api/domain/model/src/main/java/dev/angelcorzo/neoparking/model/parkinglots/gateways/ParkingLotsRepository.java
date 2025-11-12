@@ -39,6 +39,8 @@ public interface ParkingLotsRepository {
    */
   List<ParkingLots> findByOwnerId(UUID ownerId);
 
+  ParkingLots getReferenceById(UUID id);
+
   Boolean existsById(UUID id);
 
   /**
@@ -48,6 +50,10 @@ public interface ParkingLotsRepository {
    * @return {@link ParkingLots}
    */
   ParkingLots save(ParkingLots parkingLots);
+
+  void incrementTotalSpots(UUID id);
+
+  void decrementTotalSpots(UUID id);
 
   /**
    * Deletes a parking lot entity. This could be soft or hardly deleted depending on the

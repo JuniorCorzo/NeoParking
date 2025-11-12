@@ -1,11 +1,13 @@
 package dev.angelcorzo.neoparking.jpa.parkinglots;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import dev.angelcorzo.neoparking.jpa.slot.SlotsData;
 import dev.angelcorzo.neoparking.jpa.tenants.TenantsData;
 import dev.angelcorzo.neoparking.jpa.users.UsersData;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.*;
 import org.hibernate.annotations.*;
@@ -76,4 +78,7 @@ public class ParkingLotsData {
 
   @Column(name = "deleted_at")
   private OffsetDateTime deletedAt;
+
+  @OneToMany(mappedBy = "parking", fetch = FetchType.LAZY, targetEntity = SlotsData.class)
+  private List<SlotsData> slots;
 }
