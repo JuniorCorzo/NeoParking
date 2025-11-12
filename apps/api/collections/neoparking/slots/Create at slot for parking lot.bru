@@ -1,0 +1,24 @@
+meta {
+  name: Create at slot for parking lot
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/slots/create
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "parkingLotId": "ce5ab68c-300e-4d4b-ac68-37976dc8b3e1",
+    "slotNumber": "001",
+    "type": "CAR"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
