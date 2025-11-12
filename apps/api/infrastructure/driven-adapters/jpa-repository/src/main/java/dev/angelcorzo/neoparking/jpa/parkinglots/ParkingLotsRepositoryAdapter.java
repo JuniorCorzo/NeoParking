@@ -35,8 +35,23 @@ public class ParkingLotsRepositoryAdapter
   }
 
   @Override
+  public ParkingLots getReferenceById(UUID id) {
+    return super.mapper.toEntity(super.repository.getReferenceById(id));
+  }
+
+  @Override
   public Boolean existsById(UUID id) {
     return super.repository.existsById(id);
+  }
+
+  @Override
+  public void incrementTotalSpots(UUID id) {
+    super.repository.incrementTotalSpots(id);
+  }
+
+  @Override
+  public void decrementTotalSpots(UUID id) {
+    super.repository.decrementTotalSpots(id);
   }
 
   @Override
