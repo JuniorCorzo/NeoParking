@@ -21,7 +21,10 @@ public enum ErrorMessagesModel {
     LAST_OWNER_CANNOT_BE_DEACTIVATED("El ultimo dueño no puede ser desactivado"),
     TENANT_NOT_EXISTS("El inquilino con ID %s no esta registrado"),
     PARKING_NOT_EXISTS("El parking con ID %s no esta registrado"),
-    SLOT_NOT_EXISTS("El slot con ID %s no esta registrado");
+    SLOT_NOT_EXISTS("El slot con ID %s no esta registrado"),
+    SPECIAL_POLICY_NOT_FOUNT("La política especial con ID %s no esta registrada"),
+    PARKING_TICKET_NOT_FOUND("La reserva con ID %s no esta registrada"),
+    RATE_NOT_FOUND("El tarifa con ID %s no esta registrada");
 
     private final String template;
     ErrorMessagesModel(String template) {
