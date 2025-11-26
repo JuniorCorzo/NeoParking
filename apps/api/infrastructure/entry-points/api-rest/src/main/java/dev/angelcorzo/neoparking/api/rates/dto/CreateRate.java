@@ -1,4 +1,21 @@
 package dev.angelcorzo.neoparking.api.rates.dto;
 
-public record CreateRate() {
-}
+import dev.angelcorzo.neoparking.model.rates.enums.VehicleType;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.time.temporal.ChronoUnit;
+import java.util.UUID;
+import lombok.Builder;
+
+@Builder(toBuilder = true)
+public record CreateRate(
+    @org.hibernate.validator.constraints.UUID UUID parkingLotId,
+    @NotEmpty String name,
+    @NotEmpty String description,
+    @Min(value = 0) BigDecimal pricePerUnit,
+    @NotNull ChronoUnit timeUnit,
+    @NotNull String minChargeTimeMinutes,
+    @NotNull VehicleType vehicleType,
+    @org.hibernate.validator.constraints.UUID UUID specialPolicyId) {}

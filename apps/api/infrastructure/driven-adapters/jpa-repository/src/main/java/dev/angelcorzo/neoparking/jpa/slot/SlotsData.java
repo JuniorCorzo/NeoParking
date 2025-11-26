@@ -1,12 +1,14 @@
 package dev.angelcorzo.neoparking.jpa.slot;
 
 import dev.angelcorzo.neoparking.jpa.parkinglots.ParkingLotsData;
+import dev.angelcorzo.neoparking.jpa.parkingtickets.ParkingTicketsData;
 import dev.angelcorzo.neoparking.jpa.tenants.TenantsData;
 import dev.angelcorzo.neoparking.model.slots.enums.SlotStatus;
 import dev.angelcorzo.neoparking.model.slots.enums.SlotType;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -56,4 +58,7 @@ public class SlotsData {
 
   @Column(name = "deleted_at")
   private OffsetDateTime deletedAt;
+
+  @OneToMany(mappedBy = "slot", fetch = FetchType.LAZY)
+  private List<ParkingTicketsData> tickets;
 }

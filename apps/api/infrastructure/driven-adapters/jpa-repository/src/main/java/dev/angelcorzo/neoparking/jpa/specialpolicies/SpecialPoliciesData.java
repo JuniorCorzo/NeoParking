@@ -1,10 +1,12 @@
-package dev.angelcorzo.neoparking.jpa.rates.specialpolicies;
+package dev.angelcorzo.neoparking.jpa.specialpolicies;
 
+import dev.angelcorzo.neoparking.jpa.parkingtickets.ParkingTicketsData;
 import dev.angelcorzo.neoparking.jpa.tenants.TenantsData;
 import dev.angelcorzo.neoparking.model.specialpolicies.enums.ModifiesTypes;
 import dev.angelcorzo.neoparking.model.specialpolicies.enums.OperationsTypes;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +27,9 @@ import org.hibernate.annotations.SQLRestriction;
     constraints = "operation = 'PERCENTAGE' AND (value_to_modify > 0 AND value_to_modify <= 100)")
 @SQLRestriction(value = "active IS TRUE")
 public class SpecialPoliciesData {
-  @Id private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "tenant_id", referencedColumnName = "id", nullable = false)
@@ -48,4 +52,7 @@ public class SpecialPoliciesData {
   @Column(name = "active")
   @ColumnDefault(value = "TRUE")
   private boolean active;
+
+  @OneToMany(mappedBy = "specialPolicies", fetch = FetchType.LAZY, targetEntity = ParkingTicketsData.class)
+  private List<ParkingTicketsData> tickets;
 }

@@ -1,3 +1,10 @@
 package dev.angelcorzo.neoparking.jpa.rates;
 
-public interface RatesRepositoryData {}
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface RatesRepositoryData extends JpaRepository<RateData, UUID> {
+  List<RateData> findAllByParking_Id(UUID id);
+}
