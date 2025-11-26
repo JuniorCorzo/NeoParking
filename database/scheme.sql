@@ -1,4 +1,4 @@
-CREATE SCHEMA IF NOT EXISTS neo_parking; 
+CREATE SCHEMA IF NOT EXISTS neo_parking;
 SET search_path TO neo_parking;
 
 
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS user_invitations(
     deleted_at TIMESTAMP WITH TIME ZONE
 );
 
-DO $$ 
+DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'operating_hours_t') THEN
         CREATE TYPE operating_hours_t AS (
@@ -98,17 +98,19 @@ CREATE TABLE slots (
 );
 
 --- type fer special policies
-DO $$ 
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'special_policies_t') THEN
-        CREATE TYPE special_policies_t AS (
-            name TEXT,
-            modifies VARCHAR(6),
-            operation VARCHAR(11),
-            value_to_modify INTEGER
-        );
-    END IF;
-END $$;
+
+CREATE TABLE IF NOT EXISTS special_policies (
+    id UUID PRIMARY KEY,
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    modifies VARCHAR(10) CHECK (modifies IN ('PRICE', 'TIME', 'DISCOUNT', 'SURCHARGE')),
+    operation VARCHAR(11) CHECK (operation IN ( 'SUBTRACT', 'PERCENTAGE', 'SET')),
+    value_to_modify NUMERIC(10,2) CHECK(value_to_modify >= 0),
+    active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT valid_percentage CHECK (operation = 'PERCENTAGE' AND (value_to_modify > 0 AND value_to_modify <= 100) )
+);
 
 -- Tabla de tarifas
 CREATE TABLE IF NOT EXISTS rates (
@@ -118,17 +120,16 @@ CREATE TABLE IF NOT EXISTS rates (
     name TEXT NOT NULL,
     description VARCHAR(255) NOT NULL,
     price_per_unit DECIMAL(10, 2) NOT NULL,
-    time_unit VARCHAR(20) NOT NULL CHECK (time_unit IN ('MINUTE', 'HOUR', 'DAY')),
+    time_unit VARCHAR(20) NOT NULL CHECK (time_unit IN ('MINUTES', 'HOURS', 'DAYS')),
     min_charge_time_minutes INTEGER DEFAULT 0,
     vehicle_type VARCHAR(50) NOT NULL CHECK(vehicle_type IN ('CART', 'MOTORCYCLE')),
-    special_policies special_policies_t,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP WITH TIME ZONE
 );
 
--- Tabla de reservas
 CREATE TABLE IF NOT EXISTS reservations (
+-- Tabla de reservas
     id UUID PRIMARY KEY,
     slot_id UUID NOT NULL REFERENCES slots(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -149,11 +150,12 @@ CREATE TABLE IF NOT EXISTS parking_tickets (
     slot_id UUID NOT NULL REFERENCES slots(id) ON DELETE CASCADE,
     tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
     user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    special_policies_id UUID REFERENCES special_policies(id) ON DELETE SET NULL,
     license_plate VARCHAR(20),
     entry_time TIMESTAMP WITH TIME ZONE NOT NULL,
     exit_time TIMESTAMP WITH TIME ZONE,
     reservation_id UUID REFERENCES reservations(id) ON DELETE SET NULL,
-    rate_id UUID REFERENCES rates(id) ON DELETE SET NULL,
+    rate_id UUID NOT NULL REFERENCES rates(id) ON DELETE SET NULL,
     total_to_charge DECIMAL(10, 2),
     status VARCHAR(20) DEFAULT 'OPEN' CHECK (status IN ('OPEN', 'CLOSED', 'LOST')),
     payment_method VARCHAR(50),

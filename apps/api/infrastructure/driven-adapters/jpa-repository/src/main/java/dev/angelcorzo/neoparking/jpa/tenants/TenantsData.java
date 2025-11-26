@@ -2,7 +2,10 @@ package dev.angelcorzo.neoparking.jpa.tenants;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import dev.angelcorzo.neoparking.jpa.parkinglots.ParkingLotsData;
+import dev.angelcorzo.neoparking.jpa.parkingtickets.ParkingTicketsData;
+import dev.angelcorzo.neoparking.jpa.rates.RateData;
 import dev.angelcorzo.neoparking.jpa.slot.SlotsData;
+import dev.angelcorzo.neoparking.jpa.specialpolicies.SpecialPoliciesData;
 import dev.angelcorzo.neoparking.jpa.users.UsersData;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
@@ -76,4 +79,17 @@ public class TenantsData {
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   private List<SlotsData> slots;
+
+  @OneToMany(mappedBy = "tenant", fetch = FetchType.LAZY)
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  private List<RateData> rates;
+
+  @OneToMany(mappedBy = "tenant", fetch = FetchType.LAZY)
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  private List<SpecialPoliciesData> special_policies;
+
+  @OneToMany(mappedBy = "tenant", fetch = FetchType.LAZY)
+  private List<ParkingTicketsData> tickets;
 }
