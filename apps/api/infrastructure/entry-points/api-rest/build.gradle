@@ -4,7 +4,6 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework:spring-tx'
-    implementation 'org.springframework.boot:spring-boot-starter-undertow'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
@@ -16,7 +15,3 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
 }
 
-
-configurations {
-    implementation.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-}

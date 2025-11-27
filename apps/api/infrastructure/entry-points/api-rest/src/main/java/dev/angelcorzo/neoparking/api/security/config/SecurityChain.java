@@ -1,15 +1,19 @@
 package dev.angelcorzo.neoparking.api.security.config;
 
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
+import java.awt.*;
 import java.security.interfaces.RSAPublicKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.authorization.AuthorizationManagerFactory;
+import org.springframework.security.authorization.DefaultAuthorizationManagerFactory;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -84,11 +88,22 @@ public class SecurityChain {
   }
 
   @Bean
-  public MethodSecurityExpressionHandler methodSecurityExpressionHandler(
+  public <T> AuthorizationManagerFactory<T> authorizationManagerFactory(
       RoleHierarchy roleHierarchy) {
+    final DefaultAuthorizationManagerFactory<T> factory =
+        new DefaultAuthorizationManagerFactory<>();
+    factory.setRoleHierarchy(roleHierarchy);
+
+    return factory;
+  }
+
+  @Bean
+  public MethodSecurityExpressionHandler methodSecurityExpressionHandler(
+      AuthorizationManagerFactory<MethodInvocation> authorizationManagerFactory) {
     DefaultMethodSecurityExpressionHandler expressionHandler =
         new DefaultMethodSecurityExpressionHandler();
-    expressionHandler.setRoleHierarchy(roleHierarchy);
+
+    expressionHandler.setAuthorizationManagerFactory(authorizationManagerFactory);
 
     return expressionHandler;
   }
