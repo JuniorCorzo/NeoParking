@@ -11,7 +11,6 @@ import dev.angelcorzo.neoparking.model.specialpolicies.gateways.SpecialPoliciesR
 import dev.angelcorzo.neoparking.model.specialpolicies.valueobjects.SpecialPoliciesReference;
 import dev.angelcorzo.neoparking.model.tenants.gateways.TenantsRepository;
 import dev.angelcorzo.neoparking.model.tenants.valueobject.TenantReference;
-
 import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
@@ -41,8 +40,10 @@ public class RateConfigurationUseCase {
             .minChargeTimeMinutes(tariff.minChargeTimeMinutes())
             .vehicleType(tariff.vehicleType())
             .specialPolicy(
-                SpecialPoliciesReference.of(
-                    this.specialPoliciesRepository.getReferenceById(tariff.specialPolicyId())))
+                tariff.specialPolicyId() == null
+                    ? null
+                    : SpecialPoliciesReference.of(
+                        this.specialPoliciesRepository.getReferenceById(tariff.specialPolicyId())))
             .build();
 
     return this.ratesRepository.save(rate);
