@@ -11,6 +11,8 @@ public interface SlotsRepository {
 
   List<Slots> findAllByParkingLotsId(UUID parkingLotsId);
 
+  Slots getReferenceById(UUID id);
+
   Boolean existsById(UUID id);
 
   Slots save(Slots slot);
