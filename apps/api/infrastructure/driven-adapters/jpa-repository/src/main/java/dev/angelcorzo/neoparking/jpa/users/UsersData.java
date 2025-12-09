@@ -9,13 +9,14 @@ import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.proxy.HibernateProxy;
 
 /**
  * Represents the JPA data entity for a User.
@@ -35,10 +36,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
 @Table(name = "users")
-@EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @SQLRestriction(value = "deleted_at IS NULL")
 public class UsersData {
@@ -84,12 +86,12 @@ public class UsersData {
   private String deletedBy;
 
   /** Timestamp when the user record was created. */
-  @CreatedDate
+  @CreationTimestamp
   @Column(name = "created_at")
   private OffsetDateTime createdAt;
 
   /** Timestamp when the user record was last updated. */
-  @LastModifiedDate
+  @UpdateTimestamp
   @Column(name = "updated_at")
   private OffsetDateTime updatedAt;
 
@@ -104,5 +106,30 @@ public class UsersData {
   private List<ParkingLotsData> parkingLots;
 
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, targetEntity = ParkingTicketsData.class)
+  @ToString.Exclude
   private List<ParkingTicketsData> tickets;
+
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null) return false;
+    Class<?> oEffectiveClass =
+        o instanceof HibernateProxy
+            ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
+            : o.getClass();
+    Class<?> thisEffectiveClass =
+        this instanceof HibernateProxy
+            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
+            : this.getClass();
+    if (thisEffectiveClass != oEffectiveClass) return false;
+    UsersData usersData = (UsersData) o;
+    return getId() != null && Objects.equals(getId(), usersData.getId());
+  }
+
+  @Override
+  public final int hashCode() {
+    return this instanceof HibernateProxy
+        ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode()
+        : getClass().hashCode();
+  }
 }
