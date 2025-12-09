@@ -34,6 +34,7 @@ public class ParkingTicketsController {
         this.checkInVehicleWithoutReservationUseCase.execute(
             this.parkingTicketMapper.toModel(createTicket).toBuilder()
                 .tenantId(userAuthentication.tenantId())
+                .userId(userAuthentication.userId())
                 .build());
 
     return Response.created(this.parkingTicketMapper.toDto(ticket), "");
