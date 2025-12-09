@@ -24,7 +24,7 @@ public class CalculateRateUseCase {
     final RateReference rate = parkingTicket.getRate();
 
     RateComponent calculateRate =
-        new RateBaseDecorator(rate.pricePerUnit(), rate.timeUnit(), parkingTicket.getEntryDate());
+        new RateBaseDecorator(rate.pricePerUnit(), rate.timeUnit(), parkingTicket.getEntryTime());
     if (rate.hasSpecialPolicy())
       calculateRate = new RateWithSpecialPolicyDecorator(calculateRate, rate.specialPolicy());
 
