@@ -5,5 +5,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ParkingTicketsRepository {
-	Optional<ParkingTickets> findById(UUID id);
+  Optional<ParkingTickets> findById(UUID id);
+
+  ParkingTickets getReferenceById(UUID id);
+
+  ParkingTickets save(ParkingTickets parkingTickets);
 }
