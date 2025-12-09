@@ -9,6 +9,7 @@ import dev.angelcorzo.neoparking.api.rates.dto.CreateRate;
 import dev.angelcorzo.neoparking.api.rates.dto.RatesDTO;
 import dev.angelcorzo.neoparking.api.rates.enums.RateMessages;
 import dev.angelcorzo.neoparking.api.rates.mappers.RatesMapper;
+import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationContextGateway;
 import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationGateway;
 import dev.angelcorzo.neoparking.model.parkinglots.ParkingLots;
 import dev.angelcorzo.neoparking.model.parkinglots.dto.UpsertParkingLotsDTO;
@@ -32,7 +33,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Parking Lots", description = "Parking Lots API")
 @RequiredArgsConstructor
 public class ParkingLotsController {
-  private final AuthenticationGateway authenticationGateway;
+  private final AuthenticationContextGateway authenticationContext;
   private final ParkingLotsMapper parkingLotsMapper;
   private final RatesMapper ratesMapper;
 
@@ -44,9 +45,8 @@ public class ParkingLotsController {
 
   @GetMapping("/list")
   @PreAuthorize("hasRole('MANAGER')")
-  public Response<List<ParkingLotsResponse>> listParkingLots(
-      @RequestHeader("Authorization") String accessToken) {
-    final UUID tenantId = this.extractTenantId(accessToken);
+  public Response<List<ParkingLotsResponse>> listParkingLots() {
+    final UUID tenantId = this.getTenantId();
 
     final List<ParkingLotsResponse> parkingLots =
         this.listParkingLotsUseCase.listParkingLots(tenantId).stream()
@@ -58,7 +58,8 @@ public class ParkingLotsController {
 
   @GetMapping("/{parkingId}/rates")
   @PreAuthorize("hasRole('OPERATOR')")
-  public Response<Iterable<RatesDTO>> showRatesByParkingId(@PathVariable UUID parkingId) {
+  public Response<Iterable<RatesDTO>> showRatesByParkingId(
+      @PathVariable("parkingId") UUID parkingId) {
     final List<RatesDTO> listRates =
         this.showRatesByParkingLotUseCase.execute(parkingId).stream()
             .map(this.ratesMapper::toDTO)
@@ -71,12 +72,11 @@ public class ParkingLotsController {
   @PreAuthorize("hasRole('MANAGER')")
   @Transactional
   public Response<ParkingLotsResponse> createParkingLots(
-      @Valid @RequestBody UpsertParkingLotsRequest parkingLots,
-      @RequestHeader("Authorization") String accessToken) {
+      @Valid @RequestBody UpsertParkingLotsRequest parkingLots) {
 
     final UpsertParkingLotsDTO newParkingLots =
         this.parkingLotsMapper.toModel(parkingLots).toBuilder()
-            .tenantId(this.extractTenantId(accessToken))
+            .tenantId(this.getTenantId())
             .build();
 
     final ParkingLots parkingLotsCreated = this.createParkingUseCase.created(newParkingLots);
@@ -89,12 +89,9 @@ public class ParkingLotsController {
   @PostMapping("/create-rate")
   @PreAuthorize("hasRole('OWNER')")
   @Transactional
-  public Response<RatesDTO> createRateForParking(
-      @Valid @RequestBody CreateRate rate, @RequestHeader("Authorization") String accessToken) {
+  public Response<RatesDTO> createRateForParking(@Valid @RequestBody CreateRate rate) {
     final RateConfigurationUseCase.CreateTariff rateModel =
-        this.ratesMapper.toModel(rate).toBuilder()
-            .tenantId(this.extractTenantId(accessToken))
-            .build();
+        this.ratesMapper.toModel(rate).toBuilder().tenantId(this.getTenantId()).build();
 
     final Rates rateCreated = this.rateConfigurationUseCase.execute(rateModel);
 
@@ -106,11 +103,10 @@ public class ParkingLotsController {
   @PreAuthorize("hasRole('MANAGER')")
   @Transactional
   public Response<ParkingLotsResponse> updateParkingLots(
-      @Valid @RequestBody UpsertParkingLotsRequest parkingLots,
-      @RequestHeader("Authorization") String accessToken) {
+      @Valid @RequestBody UpsertParkingLotsRequest parkingLots) {
     final UpsertParkingLotsDTO updateParkingLots =
         this.parkingLotsMapper.toModel(parkingLots).toBuilder()
-            .tenantId(this.extractTenantId(accessToken))
+            .tenantId(this.getTenantId())
             .build();
 
     return Response.ok(
@@ -118,11 +114,7 @@ public class ParkingLotsController {
         ParkingLotsMessages.PARKING_LOTS_UPDATED.format());
   }
 
-  private UUID extractTenantId(String accessToken) {
-    final String token = accessToken.replace("Bearer ", "");
-    final String tenantIdClaim =
-        this.authenticationGateway.extractClaim(token, "tenantId").orElseThrow();
-
-    return UUID.fromString(tenantIdClaim);
+  private UUID getTenantId() {
+    return this.authenticationContext.getCurrentTenantId();
   }
 }
