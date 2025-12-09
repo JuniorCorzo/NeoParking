@@ -20,8 +20,12 @@ public class ParkingTicketsAdapter
    * @param mapper The mapper for converting between domain and data entities.
    */
   protected ParkingTicketsAdapter(
-      ParkingTicketsRepositoryData repository,
-      ParkingTicketMapper mapper) {
+      ParkingTicketsRepositoryData repository, ParkingTicketMapper mapper) {
     super(repository, mapper);
+  }
+
+  @Override
+  public ParkingTickets getReferenceById(UUID id) {
+    return super.mapper.toEntity(super.repository.getReferenceById(id));
   }
 }
