@@ -5,7 +5,7 @@ import dev.angelcorzo.neoparking.api.slot.dto.CreateSlotRequest;
 import dev.angelcorzo.neoparking.api.slot.dto.SlotResponse;
 import dev.angelcorzo.neoparking.api.slot.dto.UpdateSlotRequest;
 import dev.angelcorzo.neoparking.api.slot.mappers.SlotsMapper;
-import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationGateway;
+import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationContextGateway;
 import dev.angelcorzo.neoparking.model.slots.Slots;
 import dev.angelcorzo.neoparking.usecase.createslot.CreateSlotUseCase;
 import dev.angelcorzo.neoparking.usecase.editslot.EditSlotUseCase;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class SlotsController {
   private final SlotsMapper slotsMapper;
-  private final AuthenticationGateway authenticationGateway;
+  private final AuthenticationContextGateway authenticationContext;
 
   private final ListSlotsUseCase listSlotsUseCase;
   private final CreateSlotUseCase createSlotUseCase;
@@ -40,12 +40,9 @@ public class SlotsController {
 
   @PostMapping("/create")
   @PreAuthorize("hasRole('MANAGER')")
-  Response<SlotResponse> createSlot(
-      @RequestBody CreateSlotRequest request, @RequestHeader("Authorization") String accessToken) {
+  Response<SlotResponse> createSlot(@RequestBody CreateSlotRequest request) {
     final CreateSlotUseCase.CreateSlotCommand slot =
-        this.slotsMapper.toModel(request).toBuilder()
-            .tenantId(this.extractTenantId(accessToken))
-            .build();
+        this.slotsMapper.toModel(request).toBuilder().tenantId(this.getTenantId()).build();
 
     final Slots createdSlot = this.createSlotUseCase.execute(slot);
 
@@ -69,11 +66,7 @@ public class SlotsController {
     return Response.ok(null, "Slot deleted successfully");
   }
 
-  private UUID extractTenantId(String accessToken) {
-    final String token = accessToken.replace("Bearer ", "");
-    final String tenantIdClaim =
-        this.authenticationGateway.extractClaim(token, "tenantId").orElseThrow();
-
-    return UUID.fromString(tenantIdClaim);
+  private UUID getTenantId() {
+    return this.authenticationContext.getCurrentTenantId();
   }
 }
