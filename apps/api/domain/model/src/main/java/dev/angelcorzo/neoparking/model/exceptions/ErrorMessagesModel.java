@@ -16,6 +16,7 @@ public enum ErrorMessagesModel {
     USER_NOT_EXIST_EMAIL("El usuario con email %s no existe"),
     USER_NOT_EXIST_ID("El usuario con ID %s no existe"),
     USER_NOT_EXIST_IN_TENANT("El usuario no esta asociado al tenant"),
+    USER_AUTHENTICATION_INVALID("Error en la autentificación del usuario."),
     USER_ALREADY_DEACTIVATED("El usuario %s ya fue desactivado"),
     USER_BAD_CREDENTIALS("Credenciales incorrectas"),
     LAST_OWNER_CANNOT_BE_DEACTIVATED("El ultimo dueño no puede ser desactivado"),

@@ -2,9 +2,12 @@ package dev.angelcorzo.neoparking.api.security.config;
 
 import dev.angelcorzo.neoparking.model.authentication.exceptions.TokenInvalidException;
 import dev.angelcorzo.neoparking.model.exceptions.TokenErrorMessages;
+import dev.angelcorzo.neoparking.model.users.UserAuthentication;
+import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.usecase.validatetoken.ValidateAccessTokenUseCase;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -26,9 +29,9 @@ public class CustomJwtAuthenticationConverter
   public AbstractAuthenticationToken convert(Jwt source) {
     log.debug("Converting JWT to Authentication");
     validateAccessTokenUseCase.validate(source.getTokenValue());
-    String userId = source.getSubject();
-    String tenantId = source.getClaimAsString("tenantId");
-    String role = source.getClaimAsString("role");
+    final String userId = source.getSubject();
+    final String tenantId = source.getClaimAsString("tenantId");
+    final String role = source.getClaimAsString("role");
 
     if (userId == null || tenantId == null || role == null)
       throw new TokenInvalidException(TokenErrorMessages.INVALID_TOKEN.toString());
@@ -36,8 +39,15 @@ public class CustomJwtAuthenticationConverter
     List<SimpleGrantedAuthority> authority =
         Collections.singletonList(new SimpleGrantedAuthority(role));
 
+    final UserAuthentication userPrincipal =
+        UserAuthentication.builder()
+            .userId(UUID.fromString(userId))
+            .tenantId(UUID.fromString(tenantId))
+            .role(Roles.valueOf(Roles.class, role.replace("ROLE_", "").toUpperCase()))
+            .build();
+
     UsernamePasswordAuthenticationToken authenticationToken =
-        new UsernamePasswordAuthenticationToken(userId, source, authority);
+        new UsernamePasswordAuthenticationToken(userPrincipal, source, authority);
 
     log.debug("Converted JWT to Authentication: {}", authenticationToken);
     return authenticationToken;

@@ -9,7 +9,7 @@ import dev.angelcorzo.neoparking.api.tenants.dto.RegisterTenantDTO;
 import dev.angelcorzo.neoparking.api.tenants.enums.TenantsMessages;
 import dev.angelcorzo.neoparking.api.users.dto.UserDTO;
 import dev.angelcorzo.neoparking.api.users.mappers.UserMapper;
-import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationGateway;
+import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationContextGateway;
 import dev.angelcorzo.neoparking.model.specialpolicies.SpecialPolicies;
 import dev.angelcorzo.neoparking.model.tenants.Tenants;
 import dev.angelcorzo.neoparking.model.users.Users;
@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.*;
 public class TenantController {
   private final UserMapper userMapper;
   private final SpecialPoliciesMapper specialPoliciesMapper;
-  private final AuthenticationGateway authenticationGateway;
+  private final AuthenticationContextGateway authenticationContext;
 
   private final RegisterTenantUseCase registerTenantUseCase;
   private final CreateSpecialPolicyUseCase createSpecialPolicyUseCase;
@@ -44,9 +44,8 @@ public class TenantController {
 
   @GetMapping("/special-policies")
   @PreAuthorize("hasRoles('OPERATOR')")
-  public Response<Iterable<SpecialPoliciesDTO>> showSpecialPoliciesByTenant(
-      @RequestHeader("Authorization") String accessToken) {
-    final UUID tenantId = this.extractTenantId(accessToken);
+  public Response<Iterable<SpecialPoliciesDTO>> showSpecialPoliciesByTenant() {
+    final UUID tenantId = this.getTenantId();
 
     final List<SpecialPoliciesDTO> specialPolicies =
         this.showSpecialPoliciesByTenantUseCase.execute(tenantId).stream()
@@ -72,12 +71,11 @@ public class TenantController {
   @PostMapping("/create/special-policy")
   @PreAuthorize("hasRole('OWNER')")
   public Response<SpecialPoliciesDTO> createAtSpecialPolicies(
-      @Valid @RequestBody CreateSpecialPolicies policies,
-      @RequestHeader("Authorization") String accessToken) {
+      @Valid @RequestBody CreateSpecialPolicies policies) {
 
     final CreateSpecialPolicyUseCase.CreateSpecialPolicyCommand specialPolicyCommand =
         this.specialPoliciesMapper.toModel(policies).toBuilder()
-            .tenantId(this.extractTenantId(accessToken))
+            .tenantId(this.getTenantId())
             .build();
 
     final SpecialPolicies specialPoliciesCreated =
@@ -88,11 +86,7 @@ public class TenantController {
         SpecialPoliciesMessages.SHOW_SPECIAL_POLICIES_BY_TENANT.toString());
   }
 
-  private UUID extractTenantId(String accessToken) {
-    final String token = accessToken.replace("Bearer ", "");
-    final String tenantIdClaim =
-        this.authenticationGateway.extractClaim(token, "tenantId").orElseThrow();
-
-    return UUID.fromString(tenantIdClaim);
+  private UUID getTenantId() {
+    return this.authenticationContext.getCurrentTenantId();
   }
 }

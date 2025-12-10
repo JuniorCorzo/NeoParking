@@ -10,10 +10,14 @@ import dev.angelcorzo.neoparking.jpa.users.UsersData;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.proxy.HibernateProxy;
 
 /**
  * Represents the JPA data entity for a Tenant.
@@ -32,7 +36,9 @@ import org.hibernate.annotations.SQLRestriction;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
 @Table(name = "tenants")
 @SQLRestriction(value = "deleted_at IS NULL")
@@ -49,10 +55,12 @@ public class TenantsData {
 
   /** Timestamp when the tenant record was created. */
   @Column(name = "created_at")
+  @CreationTimestamp
   private OffsetDateTime createdAt;
 
   /** Timestamp when the tenant record was last updated. */
   @Column(name = "updated_at")
+  @UpdateTimestamp
   private OffsetDateTime updatedAt;
 
   /** Timestamp when the tenant record was softly deleted. */
@@ -91,5 +99,30 @@ public class TenantsData {
   private List<SpecialPoliciesData> special_policies;
 
   @OneToMany(mappedBy = "tenant", fetch = FetchType.LAZY)
+  @ToString.Exclude
   private List<ParkingTicketsData> tickets;
+
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null) return false;
+    Class<?> oEffectiveClass =
+        o instanceof HibernateProxy
+            ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
+            : o.getClass();
+    Class<?> thisEffectiveClass =
+        this instanceof HibernateProxy
+            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
+            : this.getClass();
+    if (thisEffectiveClass != oEffectiveClass) return false;
+    TenantsData that = (TenantsData) o;
+    return getId() != null && Objects.equals(getId(), that.getId());
+  }
+
+  @Override
+  public final int hashCode() {
+    return this instanceof HibernateProxy
+        ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode()
+        : getClass().hashCode();
+  }
 }

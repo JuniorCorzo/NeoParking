@@ -31,6 +31,11 @@ public class SlotsRepositoryAdapter
   }
 
   @Override
+  public Slots getReferenceById(UUID id) {
+    return super.mapper.toEntity(super.repository.getReferenceById(id));
+  }
+
+  @Override
   public Boolean existsById(UUID id) {
     return super.repository.existsById(id);
   }

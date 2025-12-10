@@ -11,11 +11,11 @@ import lombok.Builder;
 
 @Builder(toBuilder = true)
 public record CreateRate(
-    @org.hibernate.validator.constraints.UUID UUID parkingLotId,
+    @NotNull UUID parkingLotId,
     @NotEmpty String name,
     @NotEmpty String description,
     @Min(value = 0) BigDecimal pricePerUnit,
     @NotNull ChronoUnit timeUnit,
     @NotNull String minChargeTimeMinutes,
     @NotNull VehicleType vehicleType,
-    @org.hibernate.validator.constraints.UUID UUID specialPolicyId) {}
+    UUID specialPolicyId) {}

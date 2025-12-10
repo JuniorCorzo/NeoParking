@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Check;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -20,11 +19,13 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table()
+@Table(
+    check =
+        @CheckConstraint(
+            name = "valid_percentage",
+            constraint =
+                "operation = 'PERCENTAGE' AND (value_to_modify > 0 AND value_to_modify <= 100)"))
 @Entity(name = "special_policies")
-@Check(
-    name = "valid_percentage",
-    constraints = "operation = 'PERCENTAGE' AND (value_to_modify > 0 AND value_to_modify <= 100)")
 @SQLRestriction(value = "active IS TRUE")
 public class SpecialPoliciesData {
   @Id
@@ -53,6 +54,9 @@ public class SpecialPoliciesData {
   @ColumnDefault(value = "TRUE")
   private boolean active;
 
-  @OneToMany(mappedBy = "specialPolicies", fetch = FetchType.LAZY, targetEntity = ParkingTicketsData.class)
+  @OneToMany(
+      mappedBy = "specialPolicies",
+      fetch = FetchType.LAZY,
+      targetEntity = ParkingTicketsData.class)
   private List<ParkingTicketsData> tickets;
 }
