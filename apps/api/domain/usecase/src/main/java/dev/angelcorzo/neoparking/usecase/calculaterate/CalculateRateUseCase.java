@@ -7,15 +7,19 @@ import dev.angelcorzo.neoparking.model.rates.valueobject.RateReference;
 import dev.angelcorzo.neoparking.usecase.calculaterate.decorator.RateBaseDecorator;
 import dev.angelcorzo.neoparking.usecase.calculaterate.decorator.RateComponent;
 import dev.angelcorzo.neoparking.usecase.calculaterate.decorator.RateWithSpecialPolicyDecorator;
+import dev.angelcorzo.neoparking.usecase.calculaterate.dtos.ItemPriceDTO;
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.util.LinkedList;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class CalculateRateUseCase {
   private final ParkingTicketsRepository parkingTicketsRepository;
+  private RateComponent rateComponent;
 
-  public BigDecimal execute(UUID ticketId) {
+  public LinkedList<ItemPriceDTO> execute(UUID ticketId) {
     final ParkingTickets parkingTicket =
         this.parkingTicketsRepository
             .findById(ticketId)
@@ -23,11 +27,24 @@ public class CalculateRateUseCase {
 
     final RateReference rate = parkingTicket.getRate();
 
-    RateComponent calculateRate =
-        new RateBaseDecorator(rate.pricePerUnit(), rate.timeUnit(), parkingTicket.getEntryTime());
-    if (rate.hasSpecialPolicy())
-      calculateRate = new RateWithSpecialPolicyDecorator(calculateRate, rate.specialPolicy());
+    this.rateComponent =
+        new RateBaseDecorator(
+            rate.name(),
+            rate.timeUnit(),
+            Duration.ofMinutes(Long.parseLong(rate.minChargeTimeMinutes())),
+            parkingTicket.getEntryTime(),
+            rate.pricePerUnit());
 
-    return calculateRate.getPrice();
+    if (rate.hasSpecialPolicy())
+      this.rateComponent =
+          new RateWithSpecialPolicyDecorator(this.rateComponent, rate.specialPolicy());
+
+    this.addTotalItemizedPrice(this.rateComponent.getPrice());
+
+    return this.rateComponent.getItemizedPrices();
+  }
+
+  private void addTotalItemizedPrice(BigDecimal total) {
+    this.rateComponent.getItemizedPrices().add(ItemPriceDTO.of("Total", total));
   }
 }

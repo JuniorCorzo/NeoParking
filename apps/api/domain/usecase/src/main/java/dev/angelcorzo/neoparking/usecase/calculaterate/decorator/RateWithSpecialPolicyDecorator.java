@@ -2,28 +2,39 @@ package dev.angelcorzo.neoparking.usecase.calculaterate.decorator;
 
 import dev.angelcorzo.neoparking.model.specialpolicies.enums.ModifiesTypes;
 import dev.angelcorzo.neoparking.model.specialpolicies.valueobjects.SpecialPoliciesReference;
+import dev.angelcorzo.neoparking.usecase.calculaterate.dtos.ItemPriceDTO;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.temporal.TemporalUnit;
+import java.util.LinkedList;
 
 public class RateWithSpecialPolicyDecorator implements RateComponent {
   private final SpecialPoliciesReference specialPoliciesReference;
-  protected RateComponent rateComponent;
+  private final RateComponent rateComponent;
+
+  private final BigDecimal total;
 
   public RateWithSpecialPolicyDecorator(
       RateComponent rateComponent, SpecialPoliciesReference specialPoliciesReference) {
     this.rateComponent = rateComponent;
     this.specialPoliciesReference = specialPoliciesReference;
+    this.total = this.calculateTotal();
+
+    this.initialize();
+  }
+
+  private void initialize() {
+    this.rateComponent
+        .getItemizedPrices()
+        .add(
+            ItemPriceDTO.of(
+                specialPoliciesReference.name(), this.obtainPrice(this.rateComponent.getPrice())));
   }
 
   @Override
   public BigDecimal getPrice() {
-    if (this.specialPoliciesReference.modifies() == ModifiesTypes.TIME)
-      return this.rateComponent.getPrice();
-    final BigDecimal priceModified = this.obtainPrice(this.rateComponent.getPrice());
-
-    return priceModified.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : priceModified;
+    return this.total;
   }
 
   @Override
@@ -38,6 +49,14 @@ public class RateWithSpecialPolicyDecorator implements RateComponent {
   @Override
   public TemporalUnit getTimeUnit() {
     return this.rateComponent.getTimeUnit();
+  }
+
+  private BigDecimal calculateTotal() {
+    if (this.specialPoliciesReference.modifies() == ModifiesTypes.TIME)
+      return this.rateComponent.getPrice();
+    final BigDecimal priceModified = this.obtainPrice(this.rateComponent.getPrice());
+
+    return priceModified.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : priceModified;
   }
 
   private BigDecimal obtainPrice(BigDecimal price) {
@@ -70,5 +89,10 @@ public class RateWithSpecialPolicyDecorator implements RateComponent {
         yield Duration.ofMillis(modifiedTime);
       }
     };
+  }
+
+  @Override
+  public LinkedList<ItemPriceDTO> getItemizedPrices() {
+    return this.rateComponent.getItemizedPrices();
   }
 }
