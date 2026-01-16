@@ -6,8 +6,8 @@ import dev.angelcorzo.neoparking.api.parkingtickets.dto.ParkingTicketsDTO;
 import dev.angelcorzo.neoparking.api.parkingtickets.mapper.ParkingTicketMapper;
 import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationContextGateway;
 import dev.angelcorzo.neoparking.model.parkingtickets.ParkingTickets;
-import dev.angelcorzo.neoparking.model.users.UserAuthentication;
 import dev.angelcorzo.neoparking.usecase.checkinvehiclewithoureservation.CheckInVehicleWithoutReservationUseCase;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,14 +27,13 @@ public class ParkingTicketsController {
   @PostMapping("/check-in")
   @PreAuthorize("hasRole('OPERATOR')")
   public Response<ParkingTicketsDTO> createTicket(@RequestBody CreateTicket createTicket) {
-    final UserAuthentication userAuthentication =
-        this.authenticationContext.getCurrentlyAuthenticatedUser();
+    final UUID tenantId = this.authenticationContext.getCurrentTenantId();
 
     final ParkingTickets ticket =
         this.checkInVehicleWithoutReservationUseCase.execute(
             this.parkingTicketMapper.toModel(createTicket).toBuilder()
-                .tenantId(userAuthentication.tenantId())
-                .userId(userAuthentication.userId())
+                .tenantId(tenantId)
+                .email(createTicket.email())
                 .build());
 
     return Response.created(this.parkingTicketMapper.toDto(ticket), "");
