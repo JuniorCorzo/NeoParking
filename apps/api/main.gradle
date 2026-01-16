@@ -32,9 +32,9 @@ subprojects {
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         compileOnly "org.projectlombok:lombok:${lombokVersion}"
-        annotationProcessor  "org.projectlombok:lombok:${lombokVersion}"
-        testCompileOnly  "org.projectlombok:lombok:${lombokVersion}"
-        testAnnotationProcessor  "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
         implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
     }
 
@@ -89,10 +89,12 @@ tasks.register('jacocoMergedReport', JacocoReport) {
     }
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs = [
-            '-Amapstruct.suppressGeneratorTimestamp=true'
-    ]
+
+tasks.named('compileTestJava', JavaCompile).configure {
+    doFirst {
+        println "Hola: compileTestJava classpath files = ${classpath.files.size()}"
+        println "Has spring-boot-test-autoconfigure? " + classpath.files.any { it.name.contains("spring-boot-test-autoconfigure") }
+    }
 }
 
 pitestReportAggregate {
