@@ -7,12 +7,10 @@ import dev.angelcorzo.neoparking.api.rates.enums.RateMessages;
 import dev.angelcorzo.neoparking.api.rates.mappers.RatesMapper;
 import dev.angelcorzo.neoparking.model.rates.Rates;
 import dev.angelcorzo.neoparking.usecase.calculaterate.CalculateRateUseCase;
-import dev.angelcorzo.neoparking.usecase.calculaterate.dtos.ItemPriceDTO;
+import dev.angelcorzo.neoparking.usecase.calculaterate.dtos.PriceDetailed;
 import dev.angelcorzo.neoparking.usecase.deleterate.DeleteRateUseCase;
 import dev.angelcorzo.neoparking.usecase.updaterate.UpdateRateUseCase;
 import jakarta.validation.Valid;
-import java.util.LinkedList;
-import java.util.Queue;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,8 +28,8 @@ public class RateController {
 
   @GetMapping("/{ticketId}/calculate")
   @PreAuthorize("hasRole('OPERATOR')")
-  public Response<Queue<ItemPriceDTO>> calculatePrice(@PathVariable @UUID java.util.UUID ticketId) {
-    final LinkedList<ItemPriceDTO> rateCalculated = this.calculateRateUseCase.execute(ticketId);
+  public Response<PriceDetailed> calculatePrice(@PathVariable("ticketId") java.util.UUID ticketId) {
+    final PriceDetailed rateCalculated = this.calculateRateUseCase.execute(ticketId);
 
     return Response.ok(rateCalculated, RateMessages.CALCULATE_PRICE.format());
   }
