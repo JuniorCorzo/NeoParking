@@ -30,8 +30,7 @@ public class ParkingTickets {
   private OffsetDateTime exitTime;
   private BigDecimal totalToCharge;
   private ParkingTicketStatus status;
-  private String paymentMethod;
-  private String transactionReference;
+  private OffsetDateTime closedAt;
   private OffsetDateTime createdAt;
   private OffsetDateTime updatedAt;
   private OffsetDateTime deletedAt;

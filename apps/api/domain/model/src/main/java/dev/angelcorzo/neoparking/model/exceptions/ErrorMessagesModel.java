@@ -25,7 +25,8 @@ public enum ErrorMessagesModel {
     SLOT_NOT_EXISTS("El slot con ID %s no esta registrado"),
     SPECIAL_POLICY_NOT_FOUNT("La política especial con ID %s no esta registrada"),
     PARKING_TICKET_NOT_FOUND("La reserva con ID %s no esta registrada"),
-    RATE_NOT_FOUND("El tarifa con ID %s no esta registrada");
+    RATE_NOT_FOUND("El tarifa con ID %s no esta registrada"),
+    PAYMENT_NOT_FOUND_BY_TRANSACTION_ID("El pago con ID de transacción %s no esta registrado");
 
     private final String template;
     ErrorMessagesModel(String template) {
