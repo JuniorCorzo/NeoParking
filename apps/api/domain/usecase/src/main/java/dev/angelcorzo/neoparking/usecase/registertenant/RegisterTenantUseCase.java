@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
  * @see Users
  */
 @RequiredArgsConstructor
-public final class RegisterTenantUseCase {
+public class RegisterTenantUseCase {
   private final UsersRepository usersRepository;
   private final TenantsRepository tenantsRepository;
   private final PasswordEncodeGateway passwordEncode;
