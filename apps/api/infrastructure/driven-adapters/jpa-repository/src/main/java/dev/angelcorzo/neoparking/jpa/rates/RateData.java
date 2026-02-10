@@ -3,6 +3,7 @@ package dev.angelcorzo.neoparking.jpa.rates;
 import dev.angelcorzo.neoparking.jpa.parkinglots.ParkingLotsData;
 import dev.angelcorzo.neoparking.jpa.parkingtickets.ParkingTicketsData;
 import dev.angelcorzo.neoparking.jpa.tenants.TenantsData;
+import dev.angelcorzo.neoparking.model.rates.enums.TimeUnitsRate;
 import dev.angelcorzo.neoparking.model.rates.enums.VehicleType;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
@@ -49,7 +50,7 @@ public class RateData {
 
   @Column(name = "time_unit", nullable = false)
   @Enumerated(EnumType.STRING)
-  private ChronoUnit timeUnit;
+  private TimeUnitsRate timeUnit;
 
   @Column(name = "min_charge_time_minutes")
   @ColumnDefault(value = "0")
