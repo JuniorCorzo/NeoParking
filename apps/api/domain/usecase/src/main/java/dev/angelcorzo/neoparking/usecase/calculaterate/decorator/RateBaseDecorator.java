@@ -1,34 +1,46 @@
 package dev.angelcorzo.neoparking.usecase.calculaterate.decorator;
 
-import dev.angelcorzo.neoparking.usecase.calculaterate.dtos.ItemPriceDTO;
+import dev.angelcorzo.neoparking.model.rates.enums.TimeUnitsRate;
+import dev.angelcorzo.neoparking.model.rates.valueobject.RateReference;
+import dev.angelcorzo.neoparking.usecase.calculaterate.dtos.PriceDetailed;
+import dev.angelcorzo.neoparking.usecase.calculaterate.dtos.PriceLine;
+import dev.angelcorzo.neoparking.usecase.calculaterate.utils.ParkingFeeCalculator;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
-import java.util.LinkedList;
 
 public class RateBaseDecorator implements RateComponent {
   private final BigDecimal total;
-  private final ChronoUnit timeUnit;
+  private final TimeUnitsRate timeUnit;
   private final Duration duration;
-  private final OffsetDateTime entryTime;
-
-  private final LinkedList<ItemPriceDTO> itemizedPrices = new LinkedList<>();
+  private final RateReference rate;
+  private final PriceDetailed itemizedPrices;
 
   public RateBaseDecorator(
-      String name,
-      ChronoUnit timeUnit,
-      Duration minDuration,
-      OffsetDateTime entryTime,
-      BigDecimal pricePerUnit) {
-    this.timeUnit = timeUnit;
-    this.entryTime = entryTime;
+      String tenantName, BigDecimal ivaRate, RateReference rate, OffsetDateTime entryTime) {
+    this.itemizedPrices = PriceDetailed.of(tenantName);
+    this.timeUnit = rate.timeUnit();
+    this.rate = rate;
     this.duration = Duration.between(entryTime, OffsetDateTime.now());
-    this.total = this.calculateTotal(pricePerUnit, minDuration);
+    this.total =
+        ParkingFeeCalculator.calculateFee(
+            duration,
+            rate.pricePerUnit(),
+            Duration.of(Long.parseLong(rate.minChargeTimeMinutes()), ChronoUnit.MINUTES),
+            timeUnit.getChronoUnit(),
+            RoundingMode.HALF_UP);
 
-    this.itemizedPrices.add(ItemPriceDTO.of(name, total));
+    final String concept = this.generateConcept();
+    this.itemizedPrices.addLine(PriceLine.of(concept, this.total));
+    this.itemizedPrices.setIvaRate(ivaRate);
+  }
+
+  @Override
+  public RateReference getRates() {
+    return this.rate;
   }
 
   @Override
@@ -38,25 +50,25 @@ public class RateBaseDecorator implements RateComponent {
 
   @Override
   public Duration getDuration() {
-    return Duration.between(entryTime, OffsetDateTime.now());
+    return this.duration;
   }
 
   @Override
-  public TemporalUnit getTimeUnit() {
+  public TimeUnitsRate getTimeUnit() {
     return this.timeUnit;
   }
 
   @Override
-  public LinkedList<ItemPriceDTO> getItemizedPrices() {
+  public PriceDetailed getItemizedPrices() {
     return this.itemizedPrices;
   }
 
-  private BigDecimal calculateTotal(BigDecimal pricePerUnit, Duration minDuration) {
-    if (this.duration.get(ChronoUnit.MINUTES) < minDuration.toMinutes())
-      return pricePerUnit.multiply(BigDecimal.valueOf(minDuration.get(this.timeUnit)));
-
-    return pricePerUnit
-        .multiply(BigDecimal.valueOf(this.duration.get(this.timeUnit)))
-        .setScale(2, RoundingMode.CEILING);
+  private String generateConcept() {
+    return String.format(
+        "%s (%s * %d COP/%s)",
+        this.rate.name(),
+        this.timeUnit.getDurationTime(this.duration),
+        this.rate.pricePerUnit().intValue(),
+        this.timeUnit.getName());
   }
 }

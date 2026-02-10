@@ -1,35 +1,40 @@
 package dev.angelcorzo.neoparking.usecase.calculaterate.decorator;
 
+import dev.angelcorzo.neoparking.model.rates.enums.TimeUnitsRate;
+import dev.angelcorzo.neoparking.model.rates.valueobject.RateReference;
 import dev.angelcorzo.neoparking.model.specialpolicies.enums.ModifiesTypes;
+import dev.angelcorzo.neoparking.model.specialpolicies.enums.OperationsTypes;
 import dev.angelcorzo.neoparking.model.specialpolicies.valueobjects.SpecialPoliciesReference;
-import dev.angelcorzo.neoparking.usecase.calculaterate.dtos.ItemPriceDTO;
+import dev.angelcorzo.neoparking.usecase.calculaterate.dtos.PriceDetailed;
+import dev.angelcorzo.neoparking.usecase.calculaterate.dtos.PriceLine;
+import dev.angelcorzo.neoparking.usecase.calculaterate.utils.ParkingFeeCalculator;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
-import java.util.LinkedList;
 
 public class RateWithSpecialPolicyDecorator implements RateComponent {
   private final SpecialPoliciesReference specialPoliciesReference;
   private final RateComponent rateComponent;
-
   private final BigDecimal total;
+
+  private Duration duration;
 
   public RateWithSpecialPolicyDecorator(
       RateComponent rateComponent, SpecialPoliciesReference specialPoliciesReference) {
     this.rateComponent = rateComponent;
     this.specialPoliciesReference = specialPoliciesReference;
-    this.total = this.calculateTotal();
+    this.duration = rateComponent.getDuration();
 
-    this.initialize();
+    this.total = this.applySpecialPolicy();
+
+    this.getItemizedPrices().addLine(PriceLine.of(specialPoliciesReference.name(), this.total));
   }
 
-  private void initialize() {
-    this.rateComponent
-        .getItemizedPrices()
-        .add(
-            ItemPriceDTO.of(
-                specialPoliciesReference.name(), this.obtainPrice(this.rateComponent.getPrice())));
+  @Override
+  public RateReference getRates() {
+    return this.rateComponent.getRates();
   }
 
   @Override
@@ -39,60 +44,80 @@ public class RateWithSpecialPolicyDecorator implements RateComponent {
 
   @Override
   public Duration getDuration() {
-    if (this.specialPoliciesReference.modifies() != ModifiesTypes.TIME)
-      return this.rateComponent.getDuration();
-    final Duration durationModified = this.obtainDuration(this.rateComponent.getDuration());
-
-    return durationModified.toMillis() < 0L ? Duration.ZERO : durationModified;
+    return this.duration;
   }
 
   @Override
-  public TemporalUnit getTimeUnit() {
+  public TimeUnitsRate getTimeUnit() {
     return this.rateComponent.getTimeUnit();
   }
 
-  private BigDecimal calculateTotal() {
-    if (this.specialPoliciesReference.modifies() == ModifiesTypes.TIME)
-      return this.rateComponent.getPrice();
-    final BigDecimal priceModified = this.obtainPrice(this.rateComponent.getPrice());
+  @Override
+  public PriceDetailed getItemizedPrices() {
+    return this.rateComponent.getItemizedPrices();
+  }
+
+  private BigDecimal applySpecialPolicy() {
+    final BigDecimal currentPrice = this.rateComponent.getPrice();
+    final ModifiesTypes modifies = this.specialPoliciesReference.modifies();
+
+    final BigDecimal priceModified =
+        modifies == ModifiesTypes.TIME ? this.adjustedDuration() : this.adjustedPrice(currentPrice);
 
     return priceModified.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : priceModified;
   }
 
-  private BigDecimal obtainPrice(BigDecimal price) {
+  private BigDecimal adjustedPrice(BigDecimal price) {
     final BigDecimal valueToModify = this.specialPoliciesReference.valueToModify();
 
     return switch (this.specialPoliciesReference.operation()) {
       case SUBTRACT -> price.subtract(valueToModify);
       case SET -> valueToModify;
-      case PERCENTAGE -> {
-        final BigDecimal discount =
-            price.multiply(valueToModify.divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP));
-
-        yield price.subtract(discount);
-      }
+      case PERCENTAGE -> adjustPercentage(price, valueToModify);
     };
   }
 
-  private Duration obtainDuration(Duration duration) {
-    final Duration timeToModify =
-        Duration.of(
-            this.specialPoliciesReference.valueToModify().longValue(),
-            this.rateComponent.getTimeUnit());
+  private BigDecimal adjustedDuration() {
+    final Duration baseDuration = this.rateComponent.getDuration();
+    final Duration newDuration = calculatedAdjustedDuration(baseDuration);
+    this.duration = newDuration;
 
-    return switch (this.specialPoliciesReference.operation()) {
+    final RateReference rate = this.rateComponent.getRates();
+    final Duration minDuration =
+        ParkingFeeCalculator.transfomDuration(
+            Long.parseLong(rate.minChargeTimeMinutes()), ChronoUnit.MINUTES);
+
+    return ParkingFeeCalculator.calculateFee(
+        newDuration,
+        this.rateComponent.getPrice(),
+        minDuration,
+        rate.timeUnit().getChronoUnit(),
+        RoundingMode.HALF_UP);
+  }
+
+  private Duration calculatedAdjustedDuration(Duration duration) {
+    final BigDecimal valueToModify = this.specialPoliciesReference.valueToModify();
+    final TemporalUnit timeUnit = this.rateComponent.getTimeUnit().getChronoUnit();
+    final Duration timeToModify = Duration.of(valueToModify.longValue(), timeUnit);
+    final OperationsTypes operation = this.specialPoliciesReference.operation();
+
+    return switch (operation) {
       case SET -> timeToModify;
       case SUBTRACT -> duration.minus(timeToModify);
       case PERCENTAGE -> {
-        final long currentTime = duration.toMillis();
-        final long modifiedTime = currentTime - (currentTime * timeToModify.toMillis() / 100);
-        yield Duration.ofMillis(modifiedTime);
+        final long valueModified =
+            adjustPercentage(BigDecimal.valueOf(duration.toMillis()), valueToModify)
+                .longValueExact();
+
+        yield Duration.of(valueModified, timeUnit);
       }
     };
   }
 
-  @Override
-  public LinkedList<ItemPriceDTO> getItemizedPrices() {
-    return this.rateComponent.getItemizedPrices();
+  private BigDecimal adjustPercentage(BigDecimal value, BigDecimal percentage) {
+    final BigDecimal discount =
+        value.multiply(percentage.divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP));
+
+    return value.subtract(discount);
   }
 }
