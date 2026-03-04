@@ -1,9 +1,8 @@
 package dev.angelcorzo.neoparking.model.slots.enums;
 
-
 public enum SlotType {
   CAR,
-  MOTORCICLE,
+  MOTORCYCLE,
   BIKE,
   ELECTRIC_VEHICLE,
   DISABLED

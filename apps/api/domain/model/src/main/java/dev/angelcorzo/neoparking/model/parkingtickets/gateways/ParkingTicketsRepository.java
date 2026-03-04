@@ -11,6 +11,8 @@ public interface ParkingTicketsRepository {
 
   Optional<ParkingTickets> findByTenantIdAndId(UUID tenantId, UUID id);
 
+  boolean existsById(UUID id);
+
   ParkingTickets getReferenceById(UUID id);
 
   ParkingTickets save(ParkingTickets parkingTickets);
@@ -19,5 +21,5 @@ public interface ParkingTicketsRepository {
 
   ParkingTickets changeStatus(UUID ticketId, ParkingTicketStatus status);
 
-  ParkingTickets closeTicket(UUID ticketId, BigDecimal amountPaid);
+  ParkingTickets closeTicket(UUID ticketId);
 }
