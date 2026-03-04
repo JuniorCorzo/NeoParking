@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import javax.sql.DataSource;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.when;
 class JpaConfigTest {
 
   @Mock DataSource dataSource;
+  @Mock ConfigurableListableBeanFactory beanFactory;
 
   private DBSecret dbSecretUnderTest;
   private JpaConfig jpaConfigUnderTest;
@@ -63,7 +65,7 @@ class JpaConfigTest {
   void entityManagerFactoryTest() {
 
     final LocalContainerEntityManagerFactoryBean result =
-        jpaConfigUnderTest.entityManagerFactory(dataSource, "dialect");
+        jpaConfigUnderTest.entityManagerFactory(dataSource, "dialect", beanFactory);
 
     assertNotNull(result);
   }

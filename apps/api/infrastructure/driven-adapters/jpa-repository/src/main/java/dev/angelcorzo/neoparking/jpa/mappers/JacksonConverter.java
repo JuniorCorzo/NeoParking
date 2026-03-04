@@ -25,6 +25,24 @@ public class JacksonConverter {
     }
   }
 
+  public Object toObject(String str) {
+    try {
+      return this.objectMapper.readValue(str, Object.class);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public String toString(Object object) {
+    if (object == null) return null;
+
+    try {
+      return this.objectMapper.writeValueAsString(object);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   public <T> T toTypedObject(JsonNode jsonNode, Class<T> clazz) {
     if (jsonNode == null || jsonNode.isNull()) return null;
 

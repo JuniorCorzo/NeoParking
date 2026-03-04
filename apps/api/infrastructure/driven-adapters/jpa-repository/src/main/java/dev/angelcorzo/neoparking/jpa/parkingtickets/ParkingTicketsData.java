@@ -2,7 +2,6 @@ package dev.angelcorzo.neoparking.jpa.parkingtickets;
 
 import dev.angelcorzo.neoparking.jpa.rates.RateData;
 import dev.angelcorzo.neoparking.jpa.slot.SlotsData;
-import dev.angelcorzo.neoparking.jpa.specialpolicies.SpecialPoliciesData;
 import dev.angelcorzo.neoparking.jpa.tenants.TenantsData;
 import dev.angelcorzo.neoparking.jpa.users.UsersData;
 import dev.angelcorzo.neoparking.model.parkingtickets.enums.ParkingTicketStatus;
@@ -49,17 +48,13 @@ public class ParkingTicketsData {
   @JoinColumn(name = "user_id", referencedColumnName = "id")
   private UsersData user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "special_policies_id", referencedColumnName = "id")
-  private SpecialPoliciesData specialPolicies;
-
   @Column(name = "license_plate")
   private String licensePlate;
 
   @Column(name = "entry_time", nullable = false)
   private OffsetDateTime entryTime;
 
-  @Column(name = "exit_entry")
+  @Column(name = "exit_time")
   private OffsetDateTime exitTime;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -73,12 +68,6 @@ public class ParkingTicketsData {
   @ColumnDefault(value = "OPEN")
   @Enumerated(EnumType.STRING)
   private ParkingTicketStatus status;
-
-  @Column(name = "payment_method")
-  private String paymentMethod;
-
-  @Column(name = "transaction_reference")
-  private String transactionReference;
 
   @Column(name = "closed_at")
   private OffsetDateTime closedAt;

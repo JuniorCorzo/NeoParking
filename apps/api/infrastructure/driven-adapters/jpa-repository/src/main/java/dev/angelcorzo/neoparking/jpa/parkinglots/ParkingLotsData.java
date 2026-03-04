@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.*;
+import org.hibernate.type.SqlTypes;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -34,8 +35,7 @@ public class ParkingLotsData {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  @Embedded
-  @AttributeOverride(name = "zipCode", column = @Column(name = "zip_code"))
+  @JdbcTypeCode(SqlTypes.STRUCT)
   private AddressType address;
 
   @Column(name = "name", nullable = false)
@@ -67,11 +67,7 @@ public class ParkingLotsData {
   private String currency;
 
   @Column(name = "operating_hours")
-  @Embedded
-  @AttributeOverrides({
-    @AttributeOverride(name = "openTime", column = @Column(name = "open_time")),
-    @AttributeOverride(name = "closeTime", column = @Column(name = "close_time"))
-  })
+  @JdbcTypeCode(SqlTypes.STRUCT)
   private OperatingHoursType operatingHours;
 
   @CreationTimestamp

@@ -2,6 +2,7 @@ package dev.angelcorzo.neoparking.jpa.parkingtickets;
 
 import dev.angelcorzo.neoparking.jpa.helper.AdapterOperations;
 import dev.angelcorzo.neoparking.jpa.parkingtickets.mappers.ParkingTicketMapper;
+import dev.angelcorzo.neoparking.model.parkingtickets.ParkingTicketNotFound;
 import dev.angelcorzo.neoparking.model.parkingtickets.ParkingTickets;
 import dev.angelcorzo.neoparking.model.parkingtickets.enums.ParkingTicketStatus;
 import dev.angelcorzo.neoparking.model.parkingtickets.gateways.ParkingTicketsRepository;
@@ -34,14 +35,20 @@ public class ParkingTicketsAdapter
   }
 
   @Override
+  public boolean existsById(UUID id) {
+    return super.repository.existsById(id);
+  }
+
+  @Override
   public ParkingTickets getReferenceById(UUID id) {
     return super.mapper.toEntity(super.repository.getReferenceById(id));
   }
 
   @Override
   public ParkingTickets prepareCheckout(UUID ticketId, BigDecimal amountToCharge) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'prepareCheckout'");
+    super.repository.prepareCheckout(ticketId, amountToCharge);
+
+    return super.findById(ticketId).orElseThrow(() -> new ParkingTicketNotFound(ticketId));
   }
 
   @Override
@@ -52,8 +59,8 @@ public class ParkingTicketsAdapter
   }
 
   @Override
-  public ParkingTickets closeTicket(UUID ticketId, BigDecimal amountPaid) {
-    super.repository.closeTicket(ticketId, amountPaid);
+  public ParkingTickets closeTicket(UUID ticketId) {
+    super.repository.closeTicket(ticketId);
 
     return super.repository.findById(ticketId).map(super::toEntity).orElse(null);
   }
