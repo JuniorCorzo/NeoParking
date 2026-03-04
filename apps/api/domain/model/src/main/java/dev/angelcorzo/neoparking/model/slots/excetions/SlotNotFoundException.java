@@ -1,7 +1,6 @@
 package dev.angelcorzo.neoparking.model.slots.excetions;
 
-import dev.angelcorzo.neoparking.model.exceptions.ErrorMessagesModel;
-
+import dev.angelcorzo.neoparking.model.commons.exceptions.ErrorMessagesModel;
 import java.util.UUID;
 
 public class SlotNotFoundException extends RuntimeException {

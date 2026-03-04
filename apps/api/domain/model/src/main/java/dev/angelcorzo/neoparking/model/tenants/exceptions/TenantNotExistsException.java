@@ -1,13 +1,12 @@
 package dev.angelcorzo.neoparking.model.tenants.exceptions;
 
-import dev.angelcorzo.neoparking.model.exceptions.ErrorMessagesModel;
-
+import dev.angelcorzo.neoparking.model.commons.exceptions.ErrorMessagesModel;
 import java.util.UUID;
 
 /**
  * Thrown when an operation is attempted on a Tenant that does not exist.
  *
- * <p><strong>Layer:</strong> Domain</p>
+ * <p><strong>Layer:</strong> Domain
  *
  * @author Angel Corzo
  * @since 1.0.0
