@@ -10,9 +10,13 @@ spring:
   devtools:
     add-properties: false
   datasource:
-    driver-class-name: org.postgresql.Driver
+    driverClassName: org.postgresql.Driver
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    databasePlatform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        physical_naming_strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+        globally_quoted_identifiers: true
   security:
     oauth2:
       resourceserver:
@@ -29,4 +33,4 @@ management:
       probes:
         enabled: true
 cors:
-  allowed-origins: "http://localhost:4200,http://localhost:8080"
+  allowed-origins: "http://localhost:4200,http://localhost:8080,http://localhost:63342"
