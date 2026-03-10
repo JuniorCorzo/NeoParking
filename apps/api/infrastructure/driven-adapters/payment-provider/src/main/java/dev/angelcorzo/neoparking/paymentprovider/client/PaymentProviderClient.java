@@ -4,8 +4,11 @@ import dev.angelcorzo.neoparking.model.commons.result.Result;
 import dev.angelcorzo.neoparking.model.payments.exceptions.PaymentError;
 import dev.angelcorzo.neoparking.paymentprovider.config.PaymentProviderProperties;
 import dev.angelcorzo.neoparking.paymentprovider.dtos.request.CreatePayLink;
+import dev.angelcorzo.neoparking.paymentprovider.dtos.request.EpaycoFilterRequest;
+import dev.angelcorzo.neoparking.paymentprovider.dtos.response.CreatePayLinkResponse;
+import dev.angelcorzo.neoparking.paymentprovider.dtos.response.EpaycoPagination;
 import dev.angelcorzo.neoparking.paymentprovider.dtos.response.EpaycoResponse;
-import dev.angelcorzo.neoparking.paymentprovider.dtos.response.PayLinkResponse;
+import dev.angelcorzo.neoparking.paymentprovider.dtos.response.ListPayLinkResponse;
 import io.netty.handler.timeout.ReadTimeoutException;
 import java.time.Duration;
 import java.util.Optional;
@@ -25,7 +28,36 @@ public class PaymentProviderClient {
   private final WebClient webClient;
   private final PaymentProviderProperties properties;
 
-  public Result<PayLinkResponse, PaymentError> createPayLink(CreatePayLink createPayLink) {
+  public Result<ListPayLinkResponse, PaymentError> getPayLinkDetails(String checkoutSessionId) {
+    try {
+      final EpaycoFilterRequest filterRequest =
+          new EpaycoFilterRequest("reference", checkoutSessionId);
+
+      return Optional.ofNullable(
+              webClient
+                  .post()
+                  .uri("/collection/link")
+                  .bodyValue(filterRequest)
+                  .retrieve()
+                  .bodyToMono(
+                      new ParameterizedTypeReference<
+                          EpaycoResponse<EpaycoPagination<ListPayLinkResponse>>>() {})
+                  .timeout(TIMEOUT)
+                  .block())
+          .<Result<ListPayLinkResponse, PaymentError>>map(
+              response ->
+                  response.fold(
+                      data -> Result.success(data.firstData()),
+                      _ ->
+                          Result.failure(
+                              new PaymentError.ProviderValidation(response.titleResponse()))))
+          .orElseGet(this::emptyResponseFailure);
+    } catch (Exception ex) {
+      return Result.failure(handleException(ex));
+    }
+  }
+
+  public Result<CreatePayLinkResponse, PaymentError> createPayLink(CreatePayLink createPayLink) {
     try {
       return Optional.ofNullable(
               webClient
@@ -33,27 +65,27 @@ public class PaymentProviderClient {
                   .uri("/collection/link/create")
                   .bodyValue(createPayLink)
                   .retrieve()
-                  .bodyToMono(new ParameterizedTypeReference<EpaycoResponse<PayLinkResponse>>() {})
+                  .bodyToMono(
+                      new ParameterizedTypeReference<EpaycoResponse<CreatePayLinkResponse>>() {})
                   .timeout(TIMEOUT)
                   .block())
           .map(this::handleResponse)
-          .orElseGet(
-              () ->
-                  Result.failure(
-                      new PaymentError.ProviderEmptyResponse(properties.getProviderName())));
+          .orElseGet(this::emptyResponseFailure);
     } catch (Exception ex) {
       return Result.failure(handleException(ex));
     }
   }
 
-  private Result<PayLinkResponse, PaymentError> handleResponse(
-      EpaycoResponse<PayLinkResponse> response) {
+  private <T> Result<T, PaymentError> emptyResponseFailure() {
+    return Result.failure(new PaymentError.ProviderEmptyResponse(properties.getProviderName()));
+  }
+
+  private <T> Result<T, PaymentError> handleResponse(EpaycoResponse<T> response) {
     return response.fold(
         Result::success,
-        error -> {
-          log.error("Failed to create pay link: {}", error.errors().toString());
-          return Result.failure(
-              new PaymentError.ProviderValidation("Error creando el link de pago"));
+        _ -> {
+          log.error("Failed to create pay link: {}", response.textResponse());
+          return Result.failure(new PaymentError.ProviderValidation(response.textResponse()));
         });
   }
 

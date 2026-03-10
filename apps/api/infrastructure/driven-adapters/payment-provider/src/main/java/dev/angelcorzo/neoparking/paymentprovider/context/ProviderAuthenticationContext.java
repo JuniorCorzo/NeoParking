@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -31,7 +32,8 @@ public class ProviderAuthenticationContext {
   }
 
   public Mono<String> getAuthToken() {
-    if (LocalTime.now().isAfter(this.tokenExpirationTime)) this.authenticate();
+    if (this.authToken == null || LocalTime.now().isAfter(this.tokenExpirationTime))
+      this.authenticate();
 
     return Mono.justOrEmpty(this.authToken).switchIfEmpty(this.requestLogin());
   }
@@ -55,8 +57,7 @@ public class ProviderAuthenticationContext {
               })
           .onStatus(
               status -> status.value() == 400,
-              _ ->
-                  Mono.error(new ProviderAuthenticationException("Provider Bad Credentials", 400)))
+              _ -> Mono.error(new ProviderAuthenticationException("Provider Bad Credentials", 400)))
           .bodyToMono(LoginDTO.class)
           .retryWhen(
               Retry.fixedDelay(3, Duration.ofSeconds(5))
@@ -77,6 +78,7 @@ public class ProviderAuthenticationContext {
     }
   }
 
+  @Scheduled(fixedDelayString = "${payment.provider.expiration-time}")
   private void authenticate() {
     log.info("Authenticating with payment provider...");
 

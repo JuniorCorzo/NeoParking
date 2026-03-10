@@ -23,6 +23,12 @@ spring:
         jwt:
           public-key-location: classpath:keys/public_key.pem
           issuer-uri: "${jwt.issue}"
+  threads:
+    virtual:
+      enabled: true
+  task:
+    execution:
+      thread-name-prefix: virtual-async-
 management:
   endpoints:
     web:
