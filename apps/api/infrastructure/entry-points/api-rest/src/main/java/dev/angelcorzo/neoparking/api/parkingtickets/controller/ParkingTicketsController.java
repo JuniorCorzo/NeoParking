@@ -5,6 +5,7 @@ import dev.angelcorzo.neoparking.api.parkingtickets.dto.CreateTicket;
 import dev.angelcorzo.neoparking.api.parkingtickets.dto.ParkingTicketsDTO;
 import dev.angelcorzo.neoparking.api.parkingtickets.mapper.ParkingTicketMapper;
 import dev.angelcorzo.neoparking.api.payments.dtos.request.check_out.check_out.CheckOutCommand;
+import dev.angelcorzo.neoparking.api.payments.dtos.response.PaymentsDTO;
 import dev.angelcorzo.neoparking.api.payments.mappers.PaymentsMapper;
 import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationContextGateway;
 import dev.angelcorzo.neoparking.model.parkingtickets.ParkingTickets;
@@ -14,6 +15,7 @@ import dev.angelcorzo.neoparking.usecase.checkinvehiclewithoureservation.CheckIn
 import dev.angelcorzo.neoparking.usecase.checkoutvehicle.CheckOutVehicleUseCase;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,11 +47,12 @@ public class ParkingTicketsController {
 
   @PostMapping("/check-out")
   @PreAuthorize("hasRole('OPERATOR')")
-  public Response<Payments> checkOutVehicle(@RequestBody CheckOutCommand checkOutCommand) {
+  @ResponseStatus(HttpStatus.CREATED)
+  public Response<PaymentsDTO> checkOutVehicle(@RequestBody CheckOutCommand checkOutCommand) {
     final CheckOut checkOut = this.paymentsMapper.toModel(checkOutCommand);
 
     Payments payment = this.checkOutVehicleUseCase.execute(checkOut);
 
-    return Response.created(payment, "Created");
+    return Response.created(this.paymentsMapper.toDto(payment), "Created");
   }
 }

@@ -1,11 +1,11 @@
 package dev.angelcorzo.neoparking.api.payments.dtos.request.check_out.check_out;
 
 import dev.angelcorzo.neoparking.model.payments.enums.PaymentsMethods;
-import lombok.Builder;
-
+import jakarta.validation.constraints.NotEmpty;
 import java.util.UUID;
+import lombok.Builder;
 
 @Builder
 public record SMSCheckOutCommand(
-    UUID ticketId, PaymentsMethods paymentMethod, String mobilePhone)
+    @NotEmpty UUID ticketId, @NotEmpty PaymentsMethods paymentMethod, @NotEmpty String mobilePhone)
     implements CheckOutCommand {}
