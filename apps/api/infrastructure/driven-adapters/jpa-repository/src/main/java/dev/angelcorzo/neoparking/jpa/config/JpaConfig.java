@@ -3,12 +3,16 @@ package dev.angelcorzo.neoparking.jpa.config;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.hibernate.SpringBeanContainer;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -72,7 +76,8 @@ public class JpaConfig {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
             DataSource dataSource,
-            @Value("${spring.jpa.databasePlatform}") String dialect) {
+            @Value("${spring.jpa.databasePlatform}") String dialect,
+            ConfigurableListableBeanFactory beanFactory) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
         em.setPackagesToScan("dev.angelcorzo.neoparking.jpa");
@@ -82,9 +87,11 @@ public class JpaConfig {
 
         Properties properties = new Properties();
         properties.setProperty("hibernate.dialect", dialect);
-        properties.setProperty("hibernate.hbm2ddl.auto", "update"); // TODO: remove this for non auto create schema
+
         em.setJpaProperties(properties);
+        em.getJpaPropertyMap().put("hibernate.resource.beans.container", new SpringBeanContainer(beanFactory));
 
         return em;
     }
+
 }

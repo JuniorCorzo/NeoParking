@@ -1,6 +1,7 @@
 package dev.angelcorzo.neoparking.api.rates.dto;
 
 import dev.angelcorzo.neoparking.api.specialpolicies.dto.SpecialPoliciesInfo;
+import dev.angelcorzo.neoparking.model.rates.enums.TimeUnitsRate;
 import dev.angelcorzo.neoparking.model.rates.enums.VehicleType;
 import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
@@ -13,7 +14,7 @@ public record RatesInfo(
     String name,
     String description,
     BigDecimal pricePerUnit,
-    ChronoUnit timeUnit,
+    TimeUnitsRate timeUnit,
     String minChargeTimeMinutes,
     VehicleType vehicleType,
     SpecialPoliciesInfo specialPolicy) {}

@@ -1,12 +1,10 @@
 package dev.angelcorzo.neoparking.jpa.specialpolicies;
 
-import dev.angelcorzo.neoparking.jpa.parkingtickets.ParkingTicketsData;
 import dev.angelcorzo.neoparking.jpa.tenants.TenantsData;
 import dev.angelcorzo.neoparking.model.specialpolicies.enums.ModifiesTypes;
 import dev.angelcorzo.neoparking.model.specialpolicies.enums.OperationsTypes;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -54,9 +52,4 @@ public class SpecialPoliciesData {
   @ColumnDefault(value = "TRUE")
   private boolean active;
 
-  @OneToMany(
-      mappedBy = "specialPolicies",
-      fetch = FetchType.LAZY,
-      targetEntity = ParkingTicketsData.class)
-  private List<ParkingTicketsData> tickets;
-}
+  }

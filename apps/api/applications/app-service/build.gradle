@@ -1,6 +1,9 @@
 apply plugin: 'org.springframework.boot'
 
 dependencies {
+	implementation project(':websocket')
+	implementation project(':commons')
+	implementation project(':payment-provider')
     implementation project(':security-core')
     implementation project(':api-rest')
     implementation project(':jpa-repository')

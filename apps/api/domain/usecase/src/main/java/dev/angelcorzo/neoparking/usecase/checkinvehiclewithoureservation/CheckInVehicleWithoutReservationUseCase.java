@@ -11,10 +11,10 @@ import dev.angelcorzo.neoparking.model.slots.valueobject.SlotsReference;
 import dev.angelcorzo.neoparking.model.tenants.exceptions.TenantNotExistsException;
 import dev.angelcorzo.neoparking.model.tenants.gateways.TenantsRepository;
 import dev.angelcorzo.neoparking.model.tenants.valueobject.TenantReference;
+import dev.angelcorzo.neoparking.model.users.Users;
 import dev.angelcorzo.neoparking.model.users.exceptions.UserNotExistsException;
 import dev.angelcorzo.neoparking.model.users.gateways.UsersRepository;
 import dev.angelcorzo.neoparking.model.users.valueobject.UserReference;
-
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.Builder;
@@ -31,11 +31,13 @@ public class CheckInVehicleWithoutReservationUseCase {
   public ParkingTickets execute(CreatedParkingTicket ticket) {
     this.validate(ticket);
 
+    final Users user = this.getUser(ticket.email());
+
     final ParkingTickets parkingTicket =
         ParkingTickets.builder()
             .slot(SlotsReference.of(this.slotsRepository.getReferenceById(ticket.slotId())))
             .tenant(TenantReference.of(this.tenantsRepository.getReferenceById(ticket.tenantId())))
-            .user(UserReference.of(this.usersRepository.getReferenceById(ticket.userId())))
+            .user(UserReference.of(user))
             .rate(RateReference.of(this.ratesRepository.getReferenceById(ticket.rateId())))
             .entryTime(OffsetDateTime.now())
             .licensePlate(ticket.plate())
@@ -48,16 +50,21 @@ public class CheckInVehicleWithoutReservationUseCase {
     if (!this.slotsRepository.existsById(ticket.slotId()))
       throw new SlotNotFoundException(ticket.slotId());
 
-    if (ticket.userId() != null && !this.usersRepository.existsById(ticket.userId()))
-      throw new UserNotExistsException(ticket.userId());
-
     if (!this.tenantsRepository.existsById(ticket.tenantId()))
       throw new TenantNotExistsException(ticket.tenantId());
     if (!ratesRepository.existsById(ticket.rateId()))
       throw new RateNotFoundException(ticket.rateId());
   }
 
+  private Users getUser(String email) {
+    if (email == null) return null;
+
+    return this.usersRepository
+        .findByEmail(email)
+        .orElseThrow(() -> new UserNotExistsException(email));
+  }
+
   @Builder(toBuilder = true)
   public record CreatedParkingTicket(
-      UUID slotId, UUID tenantId, UUID userId, UUID rateId, String plate) {}
+      UUID slotId, UUID tenantId, String email, UUID rateId, String plate) {}
 }

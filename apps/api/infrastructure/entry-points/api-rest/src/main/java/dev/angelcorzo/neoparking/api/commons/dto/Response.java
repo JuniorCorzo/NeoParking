@@ -5,7 +5,7 @@ import java.time.OffsetDateTime;
 import org.springframework.http.HttpStatus;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record Response<T>(String status, T data, String message, OffsetDateTime timestamp) {
+public record Response<T>(String status, T data, String message, OffsetDateTime timestamp) implements BaseResponse {
   public static <T> Response<T> of(HttpStatus httpStatus, T data, String message) {
     return new Response<>(httpStatus.toString(), data, message, OffsetDateTime.now());
   }

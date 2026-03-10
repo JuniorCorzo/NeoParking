@@ -1,11 +1,11 @@
 package dev.angelcorzo.neoparking.usecase.updaterate;
 
 import dev.angelcorzo.neoparking.model.rates.Rates;
+import dev.angelcorzo.neoparking.model.rates.enums.TimeUnitsRate;
 import dev.angelcorzo.neoparking.model.rates.enums.VehicleType;
 import dev.angelcorzo.neoparking.model.rates.exceptions.RateNotFoundException;
 import dev.angelcorzo.neoparking.model.rates.gateways.RatesRepository;
 import java.math.BigDecimal;
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
@@ -35,7 +35,7 @@ public class UpdateRateUseCase {
       String name,
       String description,
       BigDecimal pricePerUnit,
-      ChronoUnit timeUnit,
+      TimeUnitsRate timeUnit,
       String minChargeTimeMinutes,
       VehicleType vehicleType) {}
 }

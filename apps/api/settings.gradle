@@ -26,3 +26,9 @@ include ':api-rest'
 project(':api-rest').projectDir = file('./infrastructure/entry-points/api-rest')
 include ':security-core'
 project(':security-core').projectDir = file('./infrastructure/helpers/security-core')
+include ':payment-provider'
+project(':payment-provider').projectDir = file('./infrastructure/driven-adapters/payment-provider')
+include ':commons'
+project(':commons').projectDir = file('./infrastructure/helpers/commons')
+include ':websocket'
+project(':websocket').projectDir = file('./infrastructure/entry-points/websocket')

@@ -1,6 +1,6 @@
 package dev.angelcorzo.neoparking.model.specialpolicies.exceptions;
 
-import dev.angelcorzo.neoparking.model.exceptions.ErrorMessagesModel;
+import dev.angelcorzo.neoparking.model.commons.exceptions.ErrorMessagesModel;
 import java.util.UUID;
 
 public class SpecialPolicyNotFoundException extends RuntimeException {

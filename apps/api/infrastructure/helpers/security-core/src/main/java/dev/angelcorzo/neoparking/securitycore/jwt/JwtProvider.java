@@ -4,7 +4,7 @@ import dev.angelcorzo.neoparking.model.authentication.exceptions.ExpiredTokenExc
 import dev.angelcorzo.neoparking.model.authentication.exceptions.MalformedTokenException;
 import dev.angelcorzo.neoparking.model.authentication.exceptions.TokenInvalidException;
 import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationGateway;
-import dev.angelcorzo.neoparking.model.exceptions.TokenErrorMessages;
+import dev.angelcorzo.neoparking.model.commons.exceptions.TokenErrorMessages;
 import dev.angelcorzo.neoparking.securitycore.jwt.config.JwtProperties;
 import dev.angelcorzo.neoparking.securitycore.jwt.config.RSAProperties;
 import io.jsonwebtoken.ExpiredJwtException;

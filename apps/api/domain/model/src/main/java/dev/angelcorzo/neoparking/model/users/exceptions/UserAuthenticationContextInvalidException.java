@@ -1,6 +1,6 @@
 package dev.angelcorzo.neoparking.model.users.exceptions;
 
-import dev.angelcorzo.neoparking.model.exceptions.ErrorMessagesModel;
+import dev.angelcorzo.neoparking.model.commons.exceptions.ErrorMessagesModel;
 
 public class UserAuthenticationContextInvalidException extends RuntimeException {
   public UserAuthenticationContextInvalidException() {

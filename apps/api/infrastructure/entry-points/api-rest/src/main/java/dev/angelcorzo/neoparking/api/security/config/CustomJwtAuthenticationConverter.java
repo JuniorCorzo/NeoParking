@@ -1,7 +1,7 @@
 package dev.angelcorzo.neoparking.api.security.config;
 
 import dev.angelcorzo.neoparking.model.authentication.exceptions.TokenInvalidException;
-import dev.angelcorzo.neoparking.model.exceptions.TokenErrorMessages;
+import dev.angelcorzo.neoparking.model.commons.exceptions.TokenErrorMessages;
 import dev.angelcorzo.neoparking.model.users.UserAuthentication;
 import dev.angelcorzo.neoparking.model.users.enums.Roles;
 import dev.angelcorzo.neoparking.usecase.validatetoken.ValidateAccessTokenUseCase;

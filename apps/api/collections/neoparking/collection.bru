@@ -6,6 +6,10 @@ auth:bearer {
   token: {{ACCESS_TOKEN}}
 }
 
+vars:pre-request {
+  PAYMENT_ID: 20b6bb66-5171-4c22-b026-b49bfe54a7fe
+}
+
 script:pre-request {
   const currentUrl = req.getUrl()
   if (currentUrl.includes("/tenants/register")) return;

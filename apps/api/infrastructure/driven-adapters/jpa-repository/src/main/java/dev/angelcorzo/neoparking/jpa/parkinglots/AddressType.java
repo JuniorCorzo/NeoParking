@@ -1,5 +1,6 @@
 package dev.angelcorzo.neoparking.jpa.parkinglots;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,5 +19,6 @@ public class AddressType {
   private String city;
   private String state;
   private String country;
+  @Column(name = "zip_code")
   private String zipCode;
 }

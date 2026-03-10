@@ -1,16 +1,15 @@
 package dev.angelcorzo.neoparking.jpa.helper;
 
+import static java.util.stream.StreamSupport.stream;
+
 import dev.angelcorzo.neoparking.jpa.mappers.BaseMapper;
+import java.lang.reflect.ParameterizedType;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Example;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.lang.reflect.ParameterizedType;
-import java.util.List;
-import java.util.Optional;
-
-import static java.util.stream.StreamSupport.stream;
 
 /**
  * Abstract base class for JPA adapter operations.
@@ -133,6 +132,7 @@ public abstract class AdapterOperations<
    * @param id The ID of the entity to find.
    * @return An {@link Optional} containing the found domain entity, or empty if not found.
    */
+  @Transactional(readOnly = true)
   public Optional<E> findById(I id) {
     return this.repository.findById(id).map(this::toEntity);
   }
@@ -143,6 +143,7 @@ public abstract class AdapterOperations<
    * @param entity The domain entity example to use for the search.
    * @return A list of domain entities matching the example.
    */
+  @Transactional(readOnly = true)
   public List<E> findByExample(E entity) {
     return toList(repository.findAll(Example.of(toData(entity))));
   }
@@ -152,6 +153,7 @@ public abstract class AdapterOperations<
    *
    * @return A list of all domain entities.
    */
+  @Transactional(readOnly = true)
   public List<E> findAll() {
     return toList(repository.findAll());
   }

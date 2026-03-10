@@ -4,6 +4,7 @@ import dev.angelcorzo.neoparking.model.parkinglots.exceptions.ParkingNotExistsEx
 import dev.angelcorzo.neoparking.model.parkinglots.gateways.ParkingLotsRepository;
 import dev.angelcorzo.neoparking.model.parkinglots.valueobject.ParkingLotsReference;
 import dev.angelcorzo.neoparking.model.rates.Rates;
+import dev.angelcorzo.neoparking.model.rates.enums.TimeUnitsRate;
 import dev.angelcorzo.neoparking.model.rates.enums.VehicleType;
 import dev.angelcorzo.neoparking.model.rates.gateways.RatesRepository;
 import dev.angelcorzo.neoparking.model.specialpolicies.exceptions.SpecialPolicyNotFoundException;
@@ -12,7 +13,6 @@ import dev.angelcorzo.neoparking.model.specialpolicies.valueobjects.SpecialPolic
 import dev.angelcorzo.neoparking.model.tenants.gateways.TenantsRepository;
 import dev.angelcorzo.neoparking.model.tenants.valueobject.TenantReference;
 import java.math.BigDecimal;
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +65,7 @@ public class RateConfigurationUseCase {
       String name,
       String description,
       BigDecimal pricePerUnit,
-      ChronoUnit timeUnit,
+      TimeUnitsRate timeUnit,
       String minChargeTimeMinutes,
       VehicleType vehicleType,
       UUID specialPolicyId) {}

@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
  * @since 1.0.0
  */
 @RequiredArgsConstructor
-public final class AcceptInvitationUseCase {
+public class AcceptInvitationUseCase {
   private final UserInvitationsRepository invitationsRepository;
   private final UsersRepository usersRepository;
   private final PasswordEncodeGateway passwordEncode;

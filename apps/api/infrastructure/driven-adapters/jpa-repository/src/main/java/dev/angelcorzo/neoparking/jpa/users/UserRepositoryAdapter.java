@@ -13,13 +13,15 @@ import org.springframework.stereotype.Repository;
 /**
  * JPA adapter for {@link UsersRepository}.
  *
- * <p>This class implements the {@link UsersRepository} interface, providing
- * concrete persistence operations for {@link Users} entities using Spring Data JPA.</p>
+ * <p>This class implements the {@link UsersRepository} interface, providing concrete persistence
+ * operations for {@link Users} entities using Spring Data JPA.
  *
- * <p>It extends {@link AdapterOperations} to leverage common CRUD and mapping functionalities.</p>
+ * <p>It extends {@link AdapterOperations} to leverage common CRUD and mapping functionalities.
  *
- * <p><strong>Layer:</strong> Infrastructure (Driven Adapter - JPA)</p>
- * <p><strong>Responsibility:</strong> To provide persistence implementation for User domain operations.</p>
+ * <p><strong>Layer:</strong> Infrastructure (Driven Adapter - JPA)
+ *
+ * <p><strong>Responsibility:</strong> To provide persistence implementation for User domain
+ * operations.
  *
  * @author Angel Corzo
  * @since 1.0.0
@@ -58,12 +60,13 @@ public class UserRepositoryAdapter
    * Finds a user by their unique identifier, eagerly fetching their associated tenant.
    *
    * @param id The unique identifier of the user.
-   * @return An {@link Optional} containing the found {@link Users} entity with tenant, or empty if not found.
+   * @return An {@link Optional} containing the found {@link Users} entity with tenant, or empty if
+   *     not found.
    */
   @Override
   public Optional<Users> findById(UUID id) {
-      Optional<UsersData> byIdFetchTenant = this.repository.findByIdFetchTenant(id);
-      return byIdFetchTenant.map(super::toEntity);
+    Optional<UsersData> byIdFetchTenant = this.repository.findByIdFetchTenant(id);
+    return byIdFetchTenant.map(super::toEntity);
   }
 
   /**
@@ -71,7 +74,8 @@ public class UserRepositoryAdapter
    *
    * @param id The unique identifier of the user.
    * @param tenantId The unique identifier of the tenant.
-   * @return An {@link Optional} containing the found {@link Users} entity with tenant, or empty if not found or not in the tenant.
+   * @return An {@link Optional} containing the found {@link Users} entity with tenant, or empty if
+   *     not found or not in the tenant.
    */
   @Override
   public Optional<Users> findByIdAndTenantId(UUID id, UUID tenantId) {
@@ -84,8 +88,8 @@ public class UserRepositoryAdapter
   }
 
   /**
-   * Saves (creates or updates) a user entity.
-   * After saving, it re-fetches the user to ensure the associated tenant is loaded.
+   * Saves (creates or updates) a user entity. After saving, it re-fetches the user to ensure the
+   * associated tenant is loaded.
    *
    * @param entity The {@link Users} entity to save.
    * @return The saved {@link Users} entity with its tenant loaded.
@@ -141,7 +145,8 @@ public class UserRepositoryAdapter
    *
    * @param email The email address to check.
    * @param tenantId The unique identifier of the tenant.
-   * @return {@code true} if a user with the specified email exists in the tenant, {@code false} otherwise.
+   * @return {@code true} if a user with the specified email exists in the tenant, {@code false}
+   *     otherwise.
    */
   @Override
   public Boolean existsByEmailAndTenantId(String email, UUID tenantId) {
@@ -149,7 +154,8 @@ public class UserRepositoryAdapter
   }
 
   /**
-   * Assigns a user to a specific tenant. This is typically used when an existing user is invited to a new tenant.
+   * Assigns a user to a specific tenant. This is typically used when an existing user is invited to
+   * a new tenant.
    *
    * @param userId The unique identifier of the user to assign.
    * @param tenantId The unique identifier of the tenant to assign the user to.

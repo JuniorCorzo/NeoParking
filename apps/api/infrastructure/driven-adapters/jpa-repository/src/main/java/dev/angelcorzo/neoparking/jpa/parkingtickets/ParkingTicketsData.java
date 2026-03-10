@@ -2,7 +2,6 @@ package dev.angelcorzo.neoparking.jpa.parkingtickets;
 
 import dev.angelcorzo.neoparking.jpa.rates.RateData;
 import dev.angelcorzo.neoparking.jpa.slot.SlotsData;
-import dev.angelcorzo.neoparking.jpa.specialpolicies.SpecialPoliciesData;
 import dev.angelcorzo.neoparking.jpa.tenants.TenantsData;
 import dev.angelcorzo.neoparking.jpa.users.UsersData;
 import dev.angelcorzo.neoparking.model.parkingtickets.enums.ParkingTicketStatus;
@@ -11,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,12 +18,18 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Table
-@Entity(name = "parking_tickets")
+@Table(
+    name = "parking_tickets",
+    uniqueConstraints =
+        @UniqueConstraint(
+            name = "uq_parking_ticket_tenant_id",
+            columnNames = {"tenant_id", "id"}))
+@Entity()
 public class ParkingTicketsData {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -42,17 +48,13 @@ public class ParkingTicketsData {
   @JoinColumn(name = "user_id", referencedColumnName = "id")
   private UsersData user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "special_policies_id", referencedColumnName = "id")
-  private SpecialPoliciesData specialPolicies;
-
   @Column(name = "license_plate")
   private String licensePlate;
 
   @Column(name = "entry_time", nullable = false)
   private OffsetDateTime entryTime;
 
-  @Column(name = "exit_entry")
+  @Column(name = "exit_time")
   private OffsetDateTime exitTime;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -67,11 +69,8 @@ public class ParkingTicketsData {
   @Enumerated(EnumType.STRING)
   private ParkingTicketStatus status;
 
-  @Column(name = "payment_method")
-  private String paymentMethod;
-
-  @Column(name = "transaction_reference")
-  private String transactionReference;
+  @Column(name = "closed_at")
+  private OffsetDateTime closedAt;
 
   @Column(name = "created_at")
   @CreationTimestamp
