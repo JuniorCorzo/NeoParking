@@ -10,7 +10,6 @@ import dev.angelcorzo.neoparking.api.rates.dto.RatesDTO;
 import dev.angelcorzo.neoparking.api.rates.enums.RateMessages;
 import dev.angelcorzo.neoparking.api.rates.mappers.RatesMapper;
 import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationContextGateway;
-import dev.angelcorzo.neoparking.model.authentication.gateway.AuthenticationGateway;
 import dev.angelcorzo.neoparking.model.parkinglots.ParkingLots;
 import dev.angelcorzo.neoparking.model.parkinglots.dto.UpsertParkingLotsDTO;
 import dev.angelcorzo.neoparking.model.rates.Rates;

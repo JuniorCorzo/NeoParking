@@ -37,6 +37,8 @@ public class JacksonConverter {
     if (object == null) return null;
 
     try {
+      if (object instanceof String) return (String) object;
+
       return this.objectMapper.writeValueAsString(object);
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);

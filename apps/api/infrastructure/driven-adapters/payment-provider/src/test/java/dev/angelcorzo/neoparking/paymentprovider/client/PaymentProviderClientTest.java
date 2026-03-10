@@ -8,9 +8,9 @@ import dev.angelcorzo.neoparking.model.commons.result.Result;
 import dev.angelcorzo.neoparking.model.payments.exceptions.PaymentError;
 import dev.angelcorzo.neoparking.paymentprovider.config.PaymentProviderProperties;
 import dev.angelcorzo.neoparking.paymentprovider.dtos.request.CreatePayLink;
+import dev.angelcorzo.neoparking.paymentprovider.dtos.response.CreatePayLinkResponse;
 import dev.angelcorzo.neoparking.paymentprovider.dtos.response.EpaycoError;
 import dev.angelcorzo.neoparking.paymentprovider.dtos.response.EpaycoResponse;
-import dev.angelcorzo.neoparking.paymentprovider.dtos.response.PayLinkResponse;
 import io.netty.handler.timeout.ReadTimeoutException;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +31,11 @@ class PaymentProviderClientTest {
   @Mock private WebClient webClient;
   @Mock private WebClient.RequestBodyUriSpec requestBodyUriSpec;
   @Mock private WebClient.RequestBodySpec requestBodySpec;
-  @Mock private WebClient.RequestHeadersSpec requestHeadersSpec; // raw type avoids wildcard capture issues
+
+  @Mock
+  private WebClient.RequestHeadersSpec
+      requestHeadersSpec; // raw type avoids wildcard capture issues
+
   @Mock private WebClient.ResponseSpec responseSpec;
 
   private PaymentProviderProperties properties;
@@ -59,19 +63,17 @@ class PaymentProviderClientTest {
   private void stubWebClientToThrow(Exception exception) {
     when(webClient.post()).thenReturn(requestBodyUriSpec);
     when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodySpec);
-    when(requestBodySpec.bodyValue(any()))
-      .thenReturn(requestHeadersSpec);
+    when(requestBodySpec.bodyValue(any())).thenReturn(requestHeadersSpec);
     when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
     when(responseSpec.bodyToMono(any(ParameterizedTypeReference.class)))
         .thenReturn(Mono.error(exception));
   }
 
   @SuppressWarnings("unchecked")
-  private void stubWebClientToReturn(EpaycoResponse<PayLinkResponse> response) {
+  private void stubWebClientToReturn(EpaycoResponse<CreatePayLinkResponse> response) {
     when(webClient.post()).thenReturn(requestBodyUriSpec);
     when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodySpec);
-    when(requestBodySpec.bodyValue(any()))
-      .thenReturn(requestHeadersSpec);
+    when(requestBodySpec.bodyValue(any())).thenReturn(requestHeadersSpec);
     when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
     when(responseSpec.bodyToMono(any(ParameterizedTypeReference.class)))
         .thenReturn(Mono.justOrEmpty(response));
@@ -82,13 +84,13 @@ class PaymentProviderClientTest {
   @Test
   @DisplayName("Should return success when provider responds with valid pay link")
   void shouldReturnSuccessOnValidResponse() {
-    PayLinkResponse payLink = buildPayLinkResponse();
-    EpaycoResponse<PayLinkResponse> response =
+    CreatePayLinkResponse payLink = buildPayLinkResponse();
+    EpaycoResponse<CreatePayLinkResponse> response =
         new EpaycoResponse.Success<>(true, "OK", "OK", "OK", payLink);
 
     stubWebClientToReturn(response);
 
-    Result<PayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
+    Result<CreatePayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
 
     assertThat(result.isSuccess()).isTrue();
     assertThat(result.get()).isEqualTo(payLink);
@@ -101,7 +103,7 @@ class PaymentProviderClientTest {
   void shouldReturnProviderEmptyResponseOnNullBody() {
     stubWebClientToReturn(null);
 
-    Result<PayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
+    Result<CreatePayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
 
     assertThat(result.isFailure()).isTrue();
     assertThat(result.getError()).isInstanceOf(PaymentError.ProviderEmptyResponse.class);
@@ -115,12 +117,12 @@ class PaymentProviderClientTest {
   void shouldReturnProviderValidationOnEpaycoError() {
     EpaycoError error =
         new EpaycoError("1", List.of(new EpaycoError.ErrorDetail(100, "Some error")));
-    EpaycoResponse<PayLinkResponse> response =
+    EpaycoResponse<CreatePayLinkResponse> response =
         new EpaycoResponse.Failure<>(false, "Error", "Error", "Error", error);
 
     stubWebClientToReturn(response);
 
-    Result<PayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
+    Result<CreatePayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
 
     assertThat(result.isFailure()).isTrue();
     assertThat(result.getError()).isInstanceOf(PaymentError.ProviderValidation.class);
@@ -138,7 +140,7 @@ class PaymentProviderClientTest {
 
     stubWebClientToThrow(exception);
 
-    Result<PayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
+    Result<CreatePayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
 
     assertThat(result.isFailure()).isTrue();
     assertThat(result.getError()).isInstanceOf(PaymentError.ProviderValidation.class);
@@ -155,7 +157,7 @@ class PaymentProviderClientTest {
 
     stubWebClientToThrow(exception);
 
-    Result<PayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
+    Result<CreatePayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
 
     assertThat(result.isFailure()).isTrue();
     assertThat(result.getError()).isInstanceOf(PaymentError.ProviderRateLimited.class);
@@ -174,7 +176,7 @@ class PaymentProviderClientTest {
 
     stubWebClientToThrow(exception);
 
-    Result<PayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
+    Result<CreatePayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
 
     assertThat(result.isFailure()).isTrue();
     assertThat(result.getError()).isInstanceOf(PaymentError.ProviderServerError.class);
@@ -192,7 +194,7 @@ class PaymentProviderClientTest {
 
     stubWebClientToThrow(exception);
 
-    Result<PayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
+    Result<CreatePayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
 
     assertThat(result.isFailure()).isTrue();
     assertThat(result.getError()).isInstanceOf(PaymentError.ProviderServerError.class);
@@ -206,7 +208,7 @@ class PaymentProviderClientTest {
   void shouldReturnProviderTimeoutOnReadTimeout() {
     stubWebClientToThrow(ReadTimeoutException.INSTANCE);
 
-    Result<PayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
+    Result<CreatePayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
 
     assertThat(result.isFailure()).isTrue();
     assertThat(result.getError()).isInstanceOf(PaymentError.ProviderTimeout.class);
@@ -223,7 +225,7 @@ class PaymentProviderClientTest {
 
     stubWebClientToThrow(exception);
 
-    Result<PayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
+    Result<CreatePayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
 
     assertThat(result.isFailure()).isTrue();
     assertThat(result.getError()).isInstanceOf(PaymentError.ProviderDeserialization.class);
@@ -240,7 +242,7 @@ class PaymentProviderClientTest {
 
     stubWebClientToThrow(exception);
 
-    Result<PayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
+    Result<CreatePayLinkResponse, PaymentError> result = client.createPayLink(dummyRequest());
 
     assertThat(result.isFailure()).isTrue();
     assertThat(result.getError()).isInstanceOf(PaymentError.ProviderUnexpectedError.class);
@@ -248,8 +250,8 @@ class PaymentProviderClientTest {
     assertThat(result.getError().status()).isEqualTo(500);
   }
 
-  private PayLinkResponse buildPayLinkResponse() {
-    return new PayLinkResponse(
+  private CreatePayLinkResponse buildPayLinkResponse() {
+    return new CreatePayLinkResponse(
         1L,
         "title",
         "desc",

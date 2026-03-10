@@ -3,12 +3,14 @@ package dev.angelcorzo.neoparking.jpa.payments;
 import com.fasterxml.jackson.databind.JsonNode;
 import dev.angelcorzo.neoparking.jpa.parkingtickets.ParkingTicketsData;
 import dev.angelcorzo.neoparking.jpa.tenants.TenantsData;
+import dev.angelcorzo.neoparking.jpa.transactions.TransactionsData;
 import dev.angelcorzo.neoparking.jpa.users.UsersData;
 import dev.angelcorzo.neoparking.model.payments.enums.PaymentStatus;
 import dev.angelcorzo.neoparking.model.payments.enums.PaymentsMethods;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -74,11 +76,14 @@ public class PaymentsData {
   @Column(name = "provider_create_response", columnDefinition = "jsonb")
   private JsonNode providerCreateResponse;
 
-  @Column(name = "created_at")
+  @Column(name = "created_at", nullable = false, updatable = false)
   @CreationTimestamp
   private OffsetDateTime createdAt;
 
-  @Column(name = "updated_at")
+  @Column(name = "updated_at", nullable = false)
   @UpdateTimestamp
   private OffsetDateTime updatedAt;
+
+  @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY)
+  private List<TransactionsData> transactions;
 }

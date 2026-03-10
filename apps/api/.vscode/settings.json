@@ -1,0 +1,14 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.compile.nullAnalysis.mode": "disabled",
+  "cSpell.words": [
+    "angelcorzo",
+    "desencriptación",
+    "epayco",
+    "Epayco",
+    "neoparking",
+    "txtcodigo"
+  ],
+  "java.debug.settings.onBuildFailureProceed": true,
+  "cSpell.language": "en,es-ES"
+}

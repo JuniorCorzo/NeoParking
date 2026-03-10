@@ -15,7 +15,7 @@ import dev.angelcorzo.neoparking.paymentprovider.client.PaymentProviderClient;
 import dev.angelcorzo.neoparking.paymentprovider.config.PaymentProviderProperties;
 import dev.angelcorzo.neoparking.paymentprovider.dtos.EpaycoConfirmationDTO;
 import dev.angelcorzo.neoparking.paymentprovider.dtos.request.CreatePayLink;
-import dev.angelcorzo.neoparking.paymentprovider.dtos.response.PayLinkResponse;
+import dev.angelcorzo.neoparking.paymentprovider.dtos.response.CreatePayLinkResponse;
 import dev.angelcorzo.neoparking.paymentprovider.utils.EpaycoSignature;
 import dev.angelcorzo.neoparking.paymentprovider.utils.PaymentProviderDateTimeFormatters;
 import java.math.BigDecimal;
@@ -32,6 +32,23 @@ import org.springframework.util.MultiValueMap;
 public class EpaycoPaymentAdapter implements PaymentProviderGateway {
   private final PaymentProviderClient paymentProviderClient;
   private final PaymentProviderProperties paymentProviderProperties;
+
+  @Override
+  public Result<Transactions, PaymentError> getTransactionDetails(String checkoutSessionId) {
+    return this.paymentProviderClient
+        .getPayLinkDetails(checkoutSessionId)
+        .map(
+            paymentDetails ->
+                Transactions.builder()
+                    .supplierRef(paymentDetails.reference())
+                    .transactionId(String.valueOf(paymentDetails.id()))
+                    .amount(paymentDetails.amount())
+                    .currency(paymentDetails.currency())
+                    .paymentProvider(this.paymentProviderProperties.getProviderName())
+                    .gatewayResponse(paymentDetails)
+                    .status(paymentDetails.state().getTransactionStatus())
+                    .build());
+  }
 
   @Override
   public Result<ProviderMetadata, PaymentError> processPayment(
@@ -71,7 +88,7 @@ public class EpaycoPaymentAdapter implements PaymentProviderGateway {
       ParkingTickets tickets, BigDecimal amount, CheckOut method) {
     final CreatePayLink payLinkRequest = this.buildPayLinkRequest(tickets, amount, method);
 
-    final Result<PayLinkResponse, PaymentError> payLinkResponse =
+    final Result<CreatePayLinkResponse, PaymentError> payLinkResponse =
         this.paymentProviderClient.createPayLink(payLinkRequest);
 
     return payLinkResponse.map(

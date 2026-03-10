@@ -2,7 +2,9 @@ package dev.angelcorzo.neoparking.model.payments.gateways;
 
 import dev.angelcorzo.neoparking.model.commons.result.Result;
 import dev.angelcorzo.neoparking.model.payments.Payments;
+import dev.angelcorzo.neoparking.model.payments.enums.PaymentStatus;
 import dev.angelcorzo.neoparking.model.payments.exceptions.PaymentError;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,9 +15,13 @@ public interface PaymentsRepository {
 
   Optional<Payments> findByParkingTicketId(UUID parkingTicketId);
 
+  List<String> findAllCheckoutSessionIds();
+
   boolean existsByParkingTicketId(UUID parkingTicketId);
 
   Payments getReferenceById(UUID id);
 
   Result<Payments, PaymentError> processPayment(Payments payment);
+
+  Result<Payments, PaymentError> processPayment(UUID paymentId, PaymentStatus newStatus);
 }

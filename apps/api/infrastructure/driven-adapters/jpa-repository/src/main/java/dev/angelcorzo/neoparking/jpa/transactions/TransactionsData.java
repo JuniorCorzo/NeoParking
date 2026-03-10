@@ -10,8 +10,6 @@ import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -47,7 +45,6 @@ public class TransactionsData {
   private TransactionStatus status;
 
   @Column(name = "gateway_response")
-  @JdbcTypeCode(SqlTypes.JSON)
   @Convert(converter = EncryptedResponseConverter.class)
   private String gatewayResponse;
 
