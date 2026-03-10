@@ -13,8 +13,8 @@ class PayLinkResponseTest {
   @Test
   void shouldParseDateCorrectly() {
     String expirationDate = "2026-02-26 04:45:01";
-    PayLinkResponse response =
-        new PayLinkResponse(
+    CreatePayLinkResponse response =
+        new CreatePayLinkResponse(
             1L,
             "title",
             "description",
@@ -42,7 +42,7 @@ class PayLinkResponseTest {
     assertNotNull(metadata);
     assertEquals("invoice", metadata.externalPaymentId());
     assertEquals("link", metadata.checkoutUrl());
-    
+
     OffsetDateTime expected = OffsetDateTime.of(2026, 2, 26, 4, 45, 1, 0, ZoneOffset.UTC);
     assertEquals(expected, metadata.checkoutExpiresAt());
   }

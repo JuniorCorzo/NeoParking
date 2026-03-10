@@ -1,19 +1,10 @@
 package dev.angelcorzo.neoparking.paymentprovider.dtos.response;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import dev.angelcorzo.neoparking.paymentprovider.config.json.SuccessTypeIdResolver;
+import dev.angelcorzo.neoparking.paymentprovider.config.json.EpaycoResponseDeserializer;
 import java.util.function.Function;
-import tools.jackson.databind.PropertyNamingStrategies;
-import tools.jackson.databind.annotation.JsonNaming;
-import tools.jackson.databind.annotation.JsonTypeIdResolver;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, property = "success", visible = true)
-@JsonTypeIdResolver(value = SuccessTypeIdResolver.class)
-@JsonSubTypes({
-  @JsonSubTypes.Type(value = EpaycoResponse.Success.class, name = "true"),
-  @JsonSubTypes.Type(value = EpaycoResponse.Failure.class, name = "false")
-})
+@JsonDeserialize(using = EpaycoResponseDeserializer.class)
 public sealed interface EpaycoResponse<T> permits EpaycoResponse.Success, EpaycoResponse.Failure {
   boolean success();
 
@@ -47,12 +38,10 @@ public sealed interface EpaycoResponse<T> permits EpaycoResponse.Success, Epayco
     return this instanceof EpaycoResponse.Failure;
   }
 
-  @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
   record Success<T>(
       boolean success, String titleResponse, String textResponse, String lastResponse, T data)
       implements EpaycoResponse<T> {}
 
-  @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
   record Failure<T>(
       boolean success,
       String titleResponse,
