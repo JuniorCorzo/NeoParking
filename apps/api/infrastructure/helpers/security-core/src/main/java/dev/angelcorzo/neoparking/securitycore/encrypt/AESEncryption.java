@@ -28,7 +28,7 @@ public class AESEncryption implements EncryptionGateway {
   public AESEncryption(
       @Value("${security.aes.secret-key}") String secretKey, ObjectMapper objectMapper) {
     final byte[] key = Base64.decode(secretKey.getBytes());
-    this.secretKey = new SecretKeySpec(key, ALGORITHM);
+    this.secretKey = new SecretKeySpec(key, "AES");
     this.objectMapper = objectMapper;
   }
 
@@ -51,7 +51,7 @@ public class AESEncryption implements EncryptionGateway {
 
       return Result.success(Base64.toBase64String(combined));
     } catch (Exception e) {
-      log.error("Failed to encrypt object");
+      log.error("Failed to encrypt object", e);
       return Result.failure(new EncryptionError.EncryptionFailed());
     }
   }
@@ -75,10 +75,10 @@ public class AESEncryption implements EncryptionGateway {
       return Result.success(this.objectMapper.readValue(decrypt, clazz));
 
     } catch (IOException e) {
-      log.error("Failed to deserialize JSON to object of type {}", clazz.getName());
+      log.error("Failed to deserialize JSON to object of type {}", clazz.getName(), e);
       return Result.failure(new EncryptionError.DecryptionFailed("Error al deserializar"));
     } catch (Exception e) {
-      log.error("Failed to decrypt object");
+      log.error("Failed to decrypt object", e);
       return Result.failure(new EncryptionError.DecryptionFailed());
     }
   }

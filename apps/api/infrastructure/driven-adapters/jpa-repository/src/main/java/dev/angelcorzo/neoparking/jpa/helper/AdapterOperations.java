@@ -7,7 +7,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Example;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @see BaseMapper
  */
 public abstract class AdapterOperations<
-    E, D, I, R extends CrudRepository<D, I> & QueryByExampleExecutor<D>> {
+    E, D, I, R extends JpaRepository<D, I> & QueryByExampleExecutor<D>> {
   private final Class<D> dataClass;
   protected R repository;
   protected BaseMapper<E, D> mapper;
@@ -113,7 +113,7 @@ public abstract class AdapterOperations<
    * @return The saved JPA data entity.
    */
   protected D saveData(D data) {
-    return repository.save(data);
+    return repository.saveAndFlush(data);
   }
 
   /**

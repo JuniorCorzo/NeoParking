@@ -83,7 +83,7 @@ public class UsersData {
 
   /** The ID of the user who performed the soft deletion. */
   @Column(name = "deleted_by")
-  private String deletedBy;
+  private UUID deletedBy;
 
   /** Timestamp when the user record was created. */
   @CreationTimestamp
