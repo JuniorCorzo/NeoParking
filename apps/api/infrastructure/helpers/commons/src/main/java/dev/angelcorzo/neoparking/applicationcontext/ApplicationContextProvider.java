@@ -1,5 +1,4 @@
-package dev.angelcorzo.applicationcontext;
-
+package dev.angelcorzo.neoparking.applicationcontext;
 
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.BeansException;
@@ -12,12 +11,13 @@ public class ApplicationContextProvider implements ApplicationContextAware {
 
   private static ApplicationContext context;
 
-  @Override
-  public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
-    context = applicationContext;
-  }
-
   public static <T> T getBean(Class<T> beanClass) {
     return context.getBean(beanClass);
+  }
+
+  @Override
+  public void setApplicationContext(@NonNull ApplicationContext applicationContext)
+      throws BeansException {
+    context = applicationContext;
   }
 }
