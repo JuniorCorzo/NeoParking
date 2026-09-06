@@ -12,7 +12,8 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from "@angular/core";
-import { provideRouter } from "@angular/router";
+import { TitleStrategy, provideRouter } from "@angular/router";
+import { AppTitleStrategy } from "@core/title/app-title-strategy";
 import { addWithCredentialsInterceptor } from "@core/http/interceptors/add-with-credentials.interceptor";
 import { authInterceptor } from "@core/http/interceptors/auth-interceptor";
 import { refreshTokenInterceptor } from "@core/http/interceptors/refresh-token-interceptor";
@@ -31,6 +32,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes),
+    { provide: TitleStrategy, useClass: AppTitleStrategy },
     provideHotToastConfig({
       autoClose: true,
       duration: 3000,

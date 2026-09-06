@@ -22,6 +22,7 @@ export const routes: Routes = [
           return m.LoginPage;
         },
         path: APP_ROUTE_PATHS.auth.login,
+        title: "Iniciar sesión",
       },
       {
         loadComponent: async () => {
@@ -30,6 +31,7 @@ export const routes: Routes = [
           return m.RegisterPage;
         },
         path: APP_ROUTE_PATHS.auth.register,
+        title: "Crear cuenta",
       },
     ],
     component: LayoutMinimal,
@@ -47,6 +49,7 @@ export const routes: Routes = [
               return c.ParkingHomeMobile;
             },
             path: APP_ROUTE_PATHS.app.parkingLots,
+            title: "Parqueaderos",
           },
           {
             loadComponent: async () => {
@@ -55,6 +58,7 @@ export const routes: Routes = [
               return c.ParkingHome;
             },
             path: APP_ROUTE_PATHS.app.parkingLots,
+            title: "Parqueaderos",
           },
           {
             loadComponent: async () => {
@@ -63,6 +67,7 @@ export const routes: Routes = [
               return c.ParkingFormComponent;
             },
             path: APP_ROUTE_PATHS.app.createParkingLots,
+            title: "Crear parqueadero",
           },
           {
             loadComponent: async () => {
@@ -71,6 +76,7 @@ export const routes: Routes = [
               return c.ParkingFormComponent;
             },
             path: APP_ROUTE_PATHS.app.editParkingLots,
+            title: "Editar parqueadero",
           },
           {
             loadComponent: async () => {
@@ -79,6 +85,7 @@ export const routes: Routes = [
               return c.ParkingSlotsListPage;
             },
             path: APP_ROUTE_PATHS.app.parkingLotSlots,
+            title: "Plazas",
           },
           {
             loadComponent: async () => {
@@ -87,6 +94,7 @@ export const routes: Routes = [
               return c.ParkingSlotFormPage;
             },
             path: APP_ROUTE_PATHS.app.createParkingLotSlot,
+            title: "Crear plazas",
           },
           {
             loadComponent: async () => {
@@ -95,6 +103,7 @@ export const routes: Routes = [
               return c.ParkingSlotFormPage;
             },
             path: APP_ROUTE_PATHS.app.editParkingLotSlot,
+            title: "Editar plaza",
           },
           {
             loadComponent: async () => {
@@ -103,6 +112,7 @@ export const routes: Routes = [
               return c.ParkingSlotsListPage;
             },
             path: APP_ROUTE_PATHS.app.parkingLotSlotDetail,
+            title: "Detalle de plaza",
           },
           {
             loadComponent: async () => {
@@ -111,6 +121,7 @@ export const routes: Routes = [
               return c.RateListComponent;
             },
             path: APP_ROUTE_PATHS.app.parkingLotRates,
+            title: "Tarifas",
           },
           {
             loadComponent: async () => {
@@ -119,6 +130,7 @@ export const routes: Routes = [
               return c.RateFormComponent;
             },
             path: APP_ROUTE_PATHS.app.createParkingLotRate,
+            title: "Crear tarifa",
           },
           {
             loadComponent: async () => {
@@ -127,6 +139,7 @@ export const routes: Routes = [
               return c.RateFormComponent;
             },
             path: APP_ROUTE_PATHS.app.editParkingLotRate,
+            title: "Editar tarifa",
           },
           {
             loadComponent: async () => {
@@ -135,6 +148,7 @@ export const routes: Routes = [
               return c.OperationsPageComponent;
             },
             path: APP_ROUTE_PATHS.app.parkingLotOperations,
+            title: "Operaciones",
           },
         ],
         loadComponent: async () => {

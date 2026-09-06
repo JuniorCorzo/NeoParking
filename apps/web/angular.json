@@ -23,7 +23,7 @@
             ],
             "styles": [
               "@ngxpert/hot-toast/styles.css",
-              "node_modules/leaflet/dist/leaflet.css",
+              "leaflet/dist/leaflet.css",
               "src/styles.css"
             ]
           },
