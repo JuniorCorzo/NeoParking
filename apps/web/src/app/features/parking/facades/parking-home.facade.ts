@@ -76,6 +76,14 @@ export class ParkingHomeFacade {
     this.router.navigate([APP_ROUTES.app.parkingLotOperations(p.id)]);
   }
 
+  onManageTickets(): void {
+    const p = this.activeParkingLot();
+    if (!p) {
+      return;
+    }
+    this.router.navigate([APP_ROUTES.app.parkingLotTickets(p.id)]);
+  }
+
   onDeleteClick(): void {
     const p = this.activeParkingLot();
     if (!p) {

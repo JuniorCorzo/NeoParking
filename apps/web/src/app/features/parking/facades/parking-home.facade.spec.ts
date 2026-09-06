@@ -179,12 +179,20 @@ describe("ParkingHomeFacade", () => {
       ]);
     });
 
+    it("should navigate to active parking tickets on onManageTickets", () => {
+      facade.onManageTickets();
+      expect(navigatedCommands).toEqual([
+        APP_ROUTES.app.parkingLotTickets("lot-1"),
+      ]);
+    });
+
     it("should not navigate on actions if activeParkingLot is null", () => {
       mockActiveParkingLotSignal.set(null);
       facade.onEdit();
       facade.onManageSlots();
       facade.onManageRates();
       facade.onManageOperations();
+      facade.onManageTickets();
       expect(navigatedCommands).toBeNull();
     });
   });

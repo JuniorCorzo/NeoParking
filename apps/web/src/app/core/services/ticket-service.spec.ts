@@ -17,9 +17,10 @@ import { firstValueFrom, of } from "rxjs";
 import { TicketService } from "./ticket-service";
 
 interface MockParkingTicketsService {
+  checkOutVehicle: ReturnType<typeof vi.fn>;
   createTicket: ReturnType<typeof vi.fn>;
   getActiveTicket: ReturnType<typeof vi.fn>;
-  checkOutVehicle: ReturnType<typeof vi.fn>;
+  listTickets: ReturnType<typeof vi.fn>;
 }
 
 interface MockRatesService {
@@ -36,6 +37,7 @@ describe("TicketService", () => {
       checkOutVehicle: vi.fn(),
       createTicket: vi.fn(),
       getActiveTicket: vi.fn(),
+      listTickets: vi.fn(),
     };
     ratesSpy = {
       calculatePrice: vi.fn(),
@@ -172,5 +174,42 @@ describe("TicketService", () => {
     expect(result.id).toBe("ticket-real-123");
     expect(result.licensePlate).toBe("XYZ789");
     expect(result.slotId).toBe("slot-1");
+  });
+
+  it("should call ParkingTicketsService.listTickets and return mapped TicketSummary array", async () => {
+    const mockResponse = {
+      data: [
+        {
+          entryTime: "2026-08-27T10:00:00Z",
+          id: "ticket-1",
+          licensePlate: "ABC123",
+          status: "OPEN",
+        },
+        {
+          entryTime: "2026-08-27T08:00:00Z",
+          exitTime: "2026-08-27T09:30:00Z",
+          id: "ticket-2",
+          licensePlate: "XYZ789",
+          status: "CLOSED",
+          totalToCharge: 5000,
+        },
+      ],
+      message: "OK",
+      status: "200",
+      timestamp: "2026-08-27T10:00:00Z",
+    };
+
+    parkingTicketsSpy.listTickets.mockReturnValue(of(mockResponse));
+
+    const result = await firstValueFrom(
+      service.listTicketsByParkingLot("lot-1")
+    );
+    expect(parkingTicketsSpy.listTickets).toHaveBeenCalledWith(
+      { parking: "lot-1" },
+      expect.anything()
+    );
+    expect(result.length).toBe(2);
+    expect(result[0].id).toBe("ticket-1");
+    expect(result[1].id).toBe("ticket-2");
   });
 });

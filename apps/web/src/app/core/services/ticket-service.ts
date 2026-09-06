@@ -119,6 +119,22 @@ export class TicketService {
   }
 
   /**
+   * List all tickets (active and historical) for a parking lot
+   */
+  listTicketsByParkingLot(parkingLotId: string): Observable<TicketSummary[]> {
+    return this.parkingTicketsService
+      .listTickets({ parking: parkingLotId }, TicketService.httpContext())
+      .pipe(
+        map((response) =>
+          /* SAFETY: list tickets response data is an array */
+          (
+            (response.data ?? []) as Parameters<typeof mapToTicketSummary>[0][]
+          ).map((dto) => mapToTicketSummary(dto))
+        )
+      );
+  }
+
+  /**
    * Helper to manually set or track active tickets locally
    */
   setActiveTickets(tickets: TicketSummary[]): void {
