@@ -66,6 +66,7 @@ services:
   web:
     <<: *common-service
     image: ${WEB_IMAGE:-ghcr.io/juniorcorzo/nivo-web:latest}
+    pull_policy: always
     environment:
       <<: *platform-env
     networks:
@@ -80,6 +81,7 @@ services:
   api:
     <<: *common-service
     image: ${API_IMAGE:-ghcr.io/juniorcorzo/nivo-api:latest}
+    pull_policy: always
     networks:
       - nivo_net
     depends_on:
