@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component } from "@angular/core";
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: "block p-6 pt-0",
+    class: "block p-5",
   },
   selector: "nv-card-content",
   standalone: true,

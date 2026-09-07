@@ -44,6 +44,13 @@ describe("ActionsColumn", () => {
     expect(component).toBeTruthy();
   });
 
+  it("should navigate on onViewTickets", () => {
+    component.onViewTickets();
+    expect(mockRouter.navigate).toHaveBeenCalledWith([
+      APP_ROUTES.app.parkingLotTickets("parking-123"),
+    ]);
+  });
+
   it("should set active parking and navigate on onViewDetails", () => {
     component.onViewDetails();
     expect(mockActiveParkingService.setActiveParkingId).toHaveBeenCalledWith(

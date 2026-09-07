@@ -150,6 +150,20 @@ export const routes: Routes = [
             path: APP_ROUTE_PATHS.app.parkingLotOperations,
             title: "Operaciones",
           },
+          {
+            loadComponent: async () => {
+              const c = await import("@features/tickets/page/tickets-page");
+              return c.TicketsPageComponent;
+            },
+            path: APP_ROUTE_PATHS.app.parkingLotTickets,
+          },
+          {
+            loadComponent: async () => {
+              const c = await import("@features/tickets/page/tickets-page");
+              return c.TicketsPageComponent;
+            },
+            path: APP_ROUTE_PATHS.app.tickets,
+          },
         ],
         loadComponent: async () => {
           const m = await import("@features/dashboard/page/dashboard-page");

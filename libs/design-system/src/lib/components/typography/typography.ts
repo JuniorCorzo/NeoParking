@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component } from "@angular/core";
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class:
-      "block scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl font-sans",
+      "block scroll-m-20 text-3xl font-bold tracking-tight text-foreground font-sans",
   },
   selector: "nv-h1",
   standalone: true,
@@ -16,7 +16,7 @@ export class TypographyH1 {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class:
-      "block scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 font-sans",
+      "block scroll-m-20 text-2xl font-semibold tracking-tight text-foreground font-sans",
   },
   selector: "nv-h2",
   standalone: true,
@@ -27,7 +27,8 @@ export class TypographyH2 {}
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: "block scroll-m-20 text-2xl font-semibold tracking-tight font-sans",
+    class:
+      "block scroll-m-20 text-xl font-semibold tracking-tight text-foreground font-sans",
   },
   selector: "nv-h3",
   standalone: true,
@@ -38,13 +39,38 @@ export class TypographyH3 {}
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: "block scroll-m-20 text-xl font-semibold tracking-tight font-sans",
+    class:
+      "block scroll-m-20 text-lg font-semibold tracking-tight text-foreground font-sans",
   },
   selector: "nv-h4",
   standalone: true,
   template: `<ng-content />`,
 })
 export class TypographyH4 {}
+
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class:
+      "block scroll-m-20 text-base font-semibold tracking-tight text-foreground font-sans",
+  },
+  selector: "nv-h5",
+  standalone: true,
+  template: `<ng-content />`,
+})
+export class TypographyH5 {}
+
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class:
+      "block scroll-m-20 text-sm font-semibold tracking-tight text-foreground font-sans",
+  },
+  selector: "nv-h6",
+  standalone: true,
+  template: `<ng-content />`,
+})
+export class TypographyH6 {}
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

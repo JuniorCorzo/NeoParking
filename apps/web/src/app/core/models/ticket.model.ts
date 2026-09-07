@@ -38,6 +38,8 @@ export interface TicketSummary {
   slotType?: string;
   rateId?: string;
   rateName?: string;
+  parkingLotId?: string;
+  parkingLotName?: string;
   entryTime: string;
   exitTime?: string;
   totalToCharge?: number;

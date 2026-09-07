@@ -72,6 +72,18 @@ export class CheckInFacade {
     return this.rateService.ratesByParking()[id] ?? [];
   });
 
+  readonly availableVehicleTypes = computed<VehicleType[]>(() => {
+    const slots = this.allSlots();
+    const availableTypes = new Set<string>();
+    for (const slot of slots) {
+      if (slot.status === "AVAILABLE") {
+        availableTypes.add(slot.type);
+      }
+    }
+    const order: VehicleType[] = ["CAR", "MOTORCYCLE", "BIKE"];
+    return order.filter((type) => availableTypes.has(type));
+  });
+
   readonly availableRates = computed<RateModel[]>(() => {
     const type = this.vehicleType();
     return this.allRates().filter((rate) => rate.vehicleType === type);
@@ -97,8 +109,30 @@ export class CheckInFacade {
   }
 
   loadData(parkingId: string): void {
-    this.slotService.getAllSlotSummariesByParkingId(parkingId).subscribe();
-    this.rateService.getRatesByParkingId(parkingId).subscribe();
+    this.slotService
+      .getAllSlotSummariesByParkingId(parkingId)
+      .subscribe((slots) => {
+        const allKnownTypes: VehicleType[] = ["CAR", "MOTORCYCLE", "BIKE"];
+        const available = allKnownTypes.filter((t) =>
+          slots.some((s) => s.status === "AVAILABLE" && s.type === t)
+        );
+        if (available.length > 0 && !available.includes(this.vehicleType())) {
+          this.setVehicleType(available[0]);
+        } else {
+          this.setVehicleType(this.vehicleType());
+        }
+      });
+    this.rateService.getRatesByParkingId(parkingId).subscribe((rates) => {
+      if (!this.selectedRateId()) {
+        const type = this.vehicleType();
+        const matchingRates = (rates ?? []).filter(
+          (r) => r.vehicleType === type
+        );
+        if (matchingRates.length > 0) {
+          this.selectedRateId.set(matchingRates[0].id);
+        }
+      }
+    });
   }
 
   setPlate(plate: string): void {
@@ -191,5 +225,10 @@ export class CheckInFacade {
     this.errorMessage.set(null);
     this.selectedSlotId.set(null);
     this.selectedRateId.set(null);
+    const available = this.availableVehicleTypes();
+    if (available.length > 0) {
+      const current = this.vehicleType();
+      this.setVehicleType(available.includes(current) ? current : available[0]);
+    }
   }
 }

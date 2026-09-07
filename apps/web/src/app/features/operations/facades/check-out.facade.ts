@@ -1,4 +1,5 @@
 import { Injectable, computed, inject, signal } from "@angular/core";
+import type { SlotSummary } from "@core/models/slot.model";
 import type {
   CheckOutPayload,
   PaymentRecord,
@@ -24,6 +25,8 @@ export class CheckOutFacade {
   readonly priceCalculation = signal<PriceDetailedModel | null>(null);
 
   readonly isLoadingCalculation = signal<boolean>(false);
+  readonly isLoadingOccupiedSlots = signal<boolean>(false);
+  readonly isLoadingTicket = signal<boolean>(false);
   readonly isSubmitting = signal<boolean>(false);
   readonly errorMessage = signal<string | null>(null);
 
@@ -34,10 +37,19 @@ export class CheckOutFacade {
   readonly lastPaymentRecord = signal<PaymentRecord | null>(null);
   readonly isReceiptOpen = signal<boolean>(false);
 
+  readonly occupiedSlots = computed<SlotSummary[]>(() => {
+    const id = this.parkingId();
+    if (!id) {
+      return [];
+    }
+    const slots = this.slotService.summaries()[id] ?? [];
+    return slots.filter((slot) => slot.status === "OCCUPIED");
+  });
+
   readonly isZeroPayment = computed<boolean>(() => {
     const calc = this.priceCalculation();
     if (!calc) {
-      return true;
+      return false;
     }
     return calc.total <= 0;
   });
@@ -45,12 +57,57 @@ export class CheckOutFacade {
   readonly canCheckOut = computed<boolean>(
     () =>
       this.selectedTicket() !== null &&
+      this.priceCalculation() !== null &&
       !this.isLoadingCalculation() &&
+      !this.isLoadingTicket() &&
       !this.isSubmitting()
   );
 
   init(parkingId: string): void {
     this.parkingId.set(parkingId);
+    this.loadOccupiedSlots(parkingId);
+  }
+
+  loadOccupiedSlots(parkingId: string): void {
+    this.isLoadingOccupiedSlots.set(true);
+    this.slotService.getAllSlotSummariesByParkingId(parkingId).subscribe({
+      error: () => {
+        this.isLoadingOccupiedSlots.set(false);
+      },
+      next: () => {
+        this.isLoadingOccupiedSlots.set(false);
+      },
+    });
+  }
+
+  selectSlot(slot: SlotSummary): void {
+    this.isLoadingTicket.set(true);
+    this.errorMessage.set(null);
+    this.ticketService.getActiveTicketBySlot(slot.id).subscribe({
+      error: (err) => {
+        this.isLoadingTicket.set(false);
+        const errorMsg =
+          err?.error?.message ||
+          err?.message ||
+          "No se encontró un ticket activo para este cupo.";
+        this.errorMessage.set(errorMsg);
+        this.toast.showToast({ message: errorMsg, type: "error" });
+      },
+      next: (ticket) => {
+        this.isLoadingTicket.set(false);
+        this.selectTicket(ticket);
+      },
+    });
+  }
+
+  clearSelectedTicket(): void {
+    this.selectedTicket.set(null);
+    this.priceCalculation.set(null);
+    this.errorMessage.set(null);
+    const pId = this.parkingId();
+    if (pId) {
+      this.loadOccupiedSlots(pId);
+    }
   }
 
   selectTicket(ticket: TicketSummary): void {

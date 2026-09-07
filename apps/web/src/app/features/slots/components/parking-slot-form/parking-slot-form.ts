@@ -1,4 +1,4 @@
-import { Component, inject } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import {
@@ -13,6 +13,7 @@ import {
   ButtonComponent,
   InputComponent,
   SelectComponent,
+  TypographyH1,
 } from "@nivo-sass/design-system";
 import { APP_ROUTES } from "@shared/constants/app-routes.constant";
 import { APP_TEXTS } from "@shared/constants/app-texts.constant";
@@ -26,6 +27,7 @@ import {
 import { ParkingSlotFormFacade } from "./parking-slot-form.facade";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: "block",
   },
@@ -35,6 +37,7 @@ import { ParkingSlotFormFacade } from "./parking-slot-form.facade";
     ButtonComponent,
     InputComponent,
     SelectComponent,
+    TypographyH1,
   ],
   providers: [
     provideIcons({

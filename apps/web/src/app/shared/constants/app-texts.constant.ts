@@ -98,14 +98,36 @@ export const APP_TEXTS = {
       title: "Crear una cuenta",
     },
   },
+  dataTable: {
+    empty: {
+      defaultMessage: "No se encontraron resultados",
+    },
+    pagination: {
+      firstPage: "Primera página",
+      lastPage: "Última página",
+      nextPage: "Página siguiente",
+      pageInfo: (current: number, total: number) =>
+        `Página ${current} de ${total}`,
+      previousPage: "Página anterior",
+      rowsPerPage: "Filas por página:",
+      totalResults: (total: number) =>
+        `Total: ${total} resultado${total === 1 ? "" : "s"}`,
+    },
+    search: {
+      clear: "Limpiar búsqueda",
+      placeholder: "Buscar...",
+    },
+  },
   parking: {
     actions: {
       backToList: "Volver a la lista",
       create: "Crear parqueadero",
       delete: "Eliminar",
       edit: "Guardar cambios",
+      editAction: "Editar",
       placeholderMap: "Selecciona la ubicación en el mapa",
       viewDetails: "Ver detalle",
+      viewTickets: "Ver tickets",
     },
     confirmations: {
       delete: {
@@ -330,6 +352,11 @@ export const APP_TEXTS = {
         label: "Parqueaderos",
         url: APP_ROUTES.app.parkingLots,
       },
+      {
+        icon: "lucideTicket",
+        label: "Tickets",
+        url: APP_ROUTES.app.tickets,
+      },
     ],
     theme: {
       label: "Tema",
@@ -514,6 +541,115 @@ export const APP_TEXTS = {
       title: "Cambiar estado",
       warningActiveTicket:
         "Esta plaza tiene un ticket activo. ¿Estás seguro de cambiar el estado?",
+    },
+  },
+  tickets: {
+    actions: {
+      backToOperations: "Volver a Operaciones",
+      backToParkingLots: "Volver a Parqueaderos",
+      closeDetail: "Cerrar detalle",
+      closeDrawer: "Cerrar",
+      reprintReceipt: "Reimprimir Comprobante",
+      resetFilters: "Restablecer Filtros",
+      viewDetail: "Ver detalle",
+      viewTickets: "Ver Tickets",
+    },
+    detail: {
+      close: "Cerrar detalle",
+      elapsedTime: "Tiempo transcurrido:",
+      entryTime: "Fecha y hora de entrada:",
+      exitTime: "Fecha y hora de salida:",
+      finalizedPayment: {
+        method: "Método de Pago:",
+        reference: "Referencia:",
+        title: "Detalle de Pago Finalizado",
+        totalPaid: "Total Pagado:",
+      },
+      idPrefix: "ID:",
+      liveSimulation: {
+        calculating: "Calculando valor en tiempo real...",
+        estimatedTotal: "Total Estimado a Cobrar:",
+        iva: "IVA",
+        subtotal: "Subtotal:",
+        title: "Simulación de Tarifa en Vivo",
+      },
+      rate: "Tarifa:",
+      rateDefault: "Estándar",
+      slotAssigned: "Plaza asignada:",
+      slotNone: "Sin plaza",
+      statusClosed: "Cerrado / Cobrado",
+      statusLabel: "Estado del Ticket",
+      statusOpen: "Activo (En Estancia)",
+      title: "Detalle del Ticket",
+    },
+    emptyState: {
+      description:
+        "No hay tickets registrados que coincidan con los filtros aplicados.",
+      message: "No se encontraron tickets",
+      title: "No se encontraron tickets",
+    },
+    filters: {
+      parkingLot: {
+        all: "Todos los parqueaderos",
+        label: "Parqueadero",
+        placeholder: "Selecciona parqueadero",
+      },
+      plate: {
+        label: "Buscar Placa",
+        placeholder: "Ej. ABC123",
+      },
+      reset: "Limpiar Filtros",
+      status: {
+        all: "Todos los estados",
+        closed: "Finalizado (Cerrado)",
+        label: "Estado",
+        open: "Activo (Abierto)",
+        placeholder: "Selecciona estado",
+      },
+      vehicle: {
+        all: "Todos los tipos",
+        bicycle: "Bicicleta",
+        car: "Carro",
+        label: "Tipo de Vehículo",
+        motorcycle: "Moto",
+        placeholder: "Selecciona tipo",
+      },
+    },
+    receiptModal: {
+      subtitle: "Reimpresión de ticket / recibo",
+      title: "Comprobante de Ticket",
+    },
+    stats: {
+      closed: "Finalizados",
+      open: "Activos en Estancia",
+      total: "Total Registrados",
+    },
+    status: {
+      closed: "Finalizado",
+      open: "Activo",
+    },
+    table: {
+      columns: {
+        actions: "Acciones",
+        entryTime: "Fecha y Hora de Ingreso",
+        parkingLot: "Parqueadero",
+        plate: "Placa",
+        status: "Estado",
+        total: "Total",
+        vehicleType: "Tipo Vehículo",
+      },
+      emptyFallback: "---",
+    },
+    titles: {
+      parkingLots: {
+        subtitle:
+          "Audita tickets históricos y activos, filtra por placa o estado y reimprime comprobantes.",
+        title: "Gestión de Tickets e Historial",
+      },
+      tenant: {
+        subtitle: "Audita tickets y estadías de todos los parqueaderos",
+        title: "Tickets e Historial General",
+      },
     },
   },
 } as const;

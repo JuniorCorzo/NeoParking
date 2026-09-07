@@ -70,10 +70,12 @@ The ONLY chromatic colors are the 4 semantic states. Everything else is Zinc gra
 
 | Level | Font | Size | Weight | Line-height | Tracking |
 | --- | --- | --- | --- | --- | --- |
-| H1 | Inter | 48px / 3rem | Bold (700) | 56px | -1.2px |
-| H2 | Inter | 36px / 2.25rem | Semibold (600) | 44px | -0.75px |
-| H3 | Inter | 24px / 1.5rem | Semibold (600) | 32px | -0.5px |
-| H4 | Inter | 20px / 1.25rem | Medium (500) | 28px | 0 |
+| H1 | Inter | 30px / 1.875rem | Bold (700) | 36px | -0.75px |
+| H2 | Inter | 24px / 1.5rem | Semibold (600) | 32px | -0.5px |
+| H3 | Inter | 20px / 1.25rem | Semibold (600) | 28px | -0.25px |
+| H4 | Inter | 18px / 1.125rem | Semibold (600) | 24px | 0 |
+| H5 | Inter | 16px / 1rem | Semibold (600) | 24px | 0 |
+| H6 | Inter | 14px / 0.875rem | Semibold (600) | 20px | 0 |
 | Body Large | Inter | 16px / 1rem | Regular (400) | 26px | 0 |
 | Body Regular | Inter | 14px / 0.875rem | Regular (400) | 22px | 0 |
 | Caption | Inter | 12px / 0.75rem | Regular (400) | 18px | 0 |
@@ -161,12 +163,12 @@ The ONLY chromatic colors are the 4 semantic states. Everything else is Zinc gra
 
 ```css
 .h1 {
-  font: 700 3rem/56px Inter;
-  letter-spacing: -1.2px;
+  font: 700 1.875rem/36px Inter;
+  letter-spacing: -0.75px;
 }
 .h2 {
-  font: 600 2.25rem/44px Inter;
-  letter-spacing: -0.75px;
+  font: 600 1.5rem/32px Inter;
+  letter-spacing: -0.5px;
 }
 .body {
   font: 400 0.875rem/22px Inter;

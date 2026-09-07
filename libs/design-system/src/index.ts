@@ -14,6 +14,15 @@ export { BadgeComponent } from "./lib/components/badge/badge";
 export { InputComponent } from "./lib/components/input/input";
 export { ComboboxComponent } from "./lib/components/combobox/index";
 export { SelectComponent } from "./lib/components/select/index";
+export {
+  DividerComponent,
+  DivisorComponent,
+} from "./lib/components/divider/index";
+export type {
+  DividerOrientation,
+  DividerThickness,
+  DividerVariant,
+} from "./lib/components/divider/index";
 
 // Typography
 export {
@@ -21,7 +30,10 @@ export {
   TypographyH2,
   TypographyH3,
   TypographyH4,
+  TypographyH5,
+  TypographyH6,
   TypographyP,
+  TypographySpan,
   TypographyMuted,
   TypographyMono,
 } from "./lib/components/typography/index";

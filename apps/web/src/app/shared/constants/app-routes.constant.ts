@@ -2,6 +2,7 @@ const parkingLotsSegment = "parking-lots";
 const slotsSegment = "slots";
 const ratesSegment = "rates";
 const operationsSegment = "operations";
+const ticketsSegment = "tickets";
 
 export const APP_ROUTE_PATHS = {
   app: {
@@ -15,7 +16,9 @@ export const APP_ROUTE_PATHS = {
     parkingLotRates: `${parkingLotsSegment}/:parkingId/${ratesSegment}`,
     parkingLotSlotDetail: `${parkingLotsSegment}/:parkingId/${slotsSegment}/:slotId`,
     parkingLotSlots: `${parkingLotsSegment}/:parkingId/${slotsSegment}`,
+    parkingLotTickets: `${parkingLotsSegment}/:parkingId/${ticketsSegment}`,
     parkingLots: parkingLotsSegment,
+    tickets: ticketsSegment,
   },
   auth: {
     login: "login",
@@ -45,7 +48,10 @@ export const APP_ROUTES = {
       `${parkingLotsRoute}/${parkingId}/${slotsSegment}/${slotId}`,
     parkingLotSlots: (parkingId: string) =>
       `${parkingLotsRoute}/${parkingId}/${slotsSegment}`,
+    parkingLotTickets: (parkingId: string) =>
+      `${parkingLotsRoute}/${parkingId}/${ticketsSegment}`,
     parkingLots: parkingLotsRoute,
+    tickets: `/app/${ticketsSegment}`,
   },
   auth: {
     login: "/auth/login",

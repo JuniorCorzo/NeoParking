@@ -11,7 +11,7 @@ const preview: Preview = {
   decorators: [
     (storyFn, context) => {
       const theme = context.globals["theme"] ?? "light";
-      document.documentElement.dataset.theme = theme;
+      document.documentElement.dataset["theme"] = theme;
       document.body.style.backgroundColor =
         theme === "dark" ? "#09090b" : "#ffffff";
       return storyFn();

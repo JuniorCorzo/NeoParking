@@ -1,0 +1,107 @@
+<div class="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 sm:p-6 lg:p-8">
+  <!-- Back Link & Title Header -->
+  <app-page-header
+    [title]="headerContext().title"
+    [subtitle]="headerContext().subtitle"
+    [backLink]="headerContext().back"
+    [backAriaLabel]="texts.actions.backToOperations"
+  ></app-page-header>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <nv-card>
+      <nv-card-content class="flex items-center gap-4 p-5">
+        <div
+          class="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-xl"
+        >
+          <ng-icon name="lucideTicket" size="24" />
+        </div>
+        <div>
+          <nv-muted class="text-xs font-semibold tracking-wider uppercase"
+            >{{ texts.stats.total }}</nv-muted
+          >
+          <div class="font-mono text-2xl font-bold">
+            {{ facade.ticketStats().total }}
+          </div>
+        </div>
+      </nv-card-content>
+    </nv-card>
+
+    <nv-card>
+      <nv-card-content class="flex items-center gap-4 p-5">
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+        >
+          <ng-icon name="lucideClock" size="24" />
+        </div>
+        <div>
+          <nv-muted class="text-xs font-semibold tracking-wider uppercase"
+            >{{ texts.stats.open }}</nv-muted
+          >
+          <div class="font-mono text-2xl font-bold">
+            {{ facade.ticketStats().open }}
+          </div>
+        </div>
+      </nv-card-content>
+    </nv-card>
+
+    <nv-card>
+      <nv-card-content class="flex items-center gap-4 p-5">
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-500/10 text-slate-600 dark:text-slate-400"
+        >
+          <ng-icon name="lucideCheckCircle2" size="24" />
+        </div>
+        <div>
+          <nv-muted class="text-xs font-semibold tracking-wider uppercase"
+            >{{ texts.stats.closed }}</nv-muted
+          >
+          <div class="font-mono text-2xl font-bold">
+            {{ facade.ticketStats().closed }}
+          </div>
+        </div>
+      </nv-card-content>
+    </nv-card>
+  </div>
+
+  <!-- Filters -->
+  <nv-card>
+    <nv-card-content class="p-5">
+      <app-ticket-filters
+        [filters]="facade.filters()"
+        [showParkingLotFilter]="facade.isTenantView()"
+        [parkingLots]="facade.parkingLots()"
+        (filtersChange)="facade.updateFilters($event)"
+        (reset)="facade.resetFilters()"
+      />
+    </nv-card-content>
+  </nv-card>
+
+  <!-- Tickets Table -->
+  <app-tickets-table
+    [table]="facade.table"
+    [isLoading]="facade.isLoading()"
+    (selectTicket)="facade.openDetail($event)"
+    (reprintReceipt)="facade.openReceipt($event)"
+    (resetFilters)="facade.resetFilters()"
+  />
+
+  <!-- Detail Drawer -->
+  <app-ticket-detail-drawer
+    [isOpen]="facade.isDrawerOpen()"
+    [ticket]="facade.selectedTicket()"
+    [liveRate]="facade.liveRatePreview()"
+    [isLoadingRate]="facade.isCalculatingRate()"
+    (close)="facade.closeDetail()"
+    (reprintReceipt)="facade.openReceipt($event)"
+  />
+
+  <!-- Ticket Receipt Modal -->
+  <app-ticket-receipt
+    [isOpen]="facade.isReceiptOpen()"
+    [ticket]="facade.selectedTicket()"
+    [title]="texts.receiptModal.title"
+    [subtitle]="texts.receiptModal.subtitle"
+    (closed)="facade.closeReceipt()"
+  />
+</div>
