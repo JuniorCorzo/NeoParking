@@ -1,5 +1,11 @@
 import { CommonModule } from "@angular/common";
-import { Component, computed, inject, signal } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import type { RateModel } from "@core/models/rate.model";
@@ -27,6 +33,7 @@ import {
   InputComponent,
   SelectComponent,
   ToastService,
+  TypographyH1,
 } from "@nivo-sass/design-system";
 import { APP_ROUTES } from "@shared/constants/app-routes.constant";
 
@@ -40,6 +47,7 @@ import { RateDeleteModal } from "../rate-delete-modal/rate-delete-modal";
 import { SpecialPoliciesConfigComponent } from "../special-policies-config/special-policies-config";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     RouterLink,
@@ -50,6 +58,7 @@ import { SpecialPoliciesConfigComponent } from "../special-policies-config/speci
     RateCalculatorComponent,
     SpecialPoliciesConfigComponent,
     RateDeleteModal,
+    TypographyH1,
   ],
   providers: [
     provideIcons({

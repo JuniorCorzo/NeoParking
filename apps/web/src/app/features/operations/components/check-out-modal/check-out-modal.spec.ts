@@ -11,10 +11,12 @@ import { CheckOutModalComponent } from "./check-out-modal.component";
 interface MockTicketService {
   calculatePrice: ReturnType<typeof vi.fn>;
   checkOutVehicle: ReturnType<typeof vi.fn>;
+  getActiveTicketBySlot: ReturnType<typeof vi.fn>;
 }
 
 interface MockSlotService {
   getAllSlotSummariesByParkingId: ReturnType<typeof vi.fn>;
+  summaries: () => Record<string, unknown[]>;
 }
 
 interface MockParkingService {
@@ -36,11 +38,29 @@ describe("CheckOutModalComponent", () => {
 
   beforeEach(async () => {
     ticketServiceSpy = {
-      calculatePrice: vi.fn(),
-      checkOutVehicle: vi.fn(),
+      calculatePrice: vi.fn().mockReturnValue(
+        of({
+          breakdown: [],
+          ivaAmount: 0,
+          ivaRate: 0,
+          name: "Standard",
+          subtotal: 5000,
+          total: 5000,
+        })
+      ),
+      checkOutVehicle: vi.fn().mockReturnValue(of({})),
+      getActiveTicketBySlot: vi.fn().mockReturnValue(
+        of({
+          entryTime: "2026-08-27T10:00:00Z",
+          id: "ticket-1",
+          licensePlate: "ABC123",
+          status: "OPEN",
+        })
+      ),
     };
     slotServiceSpy = {
       getAllSlotSummariesByParkingId: vi.fn().mockReturnValue(of([])),
+      summaries: () => ({}),
     };
     parkingServiceSpy = {
       getAll: vi.fn(),
@@ -76,5 +96,46 @@ describe("CheckOutModalComponent", () => {
     const confirmSpy = vi.spyOn(component.facade, "confirmCheckOut");
     component.onConfirmCheckOut();
     expect(confirmSpy).toHaveBeenCalled();
+  });
+
+  it("should display empty state when there are no occupied slots", () => {
+    fixture.componentRef.setInput("isOpen", true);
+    fixture.componentRef.setInput("parkingId", "parking-1");
+    fixture.detectChanges();
+
+    const emptyText = fixture.nativeElement.textContent;
+    expect(emptyText).toContain("No hay vehículos para retirar");
+  });
+
+  it("should display occupied slots when available and call facade.selectSlot when clicked", () => {
+    const occupiedSlot = {
+      hasHistory: false,
+      hasTicket: true,
+      id: "slot-1",
+      parkingName: "Parking 1",
+      prefix: "A",
+      slotNumber: "01",
+      status: "OCCUPIED",
+      type: "CAR",
+      zone: "Z1",
+    };
+    slotServiceSpy.summaries = () => ({ "parking-1": [occupiedSlot] });
+    const selectSlotSpy = vi.spyOn(component.facade, "selectSlot");
+
+    fixture.componentRef.setInput("isOpen", true);
+    fixture.componentRef.setInput("parkingId", "parking-1");
+    fixture.detectChanges();
+
+    const emptyText = fixture.nativeElement.textContent;
+    expect(emptyText).not.toContain("No hay vehículos para retirar");
+    expect(emptyText).toContain("A-01");
+
+    /* SAFETY: The slot item rendered is a button HTML element */
+    const slotBtn = fixture.nativeElement.querySelector(
+      "button.group"
+    ) as HTMLButtonElement;
+    expect(slotBtn).toBeTruthy();
+    slotBtn.click();
+    expect(selectSlotSpy).toHaveBeenCalledWith(occupiedSlot);
   });
 });

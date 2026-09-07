@@ -1,4 +1,5 @@
 import { TestBed } from "@angular/core/testing";
+import type { SlotSummary } from "@core/models/slot.model";
 import type {
   PaymentRecord,
   PriceDetailedModel,
@@ -8,17 +9,19 @@ import { ParkingService } from "@core/services/parking-service";
 import { SlotService } from "@core/services/slot-service";
 import { TicketService } from "@core/services/ticket-service";
 import { ToastService } from "@nivo-sass/design-system";
-import { of } from "rxjs";
+import { of, throwError } from "rxjs";
 
 import { CheckOutFacade } from "./check-out.facade";
 
 interface MockTicketService {
   calculatePrice: ReturnType<typeof vi.fn>;
   checkOutVehicle: ReturnType<typeof vi.fn>;
+  getActiveTicketBySlot: ReturnType<typeof vi.fn>;
 }
 
 interface MockSlotService {
   getAllSlotSummariesByParkingId: ReturnType<typeof vi.fn>;
+  summaries: () => Record<string, SlotSummary[]>;
 }
 
 interface MockParkingService {
@@ -50,9 +53,32 @@ describe("CheckOutFacade", () => {
         })
       ),
       checkOutVehicle: vi.fn(),
+      getActiveTicketBySlot: vi.fn(),
     };
     slotServiceSpy = {
       getAllSlotSummariesByParkingId: vi.fn().mockReturnValue(of([])),
+      summaries: () => ({
+        "parking-1": [
+          {
+            id: "slot-occ-1",
+            parkingName: "Central",
+            prefix: "A",
+            slotNumber: "101",
+            status: "OCCUPIED",
+            type: "CAR",
+            zone: "Z1",
+          },
+          {
+            id: "slot-avail-2",
+            parkingName: "Central",
+            prefix: "A",
+            slotNumber: "102",
+            status: "AVAILABLE",
+            type: "CAR",
+            zone: "Z1",
+          },
+        ],
+      }),
     };
     parkingServiceSpy = {
       getAll: vi.fn(),
@@ -156,5 +182,79 @@ describe("CheckOutFacade", () => {
     expect(toastSpy.showToast).toHaveBeenCalledWith(
       expect.objectContaining({ type: "success" })
     );
+  });
+
+  it("should filter and return only occupied slots", () => {
+    facade.init("parking-1");
+    expect(facade.occupiedSlots().length).toBe(1);
+    expect(facade.occupiedSlots()[0].id).toBe("slot-occ-1");
+  });
+
+  it("should load ticket and calculate price when selectSlot is called", () => {
+    const mockTicket: TicketSummary = {
+      entryTime: "2026-08-27T10:00:00Z",
+      id: "ticket-from-slot",
+      licensePlate: "SLOT123",
+      status: "OPEN",
+    };
+    ticketServiceSpy.getActiveTicketBySlot.mockReturnValue(of(mockTicket));
+
+    facade.init("parking-1");
+    const [slot] = facade.occupiedSlots();
+    facade.selectSlot(slot);
+
+    expect(ticketServiceSpy.getActiveTicketBySlot).toHaveBeenCalledWith(
+      "slot-occ-1"
+    );
+    expect(facade.selectedTicket()).toEqual(mockTicket);
+    expect(ticketServiceSpy.calculatePrice).toHaveBeenCalledWith(
+      "ticket-from-slot"
+    );
+  });
+
+  it("should clear selected ticket and reload occupied slots", () => {
+    const ticket: TicketSummary = {
+      entryTime: "2026-08-27T10:00:00Z",
+      id: "ticket-1",
+      licensePlate: "ABC123",
+      status: "OPEN",
+    };
+    facade.init("parking-1");
+    facade.selectTicket(ticket);
+    expect(facade.selectedTicket()).toEqual(ticket);
+
+    facade.clearSelectedTicket();
+    expect(facade.selectedTicket()).toBeNull();
+    expect(slotServiceSpy.getAllSlotSummariesByParkingId).toHaveBeenCalledWith(
+      "parking-1"
+    );
+  });
+
+  it("should return false for isZeroPayment and canCheckOut when priceCalculation is null", () => {
+    facade.init("parking-1");
+    expect(facade.priceCalculation()).toBeNull();
+    expect(facade.isZeroPayment()).toBe(false);
+    expect(facade.canCheckOut()).toBe(false);
+  });
+
+  it("should not allow checkout when calculatePrice fails", () => {
+    ticketServiceSpy.calculatePrice.mockReturnValue(
+      throwError(() => new Error("Network error"))
+    );
+
+    const ticket: TicketSummary = {
+      entryTime: "2026-08-27T10:00:00Z",
+      id: "ticket-err",
+      licensePlate: "ERR999",
+      status: "OPEN",
+    };
+
+    facade.selectTicket(ticket);
+
+    expect(facade.selectedTicket()).toEqual(ticket);
+    expect(facade.priceCalculation()).toBeNull();
+    expect(facade.isZeroPayment()).toBe(false);
+    expect(facade.canCheckOut()).toBe(false);
+    expect(facade.errorMessage()).toBe("Network error");
   });
 });

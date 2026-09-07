@@ -1,5 +1,10 @@
 import { CommonModule } from "@angular/common";
-import { Component, computed, inject } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from "@angular/core";
 import { RouterLink } from "@angular/router";
 import type { TimeUnit, VehicleType } from "@core/models/rate.model";
 import { NgIcon, provideIcons } from "@ng-icons/core";
@@ -16,6 +21,7 @@ import {
   ButtonComponent,
   InputComponent,
   SelectComponent,
+  TypographyH1,
 } from "@nivo-sass/design-system";
 import { APP_ROUTES } from "@shared/constants/app-routes.constant";
 
@@ -30,6 +36,7 @@ import {
 import { RatePreviewComponent } from "../rate-calculator/rate-preview";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     RouterLink,
@@ -38,6 +45,7 @@ import { RatePreviewComponent } from "../rate-calculator/rate-preview";
     InputComponent,
     SelectComponent,
     RatePreviewComponent,
+    TypographyH1,
   ],
   providers: [
     RateFormFacade,

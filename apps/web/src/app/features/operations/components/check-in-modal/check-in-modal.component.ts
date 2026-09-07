@@ -20,13 +20,14 @@ import {
   lucideLogIn,
   lucideX,
 } from "@ng-icons/lucide";
+import { ButtonComponent } from "@nivo-sass/design-system";
 
 import { CheckInFacade } from "../../facades/check-in.facade";
 import { TicketReceiptComponent } from "../ticket-receipt/ticket-receipt.component";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NgIcon, TicketReceiptComponent],
+  imports: [ButtonComponent, CommonModule, NgIcon, TicketReceiptComponent],
   providers: [
     CheckInFacade,
     provideIcons({

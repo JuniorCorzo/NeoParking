@@ -1,13 +1,23 @@
 import type { ComponentFixture } from "@angular/core/testing";
 import { TestBed } from "@angular/core/testing";
-import { ActivatedRoute, convertToParamMap } from "@angular/router";
+import { By } from "@angular/platform-browser";
+import {
+  ActivatedRoute,
+  convertToParamMap,
+  provideRouter,
+} from "@angular/router";
 import type { ParkingLotListItemModel } from "@core/models/parking.model";
 import type { RateModel } from "@core/models/rate.model";
 import { ParkingService } from "@core/services/parking-service";
 import { RateService } from "@core/services/rate-service";
 import { SlotService } from "@core/services/slot-service";
 import { TicketService } from "@core/services/ticket-service";
-import { ToastService } from "@nivo-sass/design-system";
+import {
+  ButtonComponent,
+  DividerComponent,
+  ToastService,
+} from "@nivo-sass/design-system";
+import { PageHeaderComponent } from "@shared/components/page-header/page-header.component";
 import { of, throwError } from "rxjs";
 
 import { OperationsPageComponent } from "./operations-page";
@@ -128,6 +138,7 @@ describe("OperationsPageComponent", () => {
     await TestBed.configureTestingModule({
       imports: [OperationsPageComponent],
       providers: [
+        provideRouter([]),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -171,6 +182,44 @@ describe("OperationsPageComponent", () => {
     expect(component.isCheckOutModalOpen()).toBe(true);
     component.closeCheckOutModal();
     expect(component.isCheckOutModalOpen()).toBe(false);
+  });
+
+  it("should render page header with quick action buttons that trigger modal methods", () => {
+    fixture.detectChanges();
+    const pageHeader = fixture.debugElement.query(
+      By.directive(PageHeaderComponent)
+    );
+    expect(pageHeader).toBeTruthy();
+
+    const buttons = fixture.debugElement.queryAll(
+      By.directive(ButtonComponent)
+    );
+    const checkInBtn = buttons.find((btn) =>
+      btn.nativeElement.textContent.includes("Registrar Ingreso")
+    );
+    const checkOutBtn = buttons.find((btn) =>
+      btn.nativeElement.textContent.includes("Procesar Salida")
+    );
+
+    expect(checkInBtn).toBeDefined();
+    expect(checkOutBtn).toBeDefined();
+
+    checkInBtn?.nativeElement.click();
+    expect(component.isCheckInModalOpen()).toBe(true);
+    component.closeCheckInModal();
+
+    checkOutBtn?.nativeElement.click();
+    expect(component.isCheckOutModalOpen()).toBe(true);
+  });
+
+  it("should render tickets navigation link and divider in quick action buttons", () => {
+    fixture.detectChanges();
+    const divider = fixture.debugElement.query(By.directive(DividerComponent));
+    expect(divider).toBeTruthy();
+
+    const ticketLink = fixture.debugElement.query(By.css("a[nv-button]"));
+    expect(ticketLink).toBeTruthy();
+    expect(ticketLink.nativeElement.textContent).toContain("Ver Tickets");
   });
 
   it("should filter slots by vehicle type and status", () => {

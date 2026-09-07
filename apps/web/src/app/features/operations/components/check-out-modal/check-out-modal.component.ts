@@ -11,27 +11,41 @@ import type { TicketSummary } from "@core/models/ticket.model";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import {
   lucideAlertCircle,
+  lucideArrowLeft,
+  lucideCar,
   lucideCheck,
   lucideCoins,
   lucideLoader2,
   lucideLogOut,
+  lucideParkingSquare,
   lucideX,
 } from "@ng-icons/lucide";
+import { BadgeComponent, ButtonComponent } from "@nivo-sass/design-system";
 
 import { CheckOutFacade } from "../../facades/check-out.facade";
 import { TicketReceiptComponent } from "../ticket-receipt/ticket-receipt.component";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, DecimalPipe, NgIcon, TicketReceiptComponent],
+  imports: [
+    BadgeComponent,
+    ButtonComponent,
+    CommonModule,
+    DecimalPipe,
+    NgIcon,
+    TicketReceiptComponent,
+  ],
   providers: [
     CheckOutFacade,
     provideIcons({
       lucideAlertCircle,
+      lucideArrowLeft,
+      lucideCar,
       lucideCheck,
       lucideCoins,
       lucideLoader2,
       lucideLogOut,
+      lucideParkingSquare,
       lucideX,
     }),
   ],
@@ -61,6 +75,11 @@ export class CheckOutModalComponent {
       const t = this.ticket();
       if (t && this.isOpen()) {
         this.facade.selectTicket(t);
+      } else if (!t && this.isOpen()) {
+        const pId = this.parkingId();
+        if (pId) {
+          this.facade.loadOccupiedSlots(pId);
+        }
       }
     });
   }

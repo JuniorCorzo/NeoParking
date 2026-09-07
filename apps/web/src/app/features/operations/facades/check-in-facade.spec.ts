@@ -198,4 +198,9 @@ describe("CheckInFacade", () => {
       expect.objectContaining({ type: "error" })
     );
   });
+
+  it("should only include vehicle types that have available slots in availableVehicleTypes", () => {
+    facade.init("parking-1");
+    expect(facade.availableVehicleTypes()).toEqual(["CAR"]);
+  });
 });

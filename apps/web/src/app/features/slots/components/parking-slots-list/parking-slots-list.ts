@@ -1,4 +1,4 @@
-import { Component, inject } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import {
@@ -29,6 +29,7 @@ import {
   TableHeaderComponent,
   TableRowComponent,
   InputComponent,
+  TypographyH1,
 } from "@nivo-sass/design-system";
 import { APP_ROUTES } from "@shared/constants/app-routes.constant";
 import { APP_TEXTS } from "@shared/constants/app-texts.constant";
@@ -50,6 +51,7 @@ import { SlotsSelectionState } from "./slots-selection.state";
 import { SlotsTableState } from "./slots-table.state";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: "block w-full",
   },
@@ -70,6 +72,7 @@ import { SlotsTableState } from "./slots-table.state";
     SlotDetailDrawer,
     PaginationTable,
     InputComponent,
+    TypographyH1,
   ],
   providers: [
     SlotsTableState,
