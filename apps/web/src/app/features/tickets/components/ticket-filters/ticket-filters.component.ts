@@ -2,12 +2,14 @@ import type { OnInit } from "@angular/core";
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   inject,
   input,
   output,
 } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import type { ParkingLotListItemModel } from "@core/models/parking.model";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import { lucideFilterX, lucideRotateCcw, lucideSearch } from "@ng-icons/lucide";
 import {
@@ -15,6 +17,7 @@ import {
   InputComponent,
   SelectComponent,
 } from "@nivo-sass/design-system";
+import { APP_TEXTS } from "@shared/constants/app-texts.constant";
 import { debounceTime, distinctUntilChanged, Subject } from "rxjs";
 
 import type {
@@ -45,22 +48,37 @@ export class TicketFiltersComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly plateSubject = new Subject<string>();
 
+  readonly texts = APP_TEXTS.tickets.filters;
+
   readonly filters = input.required<TicketFilterCriteria>();
+  readonly showParkingLotFilter = input<boolean>(false);
+  readonly parkingLots = input<ParkingLotListItemModel[]>([]);
 
   readonly filtersChange = output<TicketFilterCriteria>();
   readonly reset = output();
 
+  readonly parkingLotOptions = computed<FilterSelectOption[]>(() => [
+    { label: this.texts.parkingLot.all, value: "ALL" },
+    ...this.parkingLots().map((lot) => ({
+      label: lot.name,
+      value: lot.id,
+    })),
+  ]);
+
   readonly statusOptions: FilterSelectOption<TicketStatusFilter>[] = [
-    { label: "Todos los estados", value: "ALL" },
-    { label: "Activo (Abierto)", value: "OPEN" },
-    { label: "Finalizado (Cerrado)", value: "CLOSED" },
+    { label: APP_TEXTS.tickets.filters.status.all, value: "ALL" },
+    { label: APP_TEXTS.tickets.filters.status.open, value: "OPEN" },
+    { label: APP_TEXTS.tickets.filters.status.closed, value: "CLOSED" },
   ];
 
   readonly vehicleOptions: FilterSelectOption<string>[] = [
-    { label: "Todos los tipos", value: "ALL" },
-    { label: "Carro", value: "CAR" },
-    { label: "Moto", value: "MOTORCYCLE" },
-    { label: "Bicicleta", value: "BICYCLE" },
+    { label: APP_TEXTS.tickets.filters.vehicle.all, value: "ALL" },
+    { label: APP_TEXTS.tickets.filters.vehicle.car, value: "CAR" },
+    {
+      label: APP_TEXTS.tickets.filters.vehicle.motorcycle,
+      value: "MOTORCYCLE",
+    },
+    { label: APP_TEXTS.tickets.filters.vehicle.bicycle, value: "BICYCLE" },
   ];
 
   static displayOptionFn(opt: FilterSelectOption): string {
@@ -94,6 +112,16 @@ export class TicketFiltersComponent implements OnInit {
     if (target instanceof HTMLInputElement) {
       this.plateSubject.next(target.value);
     }
+  }
+
+  onParkingLotChange(val: string): void {
+    if (!val) {
+      return;
+    }
+    this.filtersChange.emit({
+      ...this.filters(),
+      parkingLotId: val,
+    });
   }
 
   onStatusChange(val: string): void {

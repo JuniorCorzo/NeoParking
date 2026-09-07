@@ -3,16 +3,23 @@ import type {
   PriceDetailedModel,
   TicketSummary,
 } from "@core/models/ticket.model";
+import { ParkingService } from "@core/services/parking-service";
 import { TicketService } from "@core/services/ticket-service";
+import { DataTableState } from "@shared/components/data-table";
 
+import { createTicketColumns } from "../components/tickets-table/ticket-columns-definition";
 import type { TicketFilterCriteria } from "../models/ticket-filter.model";
 import { INITIAL_TICKET_FILTERS } from "../models/ticket-filter.model";
 
 @Injectable()
 export class TicketsFacade {
   private readonly ticketService = inject(TicketService);
+  private readonly parkingService = inject(ParkingService);
+  private readonly tableState = new DataTableState<TicketSummary>();
 
+  readonly parkingLots = this.parkingService.parkingLots;
   readonly parkingId = signal<string | null>(null);
+  readonly isTenantView = computed(() => !this.parkingId());
   readonly tickets = signal<TicketSummary[]>([]);
   readonly filters = signal<TicketFilterCriteria>(INITIAL_TICKET_FILTERS);
   readonly selectedTicket = signal<TicketSummary | null>(null);
@@ -22,55 +29,40 @@ export class TicketsFacade {
   readonly isDrawerOpen = signal<boolean>(false);
   readonly isReceiptOpen = signal<boolean>(false);
 
-  readonly filteredTickets = computed(() => {
-    const all = this.tickets();
-    const criteria = this.filters();
-    const plateQuery = criteria.plate.trim().toUpperCase();
+  readonly columns = computed(() =>
+    createTicketColumns({
+      onReprintReceipt: (ticket) => this.openReceipt(ticket),
+      onSelectTicket: (ticket) => this.openDetail(ticket),
+      showParkingLot: this.isTenantView(),
+    })
+  );
 
-    return all.filter((ticket) => {
-      // Plate filter
-      if (
-        plateQuery &&
-        !ticket.licensePlate.toUpperCase().includes(plateQuery)
-      ) {
-        return false;
+  readonly table = this.tableState.createTable({
+    columns: () => this.columns(),
+    data: () => this.tickets(),
+    getRowId: (row) => row.id,
+    globalFilterFn: (row, _columnId, filterValue: string) => {
+      if (!filterValue) {
+        return true;
       }
-
-      // Status filter
-      if (criteria.status !== "ALL" && ticket.status !== criteria.status) {
-        return false;
-      }
-
-      // Vehicle type filter
-      if (
-        criteria.vehicleType !== "ALL" &&
-        ticket.slotType !== criteria.vehicleType
-      ) {
-        return false;
-      }
-
-      // Date range filter
-      if (criteria.dateRange) {
-        const ticketDate = ticket.entryTime
-          ? new Date(ticket.entryTime).getTime()
-          : 0;
-        if (criteria.dateRange.from) {
-          const fromTime = new Date(criteria.dateRange.from).getTime();
-          if (ticketDate < fromTime) {
-            return false;
-          }
-        }
-        if (criteria.dateRange.to) {
-          const toTime = new Date(criteria.dateRange.to).getTime();
-          if (ticketDate > toTime) {
-            return false;
-          }
-        }
-      }
-
-      return true;
-    });
+      const search = filterValue.trim().toUpperCase();
+      const plate = row.original.licensePlate?.toUpperCase() ?? "";
+      const parkingLot = row.original.parkingLotName?.toUpperCase() ?? "";
+      const barcode = row.original.barcode?.toUpperCase() ?? "";
+      return (
+        plate.includes(search) ||
+        parkingLot.includes(search) ||
+        barcode.includes(search)
+      );
+    },
+    initialVisibility: {
+      parkingLotId: false,
+    },
   });
+
+  readonly filteredTickets = computed(() =>
+    this.table.getFilteredRowModel().rows.map((row) => row.original)
+  );
 
   readonly ticketStats = computed(() => {
     const all = this.tickets();
@@ -79,11 +71,15 @@ export class TicketsFacade {
     return { closed, open, total: all.length };
   });
 
-  loadTickets(parkingId: string): void {
-    this.parkingId.set(parkingId);
+  loadTickets(parkingId?: string | null): void {
+    this.parkingId.set(parkingId ?? null);
     this.isLoading.set(true);
 
-    this.ticketService.listTicketsByParkingLot(parkingId).subscribe({
+    const request$ = parkingId
+      ? this.ticketService.listTicketsByParkingLot(parkingId)
+      : this.ticketService.listTicketsByTenant();
+
+    request$.subscribe({
       error: () => {
         this.tickets.set([]);
         this.isLoading.set(false);
@@ -100,10 +96,36 @@ export class TicketsFacade {
       ...current,
       ...criteria,
     }));
+
+    if (criteria.plate !== undefined) {
+      this.tableState.setGlobalFilter(criteria.plate);
+    }
+    if (criteria.status !== undefined) {
+      this.tableState.setColumnFilter(
+        "status",
+        criteria.status === "ALL" ? undefined : criteria.status
+      );
+    }
+    if (criteria.vehicleType !== undefined) {
+      this.tableState.setColumnFilter(
+        "slotType",
+        criteria.vehicleType === "ALL" ? undefined : criteria.vehicleType
+      );
+    }
+    if (criteria.parkingLotId !== undefined) {
+      this.tableState.setColumnFilter(
+        "parkingLotId",
+        criteria.parkingLotId === "ALL" ? undefined : criteria.parkingLotId
+      );
+    }
+    if (criteria.dateRange !== undefined) {
+      this.tableState.setColumnFilter("entryTime", criteria.dateRange);
+    }
   }
 
   resetFilters(): void {
     this.filters.set(INITIAL_TICKET_FILTERS);
+    this.tableState.resetFilters();
   }
 
   openDetail(ticket: TicketSummary): void {

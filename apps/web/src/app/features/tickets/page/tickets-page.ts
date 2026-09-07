@@ -1,7 +1,12 @@
 import { CommonModule } from "@angular/common";
 import type { OnInit } from "@angular/core";
-import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
-import { ActivatedRoute, RouterLink } from "@angular/router";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import { TicketReceiptComponent } from "@features/operations/components/ticket-receipt/ticket-receipt.component";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import {
@@ -11,34 +16,39 @@ import {
   lucideTicket,
 } from "@ng-icons/lucide";
 import {
-  ButtonComponent,
   CardComponent,
   CardContentComponent,
-  TypographyH1,
   TypographyMuted,
 } from "@nivo-sass/design-system";
 import { APP_ROUTES } from "@shared/constants/app-routes.constant";
+import { APP_TEXTS } from "@shared/constants/app-texts.constant";
+
+import { PageHeaderComponent } from "@/app/shared/components/page-header/page-header.component";
 
 import { TicketDetailDrawerComponent } from "../components/ticket-detail-drawer/ticket-detail-drawer.component";
 import { TicketFiltersComponent } from "../components/ticket-filters/ticket-filters.component";
 import { TicketsTableComponent } from "../components/tickets-table/tickets-table.component";
 import { TicketsFacade } from "../facades/tickets.facade";
 
+interface HeaderContext {
+  title: string;
+  subtitle: string;
+  back: string | null;
+}
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    RouterLink,
     NgIcon,
-    ButtonComponent,
     CardComponent,
     CardContentComponent,
-    TypographyH1,
     TypographyMuted,
     TicketFiltersComponent,
     TicketsTableComponent,
     TicketDetailDrawerComponent,
     TicketReceiptComponent,
+    PageHeaderComponent,
   ],
   providers: [
     TicketsFacade,
@@ -58,11 +68,36 @@ export class TicketsPageComponent implements OnInit {
   readonly facade = inject(TicketsFacade);
 
   protected readonly APP_ROUTES = APP_ROUTES;
+  readonly texts = APP_TEXTS.tickets;
+  protected readonly title = computed(() =>
+    this.facade.isTenantView()
+      ? this.texts.titles.tenant.title
+      : this.texts.titles.parkingLots.title
+  );
+
+  protected readonly headerContext = computed(() => this.initHeaderContext());
 
   ngOnInit(): void {
     const parkingId = this.route.snapshot.paramMap.get("parkingId");
-    if (parkingId) {
-      this.facade.loadTickets(parkingId);
-    }
+    this.facade.loadTickets(parkingId);
+  }
+
+  private initHeaderContext(): HeaderContext {
+    const isTenantView = this.facade.isTenantView();
+    const parkingLotId = this.facade.parkingId();
+    const tenantTexts = this.texts.titles.tenant;
+    const parkingTexts = this.texts.titles.parkingLots;
+
+    const title = isTenantView ? tenantTexts.title : parkingTexts.title;
+    const subtitle = isTenantView
+      ? tenantTexts.subtitle
+      : parkingTexts.subtitle;
+
+    const back =
+      !isTenantView && parkingLotId
+        ? APP_ROUTES.app.parkingLotOperations(parkingLotId)
+        : null;
+
+    return { back, subtitle, title };
   }
 }

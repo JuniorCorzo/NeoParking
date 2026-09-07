@@ -30,6 +30,7 @@ import {
   TypographyH4,
   TypographyMuted,
 } from "@nivo-sass/design-system";
+import { APP_TEXTS } from "@shared/constants/app-texts.constant";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,6 +62,9 @@ import {
   templateUrl: "./ticket-detail-drawer.component.html",
 })
 export class TicketDetailDrawerComponent {
+  readonly texts = APP_TEXTS.tickets.detail;
+  readonly actionTexts = APP_TEXTS.tickets.actions;
+
   readonly isOpen = input.required<boolean>();
   readonly ticket = input<TicketSummary | null>(null);
   readonly liveRate = input<PriceDetailedModel | null>(null);

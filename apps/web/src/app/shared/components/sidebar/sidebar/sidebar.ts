@@ -14,6 +14,7 @@ import {
   lucideLayoutDashboard,
   lucidePanelLeftClose,
   lucidePanelLeftOpen,
+  lucideTicket,
 } from "@ng-icons/lucide";
 import { SidebarFooter } from "@shared/components/sidebar-footer/sidebar-footer";
 import { APP_ROUTES } from "@shared/constants/app-routes.constant";
@@ -29,6 +30,7 @@ import { filter, map } from "rxjs";
       lucideLayoutDashboard,
       lucidePanelLeftClose,
       lucidePanelLeftOpen,
+      lucideTicket,
     }),
   ],
   selector: "app-sidebar",

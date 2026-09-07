@@ -1,8 +1,11 @@
+import { signal } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
+import type { ParkingLotListItemModel } from "@core/models/parking.model";
 import type {
   PriceDetailedModel,
   TicketSummary,
 } from "@core/models/ticket.model";
+import { ParkingService } from "@core/services/parking-service";
 import { TicketService } from "@core/services/ticket-service";
 import { of } from "rxjs";
 
@@ -11,17 +14,25 @@ import { TicketsFacade } from "./tickets.facade";
 interface MockTicketService {
   calculatePrice: ReturnType<typeof vi.fn>;
   listTicketsByParkingLot: ReturnType<typeof vi.fn>;
+  listTicketsByTenant: ReturnType<typeof vi.fn>;
+}
+
+interface MockParkingService {
+  parkingLots: ReturnType<typeof signal<ParkingLotListItemModel[]>>;
 }
 
 describe("TicketsFacade", () => {
   let facade: TicketsFacade;
   let mockTicketService: MockTicketService;
+  let mockParkingService: MockParkingService;
 
   const sampleTickets: TicketSummary[] = [
     {
       entryTime: "2026-09-05T10:00:00Z",
       id: "t-1",
       licensePlate: "ABC123",
+      parkingLotId: "lot-1",
+      parkingLotName: "Parqueadero Central",
       slotNumber: "A-01",
       slotType: "CAR",
       status: "OPEN",
@@ -31,6 +42,8 @@ describe("TicketsFacade", () => {
       exitTime: "2026-09-05T09:30:00Z",
       id: "t-2",
       licensePlate: "XYZ789",
+      parkingLotId: "lot-2",
+      parkingLotName: "Parqueadero Norte",
       slotNumber: "M-05",
       slotType: "MOTORCYCLE",
       status: "CLOSED",
@@ -41,6 +54,8 @@ describe("TicketsFacade", () => {
       exitTime: "2026-09-05T11:00:00Z",
       id: "t-3",
       licensePlate: "ABC999",
+      parkingLotId: "lot-1",
+      parkingLotName: "Parqueadero Central",
       slotNumber: "A-02",
       slotType: "CAR",
       status: "CLOSED",
@@ -52,12 +67,17 @@ describe("TicketsFacade", () => {
     mockTicketService = {
       calculatePrice: vi.fn().mockReturnValue(of(null)),
       listTicketsByParkingLot: vi.fn().mockReturnValue(of(sampleTickets)),
+      listTicketsByTenant: vi.fn().mockReturnValue(of(sampleTickets)),
+    };
+    mockParkingService = {
+      parkingLots: signal([]),
     };
 
     TestBed.configureTestingModule({
       providers: [
         TicketsFacade,
         { provide: TicketService, useValue: mockTicketService },
+        { provide: ParkingService, useValue: mockParkingService },
       ],
     });
 
@@ -151,5 +171,22 @@ describe("TicketsFacade", () => {
 
     facade.closeReceipt();
     expect(facade.isReceiptOpen()).toBe(false);
+  });
+
+  it("should load tenant tickets when no parkingId is provided", () => {
+    facade.loadTickets();
+    expect(mockTicketService.listTicketsByTenant).toHaveBeenCalled();
+    expect(facade.isTenantView()).toBe(true);
+    expect(facade.tickets().length).toBe(3);
+  });
+
+  it("should filter tickets by parkingLotId", () => {
+    facade.loadTickets();
+    facade.updateFilters({ parkingLotId: "lot-2" });
+
+    const filtered = facade.filteredTickets();
+    expect(filtered.length).toBe(1);
+    expect(filtered[0].id).toBe("t-2");
+    expect(filtered[0].parkingLotId).toBe("lot-2");
   });
 });

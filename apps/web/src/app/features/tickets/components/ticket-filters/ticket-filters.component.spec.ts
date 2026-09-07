@@ -88,4 +88,34 @@ describe("TicketFiltersComponent", () => {
     component.onReset();
     expect(resetEmitted).toBe(true);
   });
+
+  it("should emit filter change on parking lot selection", () => {
+    let emittedFilters: TicketFilterCriteria | null = null;
+    component.filtersChange.subscribe((f) => {
+      emittedFilters = f;
+    });
+
+    component.onParkingLotChange("lot-123");
+
+    expect(emittedFilters).toEqual({
+      ...INITIAL_TICKET_FILTERS,
+      parkingLotId: "lot-123",
+    });
+  });
+
+  it("should compute parking lot options including 'ALL' default", () => {
+    fixture.componentRef.setInput("parkingLots", [
+      { id: "lot-1", name: "Parqueadero 1" },
+      { id: "lot-2", name: "Parqueadero 2" },
+    ]);
+    fixture.detectChanges();
+
+    const options = component.parkingLotOptions();
+    expect(options.length).toBe(3);
+    expect(options[0]).toEqual({
+      label: "Todos los parqueaderos",
+      value: "ALL",
+    });
+    expect(options[1]).toEqual({ label: "Parqueadero 1", value: "lot-1" });
+  });
 });

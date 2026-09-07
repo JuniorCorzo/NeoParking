@@ -1,32 +1,11 @@
 <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 sm:p-6 lg:p-8">
   <!-- Back Link & Title Header -->
-  <div class="flex flex-col gap-2">
-    <div>
-      <a
-        nv-button
-        variant="ghost"
-        size="sm"
-        [routerLink]="facade.parkingId() ? APP_ROUTES.app.parkingLotOperations(facade.parkingId()!) : APP_ROUTES.app.parkingLots"
-        class="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
-      >
-        <ng-icon name="lucideArrowLeft" size="16" />
-        Volver a Operaciones
-      </a>
-    </div>
-    <div
-      class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
-    >
-      <div>
-        <nv-h1 class="text-3xl font-bold tracking-tight"
-          >Gestión de Tickets e Historial</nv-h1
-        >
-        <nv-muted class="text-sm">
-          Audita tickets históricos y activos, filtra por placa o estado y
-          reimprime comprobantes.
-        </nv-muted>
-      </div>
-    </div>
-  </div>
+  <app-page-header
+    [title]="headerContext().title"
+    [subtitle]="headerContext().subtitle"
+    [backLink]="headerContext().back"
+    [backAriaLabel]="texts.actions.backToOperations"
+  ></app-page-header>
 
   <!-- Stats Grid -->
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -39,7 +18,7 @@
         </div>
         <div>
           <nv-muted class="text-xs font-semibold tracking-wider uppercase"
-            >Total Registrados</nv-muted
+            >{{ texts.stats.total }}</nv-muted
           >
           <div class="font-mono text-2xl font-bold">
             {{ facade.ticketStats().total }}
@@ -57,7 +36,7 @@
         </div>
         <div>
           <nv-muted class="text-xs font-semibold tracking-wider uppercase"
-            >Activos en Estancia</nv-muted
+            >{{ texts.stats.open }}</nv-muted
           >
           <div class="font-mono text-2xl font-bold">
             {{ facade.ticketStats().open }}
@@ -75,7 +54,7 @@
         </div>
         <div>
           <nv-muted class="text-xs font-semibold tracking-wider uppercase"
-            >Finalizados</nv-muted
+            >{{ texts.stats.closed }}</nv-muted
           >
           <div class="font-mono text-2xl font-bold">
             {{ facade.ticketStats().closed }}
@@ -90,6 +69,8 @@
     <nv-card-content class="p-5">
       <app-ticket-filters
         [filters]="facade.filters()"
+        [showParkingLotFilter]="facade.isTenantView()"
+        [parkingLots]="facade.parkingLots()"
         (filtersChange)="facade.updateFilters($event)"
         (reset)="facade.resetFilters()"
       />
@@ -98,7 +79,7 @@
 
   <!-- Tickets Table -->
   <app-tickets-table
-    [tickets]="facade.filteredTickets()"
+    [table]="facade.table"
     [isLoading]="facade.isLoading()"
     (selectTicket)="facade.openDetail($event)"
     (reprintReceipt)="facade.openReceipt($event)"
@@ -119,8 +100,8 @@
   <app-ticket-receipt
     [isOpen]="facade.isReceiptOpen()"
     [ticket]="facade.selectedTicket()"
-    title="Comprobante de Ticket"
-    subtitle="Reimpresión de ticket / recibo"
+    [title]="texts.receiptModal.title"
+    [subtitle]="texts.receiptModal.subtitle"
     (closed)="facade.closeReceipt()"
   />
 </div>

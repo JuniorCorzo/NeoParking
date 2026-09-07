@@ -7,6 +7,7 @@ export interface TicketDateRange {
 
 export interface TicketFilterCriteria {
   dateRange: TicketDateRange | null;
+  parkingLotId: string;
   plate: string;
   status: TicketStatusFilter;
   vehicleType: string;
@@ -14,6 +15,7 @@ export interface TicketFilterCriteria {
 
 export const INITIAL_TICKET_FILTERS: TicketFilterCriteria = {
   dateRange: null,
+  parkingLotId: "ALL",
   plate: "",
   status: "ALL",
   vehicleType: "ALL",

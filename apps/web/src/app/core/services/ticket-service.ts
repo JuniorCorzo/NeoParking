@@ -19,8 +19,10 @@ import type {
   PriceDetailedModel,
   TicketSummary,
 } from "@core/models/ticket.model";
+import { ParkingService } from "@core/services/parking-service";
 import type { Observable } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { forkJoin, of } from "rxjs";
+import { catchError, map, switchMap, tap } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -28,6 +30,7 @@ import { map, tap } from "rxjs/operators";
 export class TicketService {
   private readonly parkingTicketsService = inject(ParkingTicketsService);
   private readonly ratesService = inject(RatesService);
+  private readonly parkingService = inject(ParkingService);
 
   private readonly _activeTickets = signal<TicketSummary[]>([]);
   readonly activeTickets = this._activeTickets.asReadonly();
@@ -132,6 +135,43 @@ export class TicketService {
           ).map((dto) => mapToTicketSummary(dto))
         )
       );
+  }
+
+  /**
+   * List all tickets across all parking lots for the current tenant
+   */
+  listTicketsByTenant(): Observable<TicketSummary[]> {
+    return this.parkingService.getAll().pipe(
+      switchMap((lots) => {
+        if (!lots || lots.length === 0) {
+          return of([]);
+        }
+
+        return forkJoin(
+          lots.map((lot) =>
+            this.listTicketsByParkingLot(lot.id).pipe(
+              catchError(() => of([])),
+              map((tickets) =>
+                tickets.map((t) => ({
+                  ...t,
+                  parkingLotId: lot.id,
+                  parkingLotName: lot.name,
+                }))
+              )
+            )
+          )
+        ).pipe(
+          map((ticketArrays) => {
+            const flattened: TicketSummary[] = ticketArrays.flat();
+            return flattened.toSorted((a, b) => {
+              const timeA = new Date(a.entryTime || a.createdAt || 0).getTime();
+              const timeB = new Date(b.entryTime || b.createdAt || 0).getTime();
+              return timeB - timeA;
+            });
+          })
+        );
+      })
+    );
   }
 
   /**

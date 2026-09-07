@@ -1,129 +1,33 @@
-<div
-  class="border-border bg-card w-full overflow-hidden rounded-lg border shadow-xs"
+<app-data-table
+  [table]="table()"
+  [isLoading]="isLoading()"
+  [emptyMessage]="texts.emptyState.message"
 >
-  @if (isLoading()) {
-    <div class="text-muted-foreground flex items-center justify-center p-12">
-      <div class="flex flex-col items-center gap-2">
-        <div
-          class="border-primary h-6 w-6 animate-spin rounded-full border-2 border-t-transparent"
-        ></div>
-        <nv-muted class="text-sm">Cargando tickets...</nv-muted>
-      </div>
+  <div
+    emptyState
+    class="flex flex-col items-center justify-center py-12 text-center"
+  >
+    <div
+      class="bg-muted text-muted-foreground mb-4 flex h-12 w-12 items-center justify-center rounded-full"
+    >
+      <ng-icon name="lucideInbox" size="24" />
     </div>
-  } @else if (tickets().length === 0) {
-    <!-- Empty state -->
-    <nv-card class="border-0 shadow-none">
-      <nv-card-content
-        class="flex flex-col items-center justify-center py-12 text-center"
-      >
-        <div
-          class="bg-muted text-muted-foreground mb-4 flex h-12 w-12 items-center justify-center rounded-full"
-        >
-          <ng-icon name="lucideInbox" size="24" />
-        </div>
-        <nv-h4 class="mb-1">No se encontraron tickets</nv-h4>
-        <nv-muted class="mb-4 max-w-sm">
-          No hay tickets registrados que coincidan con los filtros aplicados.
-        </nv-muted>
-        <nv-button
-          type="button"
-          variant="outline"
-          size="sm"
-          (click)="resetFilters.emit()"
-        >
-          <ng-icon name="lucideRotateCcw" size="14" />
-          Restablecer Filtros
-        </nv-button>
-      </nv-card-content>
-    </nv-card>
-  } @else {
-    <!-- Responsive Table -->
-    <div class="overflow-x-auto">
-      <table nv-table>
-        <thead nv-table-header>
-          <tr nv-table-row>
-            <th nv-table-head class="font-semibold">Placa</th>
-            <th nv-table-head class="font-semibold">Plaza</th>
-            <th nv-table-head class="font-semibold">Tarifa</th>
-            <th nv-table-head class="font-semibold">Entrada</th>
-            <th nv-table-head class="font-semibold">Salida</th>
-            <th nv-table-head class="font-semibold">Estado</th>
-            <th nv-table-head class="text-right font-semibold">Total</th>
-            <th nv-table-head class="text-center font-semibold">Acciones</th>
-          </tr>
-        </thead>
-        <tbody nv-table-body>
-          @for (ticket of tickets(); track ticket.id) {
-            <tr nv-table-row class="hover:bg-muted/50 transition-colors">
-              <td nv-table-cell class="text-foreground font-mono font-bold">
-                {{ ticket.licensePlate }}
-              </td>
-              <td nv-table-cell>
-                <div class="flex flex-col">
-                  <span class="text-sm font-medium">{{
-                    ticket.slotNumber || "Sin asignar"
-                  }}</span>
-                  <span class="text-muted-foreground text-xs">{{
-                    ticket.slotType || ""
-                  }}</span>
-                </div>
-              </td>
-              <td nv-table-cell class="text-sm">
-                {{ ticket.rateName || "Estándar" }}
-              </td>
-              <td nv-table-cell class="text-sm">
-                {{ formatDate(ticket.entryTime) }}
-              </td>
-              <td nv-table-cell class="text-sm">
-                {{ formatDate(ticket.exitTime) }}
-              </td>
-              <td nv-table-cell>
-                @if (ticket.status === "OPEN") {
-                  <nv-badge variant="success">Activo</nv-badge>
-                } @else if (ticket.status === "CLOSED") {
-                  <nv-badge variant="secondary">Finalizado</nv-badge>
-                } @else {
-                  <nv-badge variant="outline">{{ ticket.status }}</nv-badge>
-                }
-              </td>
-              <td nv-table-cell class="text-right font-mono text-sm">
-                @if (
-                  ticket.totalToCharge !== undefined &&
-                  ticket.totalToCharge !== null
-                ) {
-                  ${{ ticket.totalToCharge | number }}
-                } @else {
-                  <span class="text-muted-foreground">---</span>
-                }
-              </td>
-              <td nv-table-cell class="text-center">
-                <div class="flex items-center justify-center gap-1">
-                  <nv-button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    title="Ver detalle"
-                    (click)="selectTicket.emit(ticket)"
-                  >
-                    <ng-icon name="lucideEye" size="16" />
-                    <span class="sr-only">Ver detalle</span>
-                  </nv-button>
-                  <nv-button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    title="Reimprimir comprobante"
-                    (click)="reprintReceipt.emit(ticket)"
-                  >
-                    <ng-icon name="lucidePrinter" size="16" />
-                    <span class="sr-only">Reimprimir</span>
-                  </nv-button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
-</div>
+    <nv-h4 class="mb-1">{{ texts.emptyState.title }}</nv-h4>
+    <nv-muted class="mb-4 max-w-sm">
+      {{ texts.emptyState.description }}
+    </nv-muted>
+    <nv-button
+      type="button"
+      variant="outline"
+      size="sm"
+      (click)="resetFilters.emit()"
+    >
+      <ng-icon name="lucideRotateCcw" size="14" />
+      {{ texts.actions.resetFilters }}
+    </nv-button>
+  </div>
+</app-data-table>
+
+@if (!isLoading() && table().getRowModel().rows.length > 0) {
+  <app-data-table-pagination [table]="table()" />
+}

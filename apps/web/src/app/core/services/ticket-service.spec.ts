@@ -12,7 +12,8 @@ import type {
   CreateTicketPayload,
   CheckOutPayload,
 } from "@core/models/ticket.model";
-import { firstValueFrom, of } from "rxjs";
+import { ParkingService } from "@core/services/parking-service";
+import { firstValueFrom, of, throwError } from "rxjs";
 
 import { TicketService } from "./ticket-service";
 
@@ -27,10 +28,15 @@ interface MockRatesService {
   calculatePrice: ReturnType<typeof vi.fn>;
 }
 
+interface MockParkingService {
+  getAll: ReturnType<typeof vi.fn>;
+}
+
 describe("TicketService", () => {
   let service: TicketService;
   let parkingTicketsSpy: MockParkingTicketsService;
   let ratesSpy: MockRatesService;
+  let parkingSpy: MockParkingService;
 
   beforeEach(() => {
     parkingTicketsSpy = {
@@ -42,12 +48,16 @@ describe("TicketService", () => {
     ratesSpy = {
       calculatePrice: vi.fn(),
     };
+    parkingSpy = {
+      getAll: vi.fn(),
+    };
 
     TestBed.configureTestingModule({
       providers: [
         TicketService,
         { provide: ParkingTicketsService, useValue: parkingTicketsSpy },
         { provide: RatesService, useValue: ratesSpy },
+        { provide: ParkingService, useValue: parkingSpy },
       ],
     });
 
@@ -211,5 +221,108 @@ describe("TicketService", () => {
     expect(result.length).toBe(2);
     expect(result[0].id).toBe("ticket-1");
     expect(result[1].id).toBe("ticket-2");
+  });
+
+  describe("listTicketsByTenant", () => {
+    it("should return empty array when parking lots are empty or null", async () => {
+      parkingSpy.getAll.mockReturnValue(of([]));
+
+      const result = await firstValueFrom(service.listTicketsByTenant());
+      expect(result).toEqual([]);
+      expect(parkingTicketsSpy.listTickets).not.toHaveBeenCalled();
+    });
+
+    it("should fetch tickets for each lot, enrich with lot data, and sort descending by entryTime", async () => {
+      parkingSpy.getAll.mockReturnValue(
+        of([
+          { id: "lot-1", name: "Parqueadero Central" },
+          { id: "lot-2", name: "Parqueadero Norte" },
+        ])
+      );
+
+      parkingTicketsSpy.listTickets.mockImplementation(
+        (params: { parking: string }) => {
+          if (params.parking === "lot-1") {
+            return of({
+              data: [
+                {
+                  entryTime: "2026-08-27T10:00:00Z",
+                  id: "t-1",
+                  licensePlate: "AAA111",
+                  status: "OPEN",
+                },
+              ],
+            });
+          }
+          return of({
+            data: [
+              {
+                entryTime: "2026-08-27T14:00:00Z",
+                id: "t-2",
+                licensePlate: "BBB222",
+                status: "CLOSED",
+              },
+              {
+                createdAt: "2026-08-27T08:00:00Z",
+                id: "t-3",
+                licensePlate: "CCC333",
+                status: "OPEN",
+              },
+            ],
+          });
+        }
+      );
+
+      const result = await firstValueFrom(service.listTicketsByTenant());
+
+      expect(result.length).toBe(3);
+      // t-2 is 14:00 (latest)
+      expect(result[0].id).toBe("t-2");
+      expect(result[0].parkingLotId).toBe("lot-2");
+      expect(result[0].parkingLotName).toBe("Parqueadero Norte");
+
+      // t-1 is 10:00
+      expect(result[1].id).toBe("t-1");
+      expect(result[1].parkingLotId).toBe("lot-1");
+      expect(result[1].parkingLotName).toBe("Parqueadero Central");
+
+      // t-3 is 08:00
+      expect(result[2].id).toBe("t-3");
+      expect(result[2].parkingLotId).toBe("lot-2");
+      expect(result[2].parkingLotName).toBe("Parqueadero Norte");
+    });
+
+    it("should gracefully handle errors in individual parking lot ticket requests", async () => {
+      parkingSpy.getAll.mockReturnValue(
+        of([
+          { id: "lot-1", name: "Parqueadero Central" },
+          { id: "lot-broken", name: "Parqueadero Error" },
+        ])
+      );
+
+      parkingTicketsSpy.listTickets.mockImplementation(
+        (params: { parking: string }) => {
+          if (params.parking === "lot-1") {
+            return of({
+              data: [
+                {
+                  entryTime: "2026-08-27T10:00:00Z",
+                  id: "t-1",
+                  licensePlate: "AAA111",
+                  status: "OPEN",
+                },
+              ],
+            });
+          }
+          return throwError(() => new Error("Network error"));
+        }
+      );
+
+      const result = await firstValueFrom(service.listTicketsByTenant());
+
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe("t-1");
+      expect(result[0].parkingLotId).toBe("lot-1");
+    });
   });
 });
