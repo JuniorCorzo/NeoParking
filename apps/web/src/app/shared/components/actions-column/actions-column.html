@@ -1,11 +1,38 @@
 <div class="inline-flex">
-  <nv-button variant="ghost" size="icon" (click)="onViewDetails()">
+  <nv-button
+    variant="ghost"
+    size="icon"
+    [title]="texts.viewTickets"
+    [attr.aria-label]="texts.viewTickets"
+    (click)="onViewTickets()"
+  >
+    <ng-icon name="lucideTicket" size="16"></ng-icon>
+  </nv-button>
+  <nv-button
+    variant="ghost"
+    size="icon"
+    [title]="texts.viewDetails"
+    [attr.aria-label]="texts.viewDetails"
+    (click)="onViewDetails()"
+  >
     <ng-icon name="lucideEye" size="16"></ng-icon>
   </nv-button>
-  <nv-button variant="ghost" size="icon" (click)="onEdit()">
+  <nv-button
+    variant="ghost"
+    size="icon"
+    [title]="texts.editAction"
+    [attr.aria-label]="texts.editAction"
+    (click)="onEdit()"
+  >
     <ng-icon name="lucidePencil" size="16"></ng-icon>
   </nv-button>
-  <nv-button variant="ghost" size="icon" (click)="onDelete()">
+  <nv-button
+    variant="ghost"
+    size="icon"
+    [title]="texts.delete"
+    [attr.aria-label]="texts.delete"
+    (click)="onDelete()"
+  >
     <ng-icon name="lucideTrash2" size="16"></ng-icon>
   </nv-button>
 </div>
