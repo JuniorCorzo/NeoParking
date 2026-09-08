@@ -147,8 +147,31 @@ return context.withSubtotal(fee, PriceLine(concept, fee))
 ```
 if context.settled() → return context unchanged
 if !rate.hasSpecialPolicy() → return context unchanged
-apply ModifiesTypes × OperationsTypes (same logic as deleted RateWithSpecialPolicyDecorator, cleaned up)
-return context.withSubtotal(adjusted, PriceLine(policy.name(), adjusted))
+
+switch (policy.modifies()) {
+    case TIME:
+        newDuration = calculatedAdjustedDuration(context.duration(), policy)
+        adjustedFee = ParkingFeeCalculator.calculateFee(
+            newDuration,
+            context.rate().pricePerUnit(), // FIX: use unit rate pricePerUnit, NOT accumulated subtotal!
+            minDuration,
+            context.rate().timeUnit().getChronoUnit(),
+            RoundingMode.HALF_UP
+        )
+        delta = adjustedFee.subtract(context.subtotal())
+        return context.withSubtotal(adjustedFee, PriceLine(policy.name(), delta))
+
+    case SURCHARGE:
+        surchargeAmount = calculateSurcharge(context.subtotal(), policy)
+        newSubtotal = context.subtotal().add(surchargeAmount)
+        return context.withSubtotal(newSubtotal, PriceLine(policy.name(), surchargeAmount))
+
+    case PRICE:
+    case DISCOUNT:
+        newSubtotal = calculateDiscountedPrice(context.subtotal(), policy) // floors at BigDecimal.ZERO
+        delta = newSubtotal.subtract(context.subtotal()) // negative or zero
+        return context.withSubtotal(newSubtotal, PriceLine(policy.name(), delta))
+}
 ```
 
 **Stub stages:** Return `context` unmodified. Javadoc references the future ticket.
@@ -251,7 +274,7 @@ public PricingEngine pricingEngine() {
 |---|---|
 | `GracePeriodStage` | no grace configured → passthrough; duration ≤ grace + free → settled + subtotal=0; duration ≤ grace + priced → settled + subtotal=flatPrice; duration > grace → passthrough |
 | `BaseRateStage` | settled=true → skip; minCharge respected; billing units ceil'd |
-| `SpecialPolicyStage` | settled=true → skip; no policy → skip; PRICE×{SUBTRACT,SET,PERCENTAGE}; TIME×{SUBTRACT,SET}; floor at 0 |
+| `SpecialPolicyStage` | settled=true → skip; no policy → skip; PRICE/DISCOUNT×{SUBTRACT,SET,PERCENTAGE}; SURCHARGE×{PERCENTAGE,SET}; TIME×{SUBTRACT,SET,PERCENTAGE} verifying pricePerUnit used (not total); delta PriceLine recorded; floor at 0 |
 | `PricingEngine` | settled cuts loop at correct stage; all stages invoked when not settled; breakpoints accumulate correctly |
 | `CalculateRateUseCase` | Clock mockeable → deterministic duration; grace free path → PriceDetailed.total=0+IVA=0; grace priced path; normal billing path |
 

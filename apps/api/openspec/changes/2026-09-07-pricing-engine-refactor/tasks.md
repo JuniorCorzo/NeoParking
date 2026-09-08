@@ -42,12 +42,15 @@
 - [ ] **T-08** `SpecialPolicyStage` — write tests first:
   - settled=true → skip
   - rate has no special policy → skip
-  - PRICE × SUBTRACT → correct deduction, floor at 0
-  - PRICE × SET → replaces subtotal
-  - PRICE × PERCENTAGE → correct discount applied
-  - TIME × SUBTRACT → duration reduced, fee recalculated
-  - TIME × SET → duration replaced, fee recalculated
-  Then implement (port logic from deleted `RateWithSpecialPolicyDecorator`, cleaned).
+  - PRICE / DISCOUNT × SUBTRACT → correct deduction, floor at 0, delta PriceLine recorded
+  - PRICE / DISCOUNT × SET → replaces subtotal, delta PriceLine recorded
+  - PRICE / DISCOUNT × PERCENTAGE → correct discount applied, delta PriceLine recorded
+  - SURCHARGE × PERCENTAGE → surcharge added to subtotal, positive delta PriceLine recorded
+  - SURCHARGE × SET → surcharge sets additional fee
+  - TIME × SUBTRACT → duration reduced, fee recalculated using rate.pricePerUnit() (VERIFY BUG FIX: not accumulated subtotal!)
+  - TIME × SET → duration replaced, fee recalculated using rate.pricePerUnit()
+  - TIME × PERCENTAGE → duration adjusted by percentage, fee recalculated using rate.pricePerUnit()
+  Then implement.
 
 - [ ] **T-09** `SubscriberStage` — stub. Returns context unmodified. Single test: output equals input.
 

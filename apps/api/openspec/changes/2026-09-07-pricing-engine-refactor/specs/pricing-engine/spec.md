@@ -106,29 +106,42 @@ The stage list provided at construction MUST be defensively copied. External mut
 - WHEN stage is applied
 - THEN context is returned unchanged
 
-### Requirement: PRICE × SUBTRACT — floor at zero
+### Requirement: PRICE / DISCOUNT × SUBTRACT — floor at zero
 
-- GIVEN `context.subtotal = 3000`, `policy.modifies = PRICE`, `policy.operation = SUBTRACT`, `policy.valueToModify = 5000`
+- GIVEN `context.subtotal = 3000`, `policy.modifies = PRICE` (or `DISCOUNT`), `policy.operation = SUBTRACT`, `policy.valueToModify = 5000`
 - WHEN stage is applied
 - THEN `context.subtotal = 0.00` (floored, not negative)
+- AND `PriceLine` records delta `-3000.00`
 
-### Requirement: PRICE × SET
+### Requirement: PRICE / DISCOUNT × SET
 
 - GIVEN `context.subtotal = 8000`, `policy.modifies = PRICE`, `policy.operation = SET`, `policy.valueToModify = 2000`
 - WHEN stage is applied
 - THEN `context.subtotal = 2000`
+- AND `PriceLine` records delta `-6000.00`
 
-### Requirement: PRICE × PERCENTAGE
+### Requirement: PRICE / DISCOUNT × PERCENTAGE
 
 - GIVEN `context.subtotal = 10000`, `policy.modifies = PRICE`, `policy.operation = PERCENTAGE`, `policy.valueToModify = 20` (20% discount)
 - WHEN stage is applied
 - THEN `context.subtotal = 8000`
+- AND `PriceLine` records delta `-2000.00`
 
-### Requirement: TIME × SUBTRACT recalculates fee
+### Requirement: SURCHARGE × PERCENTAGE / SET
 
-- GIVEN `context.duration = 120 minutes`, `policy.modifies = TIME`, `policy.operation = SUBTRACT`, `policy.valueToModify = 60`
+- GIVEN `context.subtotal = 10000`, `policy.modifies = SURCHARGE`, `policy.operation = PERCENTAGE`, `policy.valueToModify = 15` (15% surcharge)
 - WHEN stage is applied
-- THEN effective billing duration = 60 minutes; fee recalculated from that duration
+- THEN `context.subtotal = 11500.00`
+- AND `PriceLine` records positive delta `+1500.00`
+
+### Requirement: TIME adjustment uses unit rate pricePerUnit (Fix Bug)
+
+- GIVEN `rate.pricePerUnit = 5000`, `rate.timeUnit = HOURS`, `context.subtotal = 20000` (4 hours)
+- AND `policy.modifies = TIME`, `policy.operation = SUBTRACT`, `policy.valueToModify = 1` (minus 1 hour)
+- WHEN stage is applied
+- THEN effective billing duration = 3 hours
+- AND fee is recalculated as `3 * 5000 = 15000` (MUST NOT use accumulated subtotal 20000)
+- AND `PriceLine` records delta `-5000.00`
 
 ---
 
