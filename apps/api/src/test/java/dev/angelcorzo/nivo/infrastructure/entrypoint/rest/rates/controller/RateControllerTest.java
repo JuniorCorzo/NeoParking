@@ -75,7 +75,7 @@ class RateControllerTest {
             .description("Daytime rate")
             .pricePerUnit(BigDecimal.valueOf(5000))
             .timeUnit(TimeUnitsRate.HOURS)
-            .minChargeTimeMinutes("15")
+            .minChargeTimeMinutes(15)
             .vehicleType(VehicleType.CAR)
             .build();
 

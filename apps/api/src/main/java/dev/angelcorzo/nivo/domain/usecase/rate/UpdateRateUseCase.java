@@ -36,6 +36,6 @@ public class UpdateRateUseCase {
       String description,
       BigDecimal pricePerUnit,
       TimeUnitsRate timeUnit,
-      String minChargeTimeMinutes,
+      int minChargeTimeMinutes,
       VehicleType vehicleType) {}
 }

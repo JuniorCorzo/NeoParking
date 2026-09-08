@@ -64,7 +64,7 @@ class CalculateRateUseCaseTest {
               .name("Hourly")
               .pricePerUnit(BigDecimal.valueOf(5000))
               .timeUnit(TimeUnitsRate.HOURS)
-              .minChargeTimeMinutes("0")
+              .minChargeTimeMinutes(0)
               .build();
 
       ParkingTickets ticket =
@@ -111,7 +111,7 @@ class CalculateRateUseCaseTest {
               .name("Hourly Special")
               .pricePerUnit(BigDecimal.valueOf(5000))
               .timeUnit(TimeUnitsRate.HOURS)
-              .minChargeTimeMinutes("0")
+              .minChargeTimeMinutes(0)
               .specialPolicy(policy)
               .build();
 

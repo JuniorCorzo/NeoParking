@@ -66,7 +66,7 @@ public class RateConfigurationUseCase {
       String description,
       BigDecimal pricePerUnit,
       TimeUnitsRate timeUnit,
-      String minChargeTimeMinutes,
+      int minChargeTimeMinutes,
       VehicleType vehicleType,
       UUID specialPolicyId) {}
 }

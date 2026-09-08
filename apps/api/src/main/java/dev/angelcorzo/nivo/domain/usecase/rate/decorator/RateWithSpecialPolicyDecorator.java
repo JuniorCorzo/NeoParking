@@ -85,7 +85,7 @@ public class RateWithSpecialPolicyDecorator implements RateComponent {
     final RateReference rate = this.rateComponent.getRates();
     final Duration minDuration =
         ParkingFeeCalculator.transfomDuration(
-            Long.parseLong(rate.minChargeTimeMinutes()), ChronoUnit.MINUTES);
+            (long) rate.minChargeTimeMinutes(), ChronoUnit.MINUTES);
 
     return ParkingFeeCalculator.calculateFee(
         newDuration,

@@ -17,7 +17,7 @@ public record RatesDTO(
     String description,
     BigDecimal pricePerUnit,
     TimeUnitsRate timeUnit,
-    String minChargeTimeMinutes,
+    Integer minChargeTimeMinutes,
     VehicleType vehicleType,
     SpecialPoliciesInfo specialPolicy,
     OffsetDateTime createdAt,

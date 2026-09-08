@@ -35,7 +35,7 @@ class UpdateRateUseCaseTest {
     UUID rateId = UUID.randomUUID();
     UpdateRateUseCase.UpdateRate command =
         new UpdateRateUseCase.UpdateRate(
-            rateId, "New Name", "New Desc", BigDecimal.valueOf(6000), TimeUnitsRate.HOURS, "30", VehicleType.CAR);
+            rateId, "New Name", "New Desc", BigDecimal.valueOf(6000), TimeUnitsRate.HOURS, 30, VehicleType.CAR);
 
     Rates existing =
         Rates.builder()
@@ -61,7 +61,7 @@ class UpdateRateUseCaseTest {
     UUID rateId = UUID.randomUUID();
     UpdateRateUseCase.UpdateRate command =
         new UpdateRateUseCase.UpdateRate(
-            rateId, "New Name", "New Desc", BigDecimal.valueOf(6000), TimeUnitsRate.HOURS, "30", VehicleType.CAR);
+            rateId, "New Name", "New Desc", BigDecimal.valueOf(6000), TimeUnitsRate.HOURS, 30, VehicleType.CAR);
 
     when(ratesRepository.findById(rateId)).thenReturn(Optional.empty());
 

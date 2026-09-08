@@ -29,7 +29,7 @@ public class Rates {
   private String description;
   private BigDecimal pricePerUnit;
   private TimeUnitsRate timeUnit;
-  private String minChargeTimeMinutes;
+  private int minChargeTimeMinutes;
   private VehicleType vehicleType;
   private SpecialPoliciesReference specialPolicy;
   private OffsetDateTime createdAt;

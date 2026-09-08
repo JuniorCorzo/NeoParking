@@ -64,7 +64,7 @@ class RateConfigurationUseCaseTest {
               .description("Hourly rate for cars")
               .pricePerUnit(BigDecimal.valueOf(5000))
               .timeUnit(TimeUnitsRate.HOURS)
-              .minChargeTimeMinutes("15")
+              .minChargeTimeMinutes(15)
               .vehicleType(VehicleType.CAR)
               .build();
 
@@ -104,7 +104,7 @@ class RateConfigurationUseCaseTest {
               .description("Promo rate")
               .pricePerUnit(BigDecimal.valueOf(4000))
               .timeUnit(TimeUnitsRate.HOURS)
-              .minChargeTimeMinutes("0")
+              .minChargeTimeMinutes(0)
               .vehicleType(VehicleType.MOTORCYCLE)
               .specialPolicyId(policyId)
               .build();

@@ -29,7 +29,7 @@ public class RateBaseDecorator implements RateComponent {
         ParkingFeeCalculator.calculateFee(
             duration,
             rate.pricePerUnit(),
-            Duration.of(Long.parseLong(rate.minChargeTimeMinutes()), ChronoUnit.MINUTES),
+            Duration.of((long) rate.minChargeTimeMinutes(), ChronoUnit.MINUTES),
             timeUnit.getChronoUnit(),
             RoundingMode.HALF_UP);
 
