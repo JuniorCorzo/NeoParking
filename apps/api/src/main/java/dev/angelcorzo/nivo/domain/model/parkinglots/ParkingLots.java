@@ -79,4 +79,11 @@ public class ParkingLots {
   private OffsetDateTime updatedAt;
 
   private OffsetDateTime deletedAt;
+
+  @Builder.Default
+  private ParkingLotPolicy policy = ParkingLotPolicy.defaults();
+
+  public ParkingLotPolicy getPolicy() {
+    return this.policy != null ? this.policy : ParkingLotPolicy.defaults();
+  }
 }

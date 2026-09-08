@@ -14,6 +14,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -66,6 +67,18 @@ public class ParkingLotsData {
   @ColumnDefault("COP")
   @Column(name = "currency")
   private String currency;
+
+  @ColumnDefault("0")
+  @Column(name = "grace_period_minutes", nullable = false)
+  private Integer gracePeriodMinutes;
+
+  @ColumnDefault("0.00")
+  @Column(name = "grace_period_price", nullable = false)
+  private BigDecimal gracePeriodPrice;
+
+  @ColumnDefault("0.19")
+  @Column(name = "iva_rate", nullable = false)
+  private BigDecimal ivaRate;
 
   @Column(name = "operating_hours")
   @JdbcTypeCode(SqlTypes.STRUCT)
