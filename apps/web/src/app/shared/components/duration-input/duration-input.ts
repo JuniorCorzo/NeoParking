@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   forwardRef,
   input,
   signal,
@@ -42,7 +43,7 @@ import {
             [placeholder]="placeholder()"
             [value]="amount().toString()"
             [disabled]="disabled()"
-            [error]="error()"
+            [error]="normalizedError()"
             (input)="onAmountInput($event)"
             (blur)="onBlur()"
           />
@@ -68,11 +69,23 @@ export class DurationInputComponent implements ControlValueAccessor {
   readonly id = input<string>("duration-input");
   readonly label = input<string>("Tiempo de gracia");
   readonly placeholder = input<string>("0");
-  readonly error = input<ValidationError.WithFieldTree[] | undefined>();
+  readonly error = input<
+    string | ValidationError.WithFieldTree[] | undefined
+  >();
 
   readonly amount = signal<number>(0);
   readonly unit = signal<DurationUnit>("MINUTES");
   readonly disabled = signal<boolean>(false);
+
+  readonly normalizedError = computed<
+    ValidationError.WithFieldTree[] | undefined
+  >(() => {
+    const err = this.error();
+    if (typeof err === "string") {
+      return [{ message: err } as ValidationError.WithFieldTree];
+    }
+    return err;
+  });
 
   readonly unitOptions: DurationOption[] = [...DURATION_UNIT_OPTIONS];
   readonly displayUnitFn = (opt: DurationOption): string => opt.label;
