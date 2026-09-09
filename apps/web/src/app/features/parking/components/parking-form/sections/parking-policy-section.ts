@@ -14,12 +14,14 @@ import {
   TypographyMuted,
 } from "@nivo-sass/design-system";
 import { DurationInputComponent } from "@shared/components/duration-input/duration-input";
+import { PercentageInputComponent } from "@shared/components/percentage-input/percentage-input";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     InputComponent,
     DurationInputComponent,
+    PercentageInputComponent,
     TypographyH3,
     TypographyMuted,
     FormField,
@@ -68,11 +70,10 @@ import { DurationInputComponent } from "@shared/components/duration-input/durati
         [formField]="gracePeriodPrice()"
         [error]="gracePeriodPriceError()"
       />
-      <nv-input
+      <app-percentage-input
         id="ivaRate"
-        type="number"
-        label="Tasa IVA (Ej. 0.19)"
-        placeholder="0.19"
+        label="Tasa IVA (%)"
+        placeholder="19"
         [formField]="ivaRate()"
         [error]="ivaRateError()"
       />
