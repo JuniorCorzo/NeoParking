@@ -6,6 +6,7 @@ import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.users.dto.UserInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -24,5 +25,8 @@ public record ParkingLotsResponse(
     String currency,
     OperatingHoursDTO operatingHours,
     OffsetDateTime createdAt,
-    OffsetDateTime updatedAt) {
+    OffsetDateTime updatedAt,
+    Integer gracePeriodMinutes,
+    BigDecimal gracePeriodPrice,
+    BigDecimal ivaRate) {
 }

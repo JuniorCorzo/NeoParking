@@ -1,5 +1,6 @@
 package dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,5 +21,8 @@ public record UpsertParkingLotsRequest(
     @Pattern(regexp = "^UTC([+-]([0-9]{1,2}|1[0-4])(:[0-5][0-9])?)?$") String timezone,
     @NotBlank String currency,
     @Valid OperatingHoursDTO operatingHours,
-    @Valid List<CreatedSlots> slots) {
+    @Valid List<CreatedSlots> slots,
+    Integer gracePeriodMinutes,
+    BigDecimal gracePeriodPrice,
+    BigDecimal ivaRate) {
 }
