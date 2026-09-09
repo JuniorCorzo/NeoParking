@@ -1,6 +1,7 @@
 import { Component, signal } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import type { ValidationError } from "@angular/forms/signals";
 import { By } from "@angular/platform-browser";
 import { DurationInputComponent } from "./duration-input";
 
@@ -20,7 +21,7 @@ class TestHostComponent {
   readonly control = new FormControl<number>(0);
   readonly label = signal("Tiempo de gracia");
   readonly id = signal("grace-duration");
-  readonly error = signal<string | undefined>(undefined);
+  readonly error = signal<ValidationError.WithFieldTree[] | undefined>(undefined);
 }
 
 describe("DurationInputComponent", () => {
