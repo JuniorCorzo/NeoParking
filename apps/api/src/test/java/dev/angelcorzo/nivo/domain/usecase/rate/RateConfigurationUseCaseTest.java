@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import dev.angelcorzo.nivo.domain.model.commons.exceptions.InvalidDomainException;
 import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLots;
 import dev.angelcorzo.nivo.domain.model.parkinglots.exceptions.ParkingNotExistsException;
 import dev.angelcorzo.nivo.domain.model.parkinglots.gateways.ParkingLotsRepository;
@@ -143,6 +144,8 @@ class RateConfigurationUseCaseTest {
           RateConfigurationUseCase.CreateTariff.builder()
               .parkingLotId(UUID.randomUUID())
               .specialPolicyId(policyId)
+              .pricePerUnit(BigDecimal.valueOf(5000))
+              .minChargeTimeMinutes(15)
               .build();
 
       when(specialPoliciesRepository.existsById(policyId)).thenReturn(false);
@@ -158,12 +161,53 @@ class RateConfigurationUseCaseTest {
       RateConfigurationUseCase.CreateTariff command =
           RateConfigurationUseCase.CreateTariff.builder()
               .parkingLotId(parkingId)
+              .pricePerUnit(BigDecimal.valueOf(5000))
+              .minChargeTimeMinutes(15)
               .build();
 
       when(parkingLotsRepository.existsById(parkingId)).thenReturn(false);
 
       assertThatThrownBy(() -> useCase.execute(command))
           .isInstanceOf(ParkingNotExistsException.class);
+    }
+
+    @Test
+    @DisplayName("Should throw InvalidDomainException when pricePerUnit is null")
+    void shouldThrowWhenPricePerUnitIsNull() {
+      assertThatThrownBy(
+              () ->
+                  RateConfigurationUseCase.CreateTariff.builder()
+                      .pricePerUnit(null)
+                      .minChargeTimeMinutes(0)
+                      .build())
+          .isInstanceOf(InvalidDomainException.class)
+          .hasMessageContaining("Rate price cannot be negative or null");
+    }
+
+    @Test
+    @DisplayName("Should throw InvalidDomainException when pricePerUnit is negative")
+    void shouldThrowWhenPricePerUnitIsNegative() {
+      assertThatThrownBy(
+              () ->
+                  RateConfigurationUseCase.CreateTariff.builder()
+                      .pricePerUnit(BigDecimal.valueOf(-100))
+                      .minChargeTimeMinutes(0)
+                      .build())
+          .isInstanceOf(InvalidDomainException.class)
+          .hasMessageContaining("Rate price cannot be negative or null");
+    }
+
+    @Test
+    @DisplayName("Should throw InvalidDomainException when minChargeTimeMinutes is negative")
+    void shouldThrowWhenMinChargeTimeMinutesIsNegative() {
+      assertThatThrownBy(
+              () ->
+                  RateConfigurationUseCase.CreateTariff.builder()
+                      .pricePerUnit(BigDecimal.valueOf(5000))
+                      .minChargeTimeMinutes(-1)
+                      .build())
+          .isInstanceOf(InvalidDomainException.class)
+          .hasMessageContaining("Minimum charge minutes cannot be negative");
     }
   }
 }

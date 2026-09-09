@@ -5,6 +5,8 @@ import dev.angelcorzo.nivo.domain.model.rates.enums.TimeUnitsRate;
 import dev.angelcorzo.nivo.domain.model.rates.enums.VehicleType;
 import dev.angelcorzo.nivo.domain.model.rates.exceptions.RateNotFoundException;
 import dev.angelcorzo.nivo.domain.model.rates.gateways.RatesRepository;
+import dev.angelcorzo.nivo.domain.model.rates.valueobject.MinChargeDuration;
+import dev.angelcorzo.nivo.domain.model.rates.valueobject.RatePrice;
 import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -37,5 +39,11 @@ public class UpdateRateUseCase {
       BigDecimal pricePerUnit,
       TimeUnitsRate timeUnit,
       int minChargeTimeMinutes,
-      VehicleType vehicleType) {}
+      VehicleType vehicleType) {
+
+    public UpdateRate {
+      RatePrice.of(pricePerUnit);
+      MinChargeDuration.of(minChargeTimeMinutes);
+    }
+  }
 }
