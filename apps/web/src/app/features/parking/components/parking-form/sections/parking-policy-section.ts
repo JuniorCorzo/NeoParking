@@ -13,10 +13,18 @@ import {
   TypographyH3,
   TypographyMuted,
 } from "@nivo-sass/design-system";
+import { DurationInputComponent } from "@shared/components/duration-input/duration-input";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [InputComponent, TypographyH3, TypographyMuted, FormField, NgIcon],
+  imports: [
+    InputComponent,
+    DurationInputComponent,
+    TypographyH3,
+    TypographyMuted,
+    FormField,
+    NgIcon,
+  ],
   providers: [provideIcons({ lucideReceipt })],
   selector: "app-parking-policy-section",
   standalone: true,
@@ -45,10 +53,9 @@ import {
     </div>
 
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-      <nv-input
+      <app-duration-input
         id="gracePeriodMinutes"
-        type="number"
-        label="Tiempo de gracia (minutos)"
+        label="Tiempo de gracia"
         placeholder="0"
         [formField]="gracePeriodMinutes()"
         [error]="gracePeriodMinutesError()"
