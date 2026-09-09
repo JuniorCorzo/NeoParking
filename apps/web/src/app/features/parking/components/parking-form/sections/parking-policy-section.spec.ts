@@ -2,6 +2,8 @@ import { Component, signal } from "@angular/core";
 import type { ComponentFixture } from "@angular/core/testing";
 import { TestBed } from "@angular/core/testing";
 import { form, min, required } from "@angular/forms/signals";
+import { By } from "@angular/platform-browser";
+import { DurationInputComponent } from "@shared/components/duration-input/duration-input";
 
 import { ParkingPolicySectionComponent } from "./parking-policy-section";
 
@@ -51,7 +53,15 @@ describe("ParkingPolicySectionComponent", () => {
     expect(compiled.textContent).toContain("Reglas de tiempo de gracia");
   });
 
-  it("should render all three numeric inputs", () => {
+  it("should render duration-input for grace period", () => {
+    const durationInput = fixture.debugElement.query(
+      By.directive(DurationInputComponent)
+    );
+    expect(durationInput).toBeTruthy();
+    expect(durationInput.componentInstance.label()).toBe("Tiempo de gracia");
+  });
+
+  it("should render all three numeric inputs across policy section", () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const inputs = compiled.querySelectorAll("input");
     expect(inputs.length).toBe(3);
