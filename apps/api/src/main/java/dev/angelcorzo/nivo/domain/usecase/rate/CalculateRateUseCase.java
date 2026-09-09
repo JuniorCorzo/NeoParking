@@ -11,6 +11,7 @@ import dev.angelcorzo.nivo.domain.model.rates.valueobject.RateReference;
 import dev.angelcorzo.nivo.domain.usecase.rate.dtos.PriceDetailed;
 import dev.angelcorzo.nivo.domain.usecase.rate.engine.PricingContext;
 import dev.angelcorzo.nivo.domain.usecase.rate.engine.PricingEngine;
+import dev.angelcorzo.nivo.domain.usecase.rate.engine.StayInterval;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -58,13 +59,10 @@ public class CalculateRateUseCase {
             ? this.authenticationContextGateway.getCurrentTenant().getCompanyName()
             : "Nivo Parking";
     final RateReference rate = parkingTicket.getRate();
+    final StayInterval stayInterval =
+        StayInterval.of(parkingTicket.getEntryTime(), OffsetDateTime.now(this.clock));
 
-    final PricingContext context =
-        PricingContext.of(
-            rate,
-            policy,
-            parkingTicket.getEntryTime(),
-            OffsetDateTime.now(this.clock));
+    final PricingContext context = PricingContext.of(rate, policy, stayInterval);
 
     return this.pricingEngine.calculate(context, tenantName);
   }

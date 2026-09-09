@@ -1,7 +1,9 @@
 package dev.angelcorzo.nivo.domain.usecase.rate.engine;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import dev.angelcorzo.nivo.domain.model.commons.exceptions.InvalidDomainException;
 import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLotPolicy;
 import dev.angelcorzo.nivo.domain.model.rates.enums.TimeUnitsRate;
 import dev.angelcorzo.nivo.domain.model.rates.enums.VehicleType;
@@ -18,7 +20,33 @@ import org.junit.jupiter.api.Test;
 class PricingContextTest {
 
   @Test
-  @DisplayName("of() should calculate duration and initialize subtotal to zero")
+  @DisplayName("of() with StayInterval should initialize context and expose stayInterval and delegations")
+  void shouldInitializeContextWithStayInterval() {
+    OffsetDateTime entry = OffsetDateTime.parse("2026-09-07T10:00:00Z");
+    OffsetDateTime exit = OffsetDateTime.parse("2026-09-07T11:30:00Z");
+    StayInterval interval = StayInterval.of(entry, exit);
+
+    RateReference rate = RateReference.builder()
+        .id(UUID.randomUUID())
+        .pricePerUnit(BigDecimal.valueOf(5000))
+        .timeUnit(TimeUnitsRate.HOURS)
+        .minChargeTimeMinutes(0)
+        .vehicleType(VehicleType.CAR)
+        .build();
+
+    PricingContext ctx = PricingContext.of(rate, ParkingLotPolicy.defaults(), interval);
+
+    assertThat(ctx.stayInterval()).isEqualTo(interval);
+    assertThat(ctx.duration()).isEqualTo(Duration.ofMinutes(90));
+    assertThat(ctx.entryTime()).isEqualTo(entry);
+    assertThat(ctx.exitTime()).isEqualTo(exit);
+    assertThat(ctx.subtotal()).isEqualByComparingTo(BigDecimal.ZERO);
+    assertThat(ctx.breakpoints()).isEmpty();
+    assertThat(ctx.settled()).isFalse();
+  }
+
+  @Test
+  @DisplayName("legacy of() should calculate duration and initialize subtotal to zero")
   void shouldInitializeContext() {
     OffsetDateTime entry = OffsetDateTime.parse("2026-09-07T10:00:00Z");
     OffsetDateTime exit = OffsetDateTime.parse("2026-09-07T11:30:00Z");
@@ -33,10 +61,37 @@ class PricingContextTest {
 
     PricingContext ctx = PricingContext.of(rate, ParkingLotPolicy.defaults(), entry, exit);
 
+    assertThat(ctx.stayInterval()).isNotNull();
+    assertThat(ctx.stayInterval().entryTime()).isEqualTo(entry);
+    assertThat(ctx.stayInterval().exitTime()).isEqualTo(exit);
     assertThat(ctx.duration()).isEqualTo(Duration.ofMinutes(90));
+    assertThat(ctx.entryTime()).isEqualTo(entry);
+    assertThat(ctx.exitTime()).isEqualTo(exit);
     assertThat(ctx.subtotal()).isEqualByComparingTo(BigDecimal.ZERO);
     assertThat(ctx.breakpoints()).isEmpty();
     assertThat(ctx.settled()).isFalse();
+  }
+
+  @Test
+  @DisplayName("legacy of() should throw InvalidDomainException when exit time is before entry time")
+  void legacyOfShouldThrowWhenExitBeforeEntry() {
+    OffsetDateTime entry = OffsetDateTime.parse("2026-09-07T12:00:00Z");
+    OffsetDateTime exit = OffsetDateTime.parse("2026-09-07T11:00:00Z");
+    RateReference rate = RateReference.builder().build();
+
+    assertThatThrownBy(() -> PricingContext.of(rate, ParkingLotPolicy.defaults(), entry, exit))
+        .isInstanceOf(InvalidDomainException.class)
+        .hasMessage("Exit time cannot be before entry time");
+  }
+
+  @Test
+  @DisplayName("legacy of() should throw InvalidDomainException when entry or exit time is null")
+  void legacyOfShouldThrowWhenTimesAreNull() {
+    RateReference rate = RateReference.builder().build();
+
+    assertThatThrownBy(() -> PricingContext.of(rate, ParkingLotPolicy.defaults(), null, null))
+        .isInstanceOf(InvalidDomainException.class)
+        .hasMessage("Entry time and exit time cannot be null");
   }
 
   @Test

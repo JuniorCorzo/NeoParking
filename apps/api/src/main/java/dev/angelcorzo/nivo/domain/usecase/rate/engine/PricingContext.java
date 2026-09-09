@@ -15,9 +15,7 @@ import lombok.Builder;
 public record PricingContext(
     RateReference rate,
     ParkingLotPolicy policy,
-    OffsetDateTime entryTime,
-    OffsetDateTime exitTime,
-    Duration duration,
+    StayInterval stayInterval,
     BigDecimal subtotal,
     List<PriceLine> breakpoints,
     boolean settled
@@ -30,11 +28,30 @@ public record PricingContext(
   public static PricingContext of(
       RateReference rate,
       ParkingLotPolicy policy,
+      StayInterval stayInterval
+  ) {
+    return new PricingContext(rate, policy, stayInterval, BigDecimal.ZERO, List.of(), false);
+  }
+
+  public static PricingContext of(
+      RateReference rate,
+      ParkingLotPolicy policy,
       OffsetDateTime entryTime,
       OffsetDateTime exitTime
   ) {
-    Duration duration = Duration.between(entryTime, exitTime);
-    return new PricingContext(rate, policy, entryTime, exitTime, duration, BigDecimal.ZERO, List.of(), false);
+    return of(rate, policy, StayInterval.of(entryTime, exitTime));
+  }
+
+  public OffsetDateTime entryTime() {
+    return stayInterval != null ? stayInterval.entryTime() : null;
+  }
+
+  public OffsetDateTime exitTime() {
+    return stayInterval != null ? stayInterval.exitTime() : null;
+  }
+
+  public Duration duration() {
+    return stayInterval != null ? stayInterval.duration() : Duration.ZERO;
   }
 
   public PricingContext withSubtotal(BigDecimal newSubtotal, PriceLine line) {

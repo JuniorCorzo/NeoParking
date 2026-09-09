@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import dev.angelcorzo.nivo.domain.model.authentication.gateway.AuthenticationContextGateway;
+import dev.angelcorzo.nivo.domain.model.commons.exceptions.InvalidDomainException;
 import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLotPolicy;
 import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLots;
 import dev.angelcorzo.nivo.domain.model.parkinglots.gateways.ParkingLotsRepository;
@@ -167,5 +168,26 @@ class CalculateRateUseCaseTest {
     assertThat(price).isNotNull();
     assertThat(price.getSubtotal()).isEqualByComparingTo(new BigDecimal("10000.00"));
     assertThat(price.getTotal()).isEqualByComparingTo(new BigDecimal("11900.00"));
+  }
+
+  @Test
+  @DisplayName("Should throw InvalidDomainException when ticket entry time is in the future")
+  void shouldThrowWhenEntryTimeIsInFuture() {
+    UUID ticketId = UUID.randomUUID();
+    RateReference rate = RateReference.builder().build();
+
+    // fixedClock is at 12:00:00Z, entry time 13:00:00Z is after exitTime (clock now)
+    ParkingTickets ticket = ParkingTickets.builder()
+        .id(ticketId)
+        .rate(rate)
+        .entryTime(OffsetDateTime.parse("2026-09-07T13:00:00Z"))
+        .build();
+
+    when(ticketsRepository.findById(ticketId)).thenReturn(Optional.of(ticket));
+    when(authGateway.getCurrentTenant()).thenReturn(Tenants.builder().companyName("Central Parking").build());
+
+    assertThatThrownBy(() -> calculateRateUseCase.execute(ticketId))
+        .isInstanceOf(InvalidDomainException.class)
+        .hasMessage("Exit time cannot be before entry time");
   }
 }
