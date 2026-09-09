@@ -4,7 +4,6 @@ import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLotPolicy;
 import dev.angelcorzo.nivo.domain.usecase.rate.dtos.PriceLine;
 import dev.angelcorzo.nivo.domain.usecase.rate.engine.PricingContext;
 import dev.angelcorzo.nivo.domain.usecase.rate.engine.PricingStage;
-import java.time.Duration;
 
 public class GracePeriodStage implements PricingStage {
 
@@ -15,20 +14,15 @@ public class GracePeriodStage implements PricingStage {
     }
 
     ParkingLotPolicy policy = context.policy();
-    if (policy == null || !policy.hasGracePeriod()) {
+    if (policy == null || policy.gracePeriod() == null || !policy.gracePeriod().covers(context.duration())) {
       return context;
     }
 
-    Duration graceDuration = Duration.ofMinutes(policy.gracePeriodMinutes());
-    if (context.duration().compareTo(graceDuration) <= 0) {
-      if (policy.isGraceFree()) {
-        return context.toSettled();
-      } else {
-        PriceLine line = PriceLine.of("Grace period", policy.gracePeriodPrice());
-        return context.withSubtotal(policy.gracePeriodPrice(), line).toSettled();
-      }
+    if (policy.gracePeriod().isFree()) {
+      return context.toSettled();
     }
 
-    return context;
+    PriceLine line = PriceLine.of("Grace period", policy.gracePeriod().price());
+    return context.withSubtotal(policy.gracePeriod().price(), line).toSettled();
   }
 }
