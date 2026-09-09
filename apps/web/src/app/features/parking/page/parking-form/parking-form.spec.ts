@@ -35,7 +35,10 @@ describe("ParkingFormComponent", () => {
     coordinates: { latitude: 4.6, longitude: -74 },
     createdAt: new Date(),
     currency: "COP",
+    gracePeriodMinutes: 0,
+    gracePeriodPrice: 0,
     id: "new-lot",
+    ivaRate: 0.19,
     name: "Nuevo",
     operatingHours: { closeTime: "20:00:00-05:00", openTime: "08:00:00-05:00" },
     owner: {
@@ -65,6 +68,9 @@ describe("ParkingFormComponent", () => {
           },
           coordinates: { latitude: 4.6, longitude: -74 },
           currency: "COP",
+          gracePeriodMinutes: 10,
+          gracePeriodPrice: 200,
+          ivaRate: 0.19,
           name: "Test",
           operatingHours: {
             closeTime: "20:00:00-05:00",

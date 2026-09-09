@@ -14,7 +14,10 @@ export interface ParkingLotListItemResponse {
   coordinates: CoordinatesDto;
   createdAt: string;
   currency: string;
+  gracePeriodMinutes?: number;
+  gracePeriodPrice?: number;
   id: string;
+  ivaRate?: number;
   name: string;
   occuppationRate: number;
   operatingHours?: OperatingHoursDto;

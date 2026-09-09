@@ -4,6 +4,7 @@ import {
   disabled,
   form,
   maxLength,
+  min,
   minLength,
   pattern,
   required,
@@ -62,6 +63,9 @@ export class ParkingFormFacade {
       longitude: 0,
     },
     currency: "COP",
+    gracePeriodMinutes: 0,
+    gracePeriodPrice: 0,
+    ivaRate: 0.19,
     name: "",
     operatingHours: {
       closeTime: "",
@@ -115,6 +119,25 @@ export class ParkingFormFacade {
         message: this.fieldTexts.operatingHours.closeTime.errors.invalidFormat,
       }
     );
+
+    required(schemaPath.gracePeriodMinutes, {
+      message: "El tiempo de gracia es requerido",
+    });
+    min(schemaPath.gracePeriodMinutes, 0, {
+      message: "El tiempo de gracia no puede ser negativo",
+    });
+    required(schemaPath.gracePeriodPrice, {
+      message: "La tarifa de tiempo de gracia es requerida",
+    });
+    min(schemaPath.gracePeriodPrice, 0, {
+      message: "La tarifa de tiempo de gracia no puede ser negativa",
+    });
+    required(schemaPath.ivaRate, {
+      message: "La tasa de IVA es requerida",
+    });
+    min(schemaPath.ivaRate, 0, {
+      message: "La tasa de IVA no puede ser negativa",
+    });
   });
 
   readonly isSelectedCoordinates = computed(() => !!this.selectedCoordinates());
@@ -202,6 +225,9 @@ export class ParkingFormFacade {
         )
       );
     this.form.currency().value.set(model.currency);
+    this.form.gracePeriodMinutes().value.set(model.gracePeriodMinutes ?? 0);
+    this.form.gracePeriodPrice().value.set(model.gracePeriodPrice ?? 0);
+    this.form.ivaRate().value.set(model.ivaRate ?? 0.19);
     this.slots.set(model.slots ?? []);
     this.originalSlots.set(structuredClone(model.slots ?? []));
 
@@ -290,6 +316,9 @@ export class ParkingFormFacade {
       },
       coordinates,
       currency: initial.currency,
+      gracePeriodMinutes: Number(this.form.gracePeriodMinutes().value() ?? 0),
+      gracePeriodPrice: Number(this.form.gracePeriodPrice().value() ?? 0),
+      ivaRate: Number(this.form.ivaRate().value() ?? 0.19),
       name: this.form.name().value(),
       operatingHours: {
         closeTime: this.formatInputTimeForOffsetTime(
