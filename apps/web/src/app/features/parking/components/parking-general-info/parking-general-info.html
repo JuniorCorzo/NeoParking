@@ -27,13 +27,13 @@
         >
           {{ LABELS_DETAIL.fields.address }}
         </nv-muted>
-        <span
-          class="text-foreground text-xs font-semibold break-words sm:text-sm"
+        <nv-span
+          class="text-foreground text-xs font-semibold wrap-break-word sm:text-sm"
         >
           {{ addressLine() || 'Sin dirección' }}
-        </span>
+        </nv-span>
         @if (addressSubline()) {
-        <nv-muted class="block text-[11px] break-words sm:text-xs">
+        <nv-muted class="block text-[11px] wrap-break-word sm:text-xs">
           {{ addressSubline() }}
         </nv-muted>
         }
@@ -51,6 +51,19 @@
           {{ formattedCoords() }}
         </nv-mono>
       </div>
+
+      <div
+        class="bg-muted/50 border-border flex flex-col gap-1 rounded-xl border p-3 sm:p-3.5"
+      >
+        <nv-muted
+          class="block text-[11px] font-semibold tracking-wider uppercase sm:text-xs"
+        >
+          {{ LABELS_DETAIL.fields.operatingHours }}
+        </nv-muted>
+        <nv-span class="text-foreground text-xs font-semibold sm:text-sm">
+          {{ operatingHoursText() }}
+        </nv-span>
+      </div>
     </div>
 
     <!-- Column 2 -->
@@ -63,9 +76,9 @@
         >
           {{ LABELS_DETAIL.fields.createdAt }}
         </nv-muted>
-        <span class="text-foreground text-xs font-semibold sm:text-sm">
+        <nv-span class="text-foreground text-xs font-semibold sm:text-sm">
           {{ formattedDate(p.createdAt) }}
-        </span>
+        </nv-span>
       </div>
 
       <div
@@ -76,9 +89,9 @@
         >
           {{ LABELS_DETAIL.fields.updatedAt }}
         </nv-muted>
-        <span class="text-foreground text-xs font-semibold sm:text-sm">
+        <nv-span class="text-foreground text-xs font-semibold sm:text-sm">
           {{ formattedDate(p.updatedAt) }}
-        </span>
+        </nv-span>
       </div>
 
       <div
@@ -91,6 +104,59 @@
         </nv-muted>
         <nv-mono class="text-foreground block text-xs font-bold break-all">
           {{ p.id }}
+        </nv-mono>
+      </div>
+    </div>
+  </div>
+
+  <!-- Policies Section -->
+  <div class="border-border border-t pt-4 sm:pt-5">
+    <div class="mb-3 sm:mb-4">
+      <nv-h3 class="text-sm font-bold sm:text-base">
+        {{ LABELS_DETAIL.fields.policyTitle }}
+      </nv-h3>
+      <nv-muted class="block text-xs">
+        {{ LABELS_DETAIL.fields.policySubtitle }}
+      </nv-muted>
+    </div>
+
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+      <div
+        class="bg-muted/50 border-border flex flex-col gap-1 rounded-xl border p-3 sm:p-3.5"
+      >
+        <nv-muted
+          class="block text-[11px] font-semibold tracking-wider uppercase sm:text-xs"
+        >
+          {{ LABELS_DETAIL.fields.gracePeriodMinutes }}
+        </nv-muted>
+        <nv-span class="text-foreground text-xs font-semibold sm:text-sm">
+          {{ gracePeriodText() }}
+        </nv-span>
+      </div>
+
+      <div
+        class="bg-muted/50 border-border flex flex-col gap-1 rounded-xl border p-3 sm:p-3.5"
+      >
+        <nv-muted
+          class="block text-[11px] font-semibold tracking-wider uppercase sm:text-xs"
+        >
+          {{ LABELS_DETAIL.fields.gracePeriodPrice }}
+        </nv-muted>
+        <nv-mono class="text-foreground block text-xs font-bold sm:text-sm">
+          {{ gracePeriodPriceText() }}
+        </nv-mono>
+      </div>
+
+      <div
+        class="bg-muted/50 border-border flex flex-col gap-1 rounded-xl border p-3 sm:p-3.5"
+      >
+        <nv-muted
+          class="block text-[11px] font-semibold tracking-wider uppercase sm:text-xs"
+        >
+          {{ LABELS_DETAIL.fields.ivaRate }}
+        </nv-muted>
+        <nv-mono class="text-foreground block text-xs font-bold sm:text-sm">
+          {{ ivaRateText() }}
         </nv-mono>
       </div>
     </div>
