@@ -1,9 +1,12 @@
-package dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto;
+package dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.commons.AddressDTO;
+import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.commons.CoordinatesDTO;
+import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.commons.OperatingHoursDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.time.OffsetTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
@@ -19,7 +22,7 @@ import lombok.Builder;
 @Builder(toBuilder = true)
 @Schema(description = "Parking lot with aggregated slot distribution", requiredProperties = { "id", "name",
     "address", "coordinates", "occuppationRate", "currency", "createdAt", "updatedAt", "slotDistribution", "ownerName",
-    "totalCapacity" })
+    "totalCapacity", "operatingHours", "gracePeriodMinutes", "gracePeriodPrice", "ivaRate" })
 public record ParkingLotListItemResponse(
     UUID id,
     String name,
@@ -32,5 +35,8 @@ public record ParkingLotListItemResponse(
     List<SlotDistributionResponse> slotDistribution,
     String ownerName,
     Long totalCapacity,
-    OperatingHoursDTO operatingHours) {
+    OperatingHoursDTO operatingHours,
+    Integer gracePeriodMinutes,
+    BigDecimal gracePeriodPrice,
+    BigDecimal ivaRate) {
 }

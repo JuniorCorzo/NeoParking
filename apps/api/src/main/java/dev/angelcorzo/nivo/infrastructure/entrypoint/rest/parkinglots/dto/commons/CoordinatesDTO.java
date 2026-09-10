@@ -1,4 +1,4 @@
-package dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto;
+package dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.commons;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

@@ -1,14 +1,16 @@
-package dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto;
+package dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.request;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.UUID;
-
+import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.commons.AddressDTO;
+import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.commons.CoordinatesDTO;
+import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.commons.OperatingHoursDTO;
 import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.slot.dto.CreatedSlots;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
 import lombok.Builder;
 
 @Builder(toBuilder = true)

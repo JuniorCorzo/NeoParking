@@ -58,12 +58,22 @@ public abstract class ParkingLotsMapper implements BaseMapper<ParkingLots, Parki
         data.getIvaRate() != null ? data.getIvaRate() : new BigDecimal("0.19"));
   }
 
+  protected ParkingLotPolicy toPolicy(ParkingLotSummaryData data) {
+    if (data == null)
+      return ParkingLotPolicy.defaults();
+    return new ParkingLotPolicy(
+        data.gracePeriodMinutes() != null ? data.gracePeriodMinutes() : 0,
+        data.gracePeriodPrice() != null ? data.gracePeriodPrice() : BigDecimal.ZERO,
+        data.ivaRate() != null ? data.ivaRate() : new BigDecimal("0.19"));
+  }
+
   @Mapping(target = "address", expression = "java(toAddress(data))")
   @Mapping(target = "coordinates", expression = "java(toCoordinates(data))")
   @Mapping(target = "createdAt", source = "createdAt")
   @Mapping(target = "updatedAt", source = "updatedAt")
   @Mapping(target = "slotDistribution", source = "slotDistribution")
   @Mapping(target = "operatingHours", expression = "java(toOperatingHours(data))")
+  @Mapping(target = "policy", expression = "java(toPolicy(data))")
   public abstract ParkingLotListItem toListItem(ParkingLotSummaryData data);
 
   protected Address toAddress(ParkingLotSummaryData data) {

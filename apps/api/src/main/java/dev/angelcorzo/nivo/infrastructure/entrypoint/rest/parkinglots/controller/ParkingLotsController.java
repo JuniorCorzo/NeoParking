@@ -1,9 +1,9 @@
 package dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.controller;
 
 import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.commons.dto.Response;
-import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.ParkingLotListItemResponse;
-import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.ParkingLotsResponse;
-import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.UpsertParkingLotsRequest;
+import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.request.UpsertParkingLotsRequest;
+import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.response.ParkingLotListItemResponse;
+import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.response.ParkingLotsResponse;
 import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.enums.ParkingLotsMessages;
 import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.mappers.ParkingLotsMapper;
 import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.rates.dto.CreateRate;

@@ -1,9 +1,9 @@
 package dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.mappers;
 
 import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.commons.config.MapperStructConfig;
-import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.ParkingLotListItemResponse;
-import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.ParkingLotsResponse;
-import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.UpsertParkingLotsRequest;
+import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.request.UpsertParkingLotsRequest;
+import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.response.ParkingLotListItemResponse;
+import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.response.ParkingLotsResponse;
 import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLotListItem;
 import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLotPolicy;
 import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLots;
@@ -22,6 +22,9 @@ public interface ParkingLotsMapper {
   @Mapping(target = "ivaRate", expression = "java(model.getPolicy().ivaRate())")
   ParkingLotsResponse toDTO(ParkingLots model);
 
+  @Mapping(target = "gracePeriodMinutes", expression = "java(model.policy() != null ? model.policy().gracePeriodMinutes() : 0)")
+  @Mapping(target = "gracePeriodPrice", expression = "java(model.policy() != null ? model.policy().gracePeriodPrice() : java.math.BigDecimal.ZERO)")
+  @Mapping(target = "ivaRate", expression = "java(model.policy() != null ? model.policy().ivaRate() : new java.math.BigDecimal(\"0.19\"))")
   ParkingLotListItemResponse toListItemResponse(ParkingLotListItem model);
 
   default ParkingLotPolicy toPolicy(UpsertParkingLotsRequest dto) {
