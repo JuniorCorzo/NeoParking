@@ -11,10 +11,7 @@ import { NG_VALUE_ACCESSOR } from "@angular/forms";
 import type { ValidationError } from "@angular/forms/signals";
 import { InputComponent, SelectComponent } from "@nivo-sass/design-system";
 
-import type {
-  DurationOption,
-  DurationUnit,
-} from "../../utils/duration.utils";
+import type { DurationOption, DurationUnit } from "../../utils/duration.utils";
 import {
   DURATION_UNIT_OPTIONS,
   DurationConverter,

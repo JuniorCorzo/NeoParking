@@ -78,7 +78,8 @@ describe("ParkingPolicySectionComponent", () => {
     const durationInput = fixture.debugElement.query(
       By.directive(DurationInputComponent)
     );
-    const durationComp: DurationInputComponent = durationInput.componentInstance;
+    const durationComp: DurationInputComponent =
+      durationInput.componentInstance;
 
     durationComp.onUnitChange("HOURS");
     durationComp.onAmountChange(2);
@@ -91,7 +92,8 @@ describe("ParkingPolicySectionComponent", () => {
     const durationInput = fixture.debugElement.query(
       By.directive(DurationInputComponent)
     );
-    const durationComp: DurationInputComponent = durationInput.componentInstance;
+    const durationComp: DurationInputComponent =
+      durationInput.componentInstance;
 
     expect(durationComp.error()).toEqual([]);
 
@@ -103,9 +105,7 @@ describe("ParkingPolicySectionComponent", () => {
     expect(err).toBeDefined();
     expect(Array.isArray(err)).toBe(true);
     if (Array.isArray(err)) {
-      expect(err[0]?.message).toBe(
-        "El tiempo de gracia no puede ser negativo"
-      );
+      expect(err[0]?.message).toBe("El tiempo de gracia no puede ser negativo");
     }
   });
 
@@ -122,7 +122,8 @@ describe("ParkingPolicySectionComponent", () => {
     const percentageInput = fixture.debugElement.query(
       By.directive(PercentageInputComponent)
     );
-    const inputEl: HTMLInputElement = percentageInput.nativeElement.querySelector("input");
+    const inputEl: HTMLInputElement =
+      percentageInput.nativeElement.querySelector("input");
 
     inputEl.value = "16";
     inputEl.dispatchEvent(new Event("input", { bubbles: true }));
@@ -135,7 +136,8 @@ describe("ParkingPolicySectionComponent", () => {
     const percentageInput = fixture.debugElement.query(
       By.directive(PercentageInputComponent)
     );
-    const percentageComp: PercentageInputComponent = percentageInput.componentInstance;
+    const percentageComp: PercentageInputComponent =
+      percentageInput.componentInstance;
 
     expect(percentageComp.error()).toEqual([]);
 

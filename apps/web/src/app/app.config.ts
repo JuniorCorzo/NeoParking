@@ -13,11 +13,11 @@ import {
   provideZonelessChangeDetection,
 } from "@angular/core";
 import { TitleStrategy, provideRouter } from "@angular/router";
-import { AppTitleStrategy } from "@core/title/app-title-strategy";
 import { addWithCredentialsInterceptor } from "@core/http/interceptors/add-with-credentials.interceptor";
 import { authInterceptor } from "@core/http/interceptors/auth-interceptor";
 import { refreshTokenInterceptor } from "@core/http/interceptors/refresh-token-interceptor";
 import { AuthService } from "@core/services/auth-service";
+import { AppTitleStrategy } from "@core/title/app-title-strategy";
 import { provideNgIconLoader, withCaching } from "@ng-icons/core";
 import { provideHotToastConfig } from "@ngxpert/hot-toast";
 import { catchError, of } from "rxjs";

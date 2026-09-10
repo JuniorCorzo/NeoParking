@@ -1,5 +1,6 @@
 import { Component, signal } from "@angular/core";
-import { ComponentFixture, TestBed } from "@angular/core/testing";
+import type { ComponentFixture } from "@angular/core/testing";
+import { TestBed } from "@angular/core/testing";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import type { ValidationError } from "@angular/forms/signals";
 import { By } from "@angular/platform-browser";
@@ -25,9 +26,9 @@ class TestHostComponent {
   readonly label = signal("Tasa IVA (%)");
   readonly id = signal("iva-rate-input");
   readonly placeholder = signal("19");
-  readonly error = signal<string | ValidationError.WithFieldTree[] | undefined>(
-    undefined
-  );
+  readonly error = signal<
+    string | ValidationError.WithFieldTree[] | undefined
+  >();
 }
 
 describe("PercentageInputComponent", () => {
