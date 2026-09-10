@@ -7,6 +7,8 @@ import dev.angelcorzo.nivo.domain.model.rates.Rates;
 import dev.angelcorzo.nivo.domain.model.rates.enums.TimeUnitsRate;
 import dev.angelcorzo.nivo.domain.model.rates.enums.VehicleType;
 import dev.angelcorzo.nivo.domain.model.rates.gateways.RatesRepository;
+import dev.angelcorzo.nivo.domain.model.rates.valueobject.MinChargeDuration;
+import dev.angelcorzo.nivo.domain.model.rates.valueobject.RatePrice;
 import dev.angelcorzo.nivo.domain.model.specialpolicies.exceptions.SpecialPolicyNotFoundException;
 import dev.angelcorzo.nivo.domain.model.specialpolicies.gateways.SpecialPoliciesRepository;
 import dev.angelcorzo.nivo.domain.model.specialpolicies.valueobjects.SpecialPoliciesReference;
@@ -66,7 +68,13 @@ public class RateConfigurationUseCase {
       String description,
       BigDecimal pricePerUnit,
       TimeUnitsRate timeUnit,
-      String minChargeTimeMinutes,
+      int minChargeTimeMinutes,
       VehicleType vehicleType,
-      UUID specialPolicyId) {}
+      UUID specialPolicyId) {
+
+    public CreateTariff {
+      RatePrice.of(pricePerUnit);
+      MinChargeDuration.of(minChargeTimeMinutes);
+    }
+  }
 }

@@ -16,7 +16,7 @@ public record RateReference(
     String description,
     BigDecimal pricePerUnit,
     TimeUnitsRate timeUnit,
-    String minChargeTimeMinutes,
+    int minChargeTimeMinutes,
     VehicleType vehicleType,
     SpecialPoliciesReference specialPolicy) {
 

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import dev.angelcorzo.nivo.domain.model.commons.exceptions.InvalidDomainException;
 import dev.angelcorzo.nivo.domain.model.rates.Rates;
 import dev.angelcorzo.nivo.domain.model.rates.enums.TimeUnitsRate;
 import dev.angelcorzo.nivo.domain.model.rates.enums.VehicleType;
@@ -35,7 +36,7 @@ class UpdateRateUseCaseTest {
     UUID rateId = UUID.randomUUID();
     UpdateRateUseCase.UpdateRate command =
         new UpdateRateUseCase.UpdateRate(
-            rateId, "New Name", "New Desc", BigDecimal.valueOf(6000), TimeUnitsRate.HOURS, "30", VehicleType.CAR);
+            rateId, "New Name", "New Desc", BigDecimal.valueOf(6000), TimeUnitsRate.HOURS, 30, VehicleType.CAR);
 
     Rates existing =
         Rates.builder()
@@ -61,11 +62,62 @@ class UpdateRateUseCaseTest {
     UUID rateId = UUID.randomUUID();
     UpdateRateUseCase.UpdateRate command =
         new UpdateRateUseCase.UpdateRate(
-            rateId, "New Name", "New Desc", BigDecimal.valueOf(6000), TimeUnitsRate.HOURS, "30", VehicleType.CAR);
+            rateId, "New Name", "New Desc", BigDecimal.valueOf(6000), TimeUnitsRate.HOURS, 30, VehicleType.CAR);
 
     when(ratesRepository.findById(rateId)).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> useCase.execute(command))
         .isInstanceOf(RateNotFoundException.class);
+  }
+
+  @Test
+  @DisplayName("Should throw InvalidDomainException when pricePerUnit is null")
+  void shouldThrowWhenPriceIsNull() {
+    assertThatThrownBy(
+            () ->
+                new UpdateRateUseCase.UpdateRate(
+                    UUID.randomUUID(),
+                    "Name",
+                    "Desc",
+                    null,
+                    TimeUnitsRate.HOURS,
+                    15,
+                    VehicleType.CAR))
+        .isInstanceOf(InvalidDomainException.class)
+        .hasMessageContaining("Rate price cannot be negative or null");
+  }
+
+  @Test
+  @DisplayName("Should throw InvalidDomainException when pricePerUnit is negative")
+  void shouldThrowWhenPriceIsNegative() {
+    assertThatThrownBy(
+            () ->
+                new UpdateRateUseCase.UpdateRate(
+                    UUID.randomUUID(),
+                    "Name",
+                    "Desc",
+                    BigDecimal.valueOf(-1),
+                    TimeUnitsRate.HOURS,
+                    15,
+                    VehicleType.CAR))
+        .isInstanceOf(InvalidDomainException.class)
+        .hasMessageContaining("Rate price cannot be negative or null");
+  }
+
+  @Test
+  @DisplayName("Should throw InvalidDomainException when minChargeTimeMinutes is negative")
+  void shouldThrowWhenMinChargeMinutesIsNegative() {
+    assertThatThrownBy(
+            () ->
+                new UpdateRateUseCase.UpdateRate(
+                    UUID.randomUUID(),
+                    "Name",
+                    "Desc",
+                    BigDecimal.valueOf(5000),
+                    TimeUnitsRate.HOURS,
+                    -10,
+                    VehicleType.CAR))
+        .isInstanceOf(InvalidDomainException.class)
+        .hasMessageContaining("Minimum charge minutes cannot be negative");
   }
 }

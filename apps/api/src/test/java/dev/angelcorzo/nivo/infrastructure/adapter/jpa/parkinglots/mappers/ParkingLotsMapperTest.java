@@ -5,7 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.angelcorzo.nivo.infrastructure.adapter.jpa.mappers.CoordinatesMapperJpaImpl;
 import dev.angelcorzo.nivo.infrastructure.adapter.jpa.parkinglots.ParkingLotSummaryData;
+import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLotPolicy;
+import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLots;
 import dev.angelcorzo.nivo.domain.model.slots.enums.SlotType;
+import dev.angelcorzo.nivo.infrastructure.adapter.jpa.parkinglots.ParkingLotsData;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -78,6 +82,77 @@ class ParkingLotsMapperTest {
     assertThat(result.operatingHours()).isNotNull();
     assertThat(result.operatingHours().getOpenTime()).isEqualTo(java.time.OffsetTime.of(6, 0, 0, 0, ZoneOffset.ofHours(-5)));
     assertThat(result.operatingHours().getCloseTime()).isEqualTo(java.time.OffsetTime.of(22, 0, 0, 0, ZoneOffset.ofHours(-5)));
+  }
+
+  @Test
+  @DisplayName("Should map ParkingLotsData to ParkingLots domain entity including policy")
+  void shouldMapDataToEntityWithPolicy() {
+    ParkingLotsData data =
+        ParkingLotsData.builder()
+            .id(UUID.randomUUID())
+            .name("Parking Central")
+            .gracePeriodMinutes(15)
+            .gracePeriodPrice(new BigDecimal("2000.00"))
+            .ivaRate(new BigDecimal("0.1900"))
+            .build();
+
+    ParkingLots entity = parkingLotsMapper.toEntity(data);
+
+    assertThat(entity).isNotNull();
+    assertThat(entity.getId()).isEqualTo(data.getId());
+    assertThat(entity.getName()).isEqualTo("Parking Central");
+    assertThat(entity.getPolicy()).isNotNull();
+    assertThat(entity.getPolicy().gracePeriodMinutes()).isEqualTo(15);
+    assertThat(entity.getPolicy().gracePeriodPrice()).isEqualByComparingTo(new BigDecimal("2000.00"));
+    assertThat(entity.getPolicy().ivaRate()).isEqualByComparingTo(new BigDecimal("0.1900"));
+  }
+
+  @Test
+  @DisplayName("Should fallback to default policy when ParkingLotsData has null policy fields")
+  void shouldMapDataToEntityWithNullPolicyFieldsUsingDefaults() {
+    ParkingLotsData data =
+        ParkingLotsData.builder()
+            .id(UUID.randomUUID())
+            .name("Parking Central")
+            .gracePeriodMinutes(null)
+            .gracePeriodPrice(null)
+            .ivaRate(null)
+            .build();
+
+    ParkingLots entity = parkingLotsMapper.toEntity(data);
+
+    assertThat(entity).isNotNull();
+    assertThat(entity.getPolicy()).isNotNull();
+    assertThat(entity.getPolicy().gracePeriodMinutes()).isZero();
+    assertThat(entity.getPolicy().gracePeriodPrice()).isEqualByComparingTo(BigDecimal.ZERO);
+    assertThat(entity.getPolicy().ivaRate()).isEqualByComparingTo(new BigDecimal("0.19"));
+  }
+
+  @Test
+  @DisplayName("Should map ParkingLots domain entity to ParkingLotsData including policy fields")
+  void shouldMapEntityToDataWithPolicy() {
+    ParkingLotPolicy policy =
+        ParkingLotPolicy.builder()
+            .gracePeriodMinutes(20)
+            .gracePeriodPrice(new BigDecimal("1500.00"))
+            .ivaRate(new BigDecimal("0.1900"))
+            .build();
+
+    ParkingLots entity =
+        ParkingLots.builder()
+            .id(UUID.randomUUID())
+            .name("Parking Express")
+            .policy(policy)
+            .build();
+
+    ParkingLotsData data = parkingLotsMapper.toData(entity);
+
+    assertThat(data).isNotNull();
+    assertThat(data.getId()).isEqualTo(entity.getId());
+    assertThat(data.getName()).isEqualTo("Parking Express");
+    assertThat(data.getGracePeriodMinutes()).isEqualTo(20);
+    assertThat(data.getGracePeriodPrice()).isEqualByComparingTo(new BigDecimal("1500.00"));
+    assertThat(data.getIvaRate()).isEqualByComparingTo(new BigDecimal("0.1900"));
   }
 
   @Configuration

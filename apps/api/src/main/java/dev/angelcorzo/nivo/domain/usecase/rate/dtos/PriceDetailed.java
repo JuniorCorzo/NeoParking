@@ -24,6 +24,19 @@ public final class PriceDetailed {
     return new PriceDetailed(name);
   }
 
+  public static PriceDetailed from(dev.angelcorzo.nivo.domain.usecase.rate.engine.PricingContext context, String tenantName) {
+    PriceDetailed detailed = new PriceDetailed(tenantName);
+    if (context.policy() != null && context.policy().ivaRate() != null) {
+      detailed.setIvaRate(context.policy().ivaRate());
+    }
+    if (context.breakpoints() != null) {
+      for (PriceLine line : context.breakpoints()) {
+        detailed.addLine(line);
+      }
+    }
+    return detailed;
+  }
+
   public void addLine(PriceLine breakpoint) {
     this.breakpoint.add(breakpoint);
     this.subtotal = this.subtotal.add(breakpoint.amount());

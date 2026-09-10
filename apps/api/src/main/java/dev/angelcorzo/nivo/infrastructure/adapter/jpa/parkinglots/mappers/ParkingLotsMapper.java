@@ -12,8 +12,10 @@ import dev.angelcorzo.nivo.domain.model.parkinglots.Address;
 import dev.angelcorzo.nivo.domain.model.parkinglots.Coordinates;
 import dev.angelcorzo.nivo.domain.model.parkinglots.OperatingHours;
 import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLotListItem;
+import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLotPolicy;
 import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLots;
 import dev.angelcorzo.nivo.domain.model.parkinglots.SlotDistributionEntry;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
@@ -31,6 +33,23 @@ public abstract class ParkingLotsMapper implements BaseMapper<ParkingLots, Parki
   private static final Logger LOGGER = LoggerFactory.getLogger(ParkingLotsMapper.class);
 
   @Autowired protected ObjectMapper objectMapper;
+
+  @Mapping(target = "policy", expression = "java(toPolicy(data))")
+  public abstract ParkingLots toEntity(ParkingLotsData data);
+
+  @Mapping(target = "gracePeriodMinutes", expression = "java(entity.getPolicy().gracePeriodMinutes())")
+  @Mapping(target = "gracePeriodPrice", expression = "java(entity.getPolicy().gracePeriodPrice())")
+  @Mapping(target = "ivaRate", expression = "java(entity.getPolicy().ivaRate())")
+  public abstract ParkingLotsData toData(ParkingLots entity);
+
+  protected ParkingLotPolicy toPolicy(ParkingLotsData data) {
+    if (data == null) return ParkingLotPolicy.defaults();
+    return new ParkingLotPolicy(
+        data.getGracePeriodMinutes() != null ? data.getGracePeriodMinutes() : 0,
+        data.getGracePeriodPrice() != null ? data.getGracePeriodPrice() : BigDecimal.ZERO,
+        data.getIvaRate() != null ? data.getIvaRate() : new BigDecimal("0.19")
+    );
+  }
 
   @Mapping(target = "address", expression = "java(toAddress(data))")
   @Mapping(target = "coordinates", expression = "java(toCoordinates(data))")

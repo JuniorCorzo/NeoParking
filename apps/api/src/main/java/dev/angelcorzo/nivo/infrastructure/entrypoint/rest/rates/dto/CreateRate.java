@@ -16,6 +16,6 @@ public record CreateRate(
     @NotEmpty String description,
     @Min(value = 0) BigDecimal pricePerUnit,
     @NotNull TimeUnitsRate timeUnit,
-    @NotNull String minChargeTimeMinutes,
+    @NotNull Integer minChargeTimeMinutes,
     @NotNull VehicleType vehicleType,
     UUID specialPolicyId) {}

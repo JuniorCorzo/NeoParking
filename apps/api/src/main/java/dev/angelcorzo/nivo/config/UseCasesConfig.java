@@ -2,6 +2,7 @@ package dev.angelcorzo.nivo.config;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator;
@@ -11,6 +12,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.interceptor.*;
+import dev.angelcorzo.nivo.domain.usecase.rate.engine.PricingEngine;
+import dev.angelcorzo.nivo.domain.usecase.rate.engine.stages.*;
 
 @Configuration
 @EnableTransactionManagement
@@ -68,5 +71,17 @@ public class UseCasesConfig {
     autoProxyCreator.setBeanNames("*UseCase");
 
     return autoProxyCreator;
+  }
+
+  @Bean
+  public PricingEngine pricingEngine() {
+    return new PricingEngine(List.of(
+        new GracePeriodStage(),
+        new BaseRateStage(),
+        new SpecialPolicyStage(),
+        new SubscriberStage(),
+        new StampsStage(),
+        new DayCapStage()
+    ));
   }
 }

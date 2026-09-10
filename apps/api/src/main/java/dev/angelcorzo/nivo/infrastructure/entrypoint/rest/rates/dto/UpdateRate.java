@@ -29,7 +29,7 @@ public record UpdateRate(
     @NotNull TimeUnitsRate timeUnit,
 
     @Schema(description = "Minimum charge time in minutes", example = "15", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull String minChargeTimeMinutes,
+    @NotNull Integer minChargeTimeMinutes,
 
     @Schema(description = "Vehicle type applicability", example = "CAR", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull VehicleType vehicleType) {}

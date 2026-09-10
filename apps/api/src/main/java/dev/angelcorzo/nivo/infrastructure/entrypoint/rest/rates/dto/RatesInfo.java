@@ -15,6 +15,6 @@ public record RatesInfo(
     String description,
     BigDecimal pricePerUnit,
     TimeUnitsRate timeUnit,
-    String minChargeTimeMinutes,
+    Integer minChargeTimeMinutes,
     VehicleType vehicleType,
     SpecialPoliciesInfo specialPolicy) {}
