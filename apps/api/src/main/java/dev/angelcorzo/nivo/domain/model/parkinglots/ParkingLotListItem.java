@@ -1,7 +1,6 @@
 package dev.angelcorzo.nivo.domain.model.parkinglots;
 
 import java.time.OffsetDateTime;
-import java.time.OffsetTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
@@ -34,6 +33,7 @@ import lombok.Builder;
  * @param ownerName        Full name of the parking lot owner
  * @param totalCapacity    Total number of slots across all types
  * @param operatingHours   Operating hours (open/close times with timezone)
+ * @param policy           Parking lot policy value object
  * @see SlotDistributionEntry
  * @see ParkingLots
  */
@@ -50,5 +50,6 @@ public record ParkingLotListItem(
     List<SlotDistributionEntry> slotDistribution,
     String ownerName,
     Long totalCapacity,
-    OperatingHours operatingHours) {
+    OperatingHours operatingHours,
+    ParkingLotPolicy policy) {
 }
