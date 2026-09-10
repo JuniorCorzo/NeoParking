@@ -1,6 +1,7 @@
 package dev.angelcorzo.nivo.domain.usecase.parkinglot;
 
 import dev.angelcorzo.nivo.domain.model.authentication.gateway.AuthenticationContextGateway;
+import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLotPolicy;
 import dev.angelcorzo.nivo.domain.model.parkinglots.ParkingLots;
 import dev.angelcorzo.nivo.domain.model.parkinglots.dto.UpsertParkingLotsDTO;
 import dev.angelcorzo.nivo.domain.model.parkinglots.gateways.ParkingLotsRepository;
@@ -39,6 +40,7 @@ public class CreateParkingUseCase {
         .timezone(parking.timezone())
         .currency(parking.currency())
         .operatingHours(parking.operatingHours())
+        .policy(parking.policy() != null ? parking.policy() : ParkingLotPolicy.defaults())
         .build();
   }
 

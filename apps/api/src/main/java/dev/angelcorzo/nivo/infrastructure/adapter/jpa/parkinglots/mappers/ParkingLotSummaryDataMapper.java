@@ -2,6 +2,7 @@ package dev.angelcorzo.nivo.infrastructure.adapter.jpa.parkinglots.mappers;
 
 import dev.angelcorzo.nivo.infrastructure.adapter.jpa.parkinglots.ParkingLotSummaryData;
 import jakarta.persistence.Tuple;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -32,6 +33,9 @@ public class ParkingLotSummaryDataMapper {
         .totalCapacity(toLong(row.get("total_capacity")))
         .openTime(row.get("open_time", String.class))
         .closeTime(row.get("close_time", String.class))
+        .gracePeriodMinutes(toInteger(row.get("grace_period_minutes")))
+        .gracePeriodPrice(toBigDecimal(row.get("grace_period_price")))
+        .ivaRate(toBigDecimal(row.get("iva_rate")))
         .build();
   }
 
@@ -52,5 +56,18 @@ public class ParkingLotSummaryDataMapper {
 
   private Long toLong(Object value) {
     return value != null ? ((Number) value).longValue() : 0L;
+  }
+
+  private Integer toInteger(Object value) {
+    return value != null ? ((Number) value).intValue() : null;
+  }
+
+  private BigDecimal toBigDecimal(Object value) {
+    return switch (value) {
+      case null -> null;
+      case BigDecimal bd -> bd;
+      case Number n -> BigDecimal.valueOf(n.doubleValue());
+      default -> new BigDecimal(value.toString());
+    };
   }
 }

@@ -44,6 +44,9 @@ class ParkingLotSummaryDataMapperTest {
     when(row.get("slot_distribution", String.class)).thenReturn("[{\"type\":\"CAR\",\"count\":10}]");
     when(row.get("owner_name", String.class)).thenReturn("Juan Pérez");
     when(row.get("total_capacity")).thenReturn(BigDecimal.valueOf(10));
+    when(row.get("grace_period_minutes")).thenReturn(15);
+    when(row.get("grace_period_price")).thenReturn(new BigDecimal("5000.00"));
+    when(row.get("iva_rate")).thenReturn(new BigDecimal("0.1900"));
 
     ParkingLotSummaryData result = mapper.toSummaryData(row);
 
@@ -63,5 +66,8 @@ class ParkingLotSummaryDataMapperTest {
     assertThat(result.slotDistribution()).isEqualTo("[{\"type\":\"CAR\",\"count\":10}]");
     assertThat(result.ownerName()).isEqualTo("Juan Pérez");
     assertThat(result.totalCapacity()).isEqualTo(10L);
+    assertThat(result.gracePeriodMinutes()).isEqualTo(15);
+    assertThat(result.gracePeriodPrice()).isEqualByComparingTo(new BigDecimal("5000.00"));
+    assertThat(result.ivaRate()).isEqualByComparingTo(new BigDecimal("0.1900"));
   }
 }

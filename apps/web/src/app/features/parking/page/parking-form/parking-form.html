@@ -88,7 +88,16 @@
         />
       </div>
 
-      <!-- Section 5: Slots Distribution -->
+      <!-- Section 5: Policy -->
+      <div class="border-border border-t pt-6">
+        <app-parking-policy-section
+          [gracePeriodMinutes]="facade.form.gracePeriodMinutes"
+          [gracePeriodPrice]="facade.form.gracePeriodPrice"
+          [ivaRate]="facade.form.ivaRate"
+        />
+      </div>
+
+      <!-- Section 6: Slots Distribution -->
       <div class="border-border border-t pt-6">
         <app-parking-slot-groups-section
           [slots]="facade.slots()"

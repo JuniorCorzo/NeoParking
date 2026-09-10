@@ -27,6 +27,7 @@ import { Subject, exhaustMap, firstValueFrom, takeUntil } from "rxjs";
 import { ParkingAddressSectionComponent } from "../../components/parking-form/sections/parking-address-section";
 import { ParkingLocationSectionComponent } from "../../components/parking-form/sections/parking-location-section";
 import { ParkingOperatingHoursSectionComponent } from "../../components/parking-form/sections/parking-operating-hours-section";
+import { ParkingPolicySectionComponent } from "../../components/parking-form/sections/parking-policy-section";
 import { ParkingSlotGroupsSectionComponent } from "../../components/parking-form/sections/parking-slot-groups-section";
 import { ParkingFormFacade } from "../../facades/parking-form.facade";
 
@@ -45,6 +46,7 @@ import { ParkingFormFacade } from "../../facades/parking-form.facade";
     ParkingAddressSectionComponent,
     ParkingLocationSectionComponent,
     ParkingOperatingHoursSectionComponent,
+    ParkingPolicySectionComponent,
     ParkingSlotGroupsSectionComponent,
   ],
   providers: [

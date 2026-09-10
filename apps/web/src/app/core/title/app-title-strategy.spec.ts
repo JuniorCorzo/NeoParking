@@ -27,7 +27,7 @@ describe("AppTitleStrategy", () => {
   });
 
   it("should set title to default when title is not provided", () => {
-    vi.spyOn(titleStrategy, "buildTitle").mockReturnValue(undefined);
+    vi.spyOn(titleStrategy, "buildTitle").mockReturnValue();
     const setTitleSpy = vi.spyOn(titleService, "setTitle");
 
     titleStrategy.updateTitle({} as RouterStateSnapshot);

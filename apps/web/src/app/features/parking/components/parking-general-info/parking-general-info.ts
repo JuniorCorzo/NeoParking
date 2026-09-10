@@ -9,11 +9,17 @@ import {
   BadgeComponent,
   CardComponent,
   TypographyH2,
+  TypographyH3,
   TypographyMono,
   TypographyMuted,
+  TypographySpan,
 } from "@nivo-sass/design-system";
 import { APP_TEXTS } from "@shared/constants/app-texts.constant";
 import { formatCoordinates } from "@shared/utils/coordinates.utils";
+import { formatDateTime } from "@shared/utils/date.utils";
+import { formatDuration } from "@shared/utils/duration.utils";
+import { formatIvaRate } from "@shared/utils/percentage.utils";
+import { formatPrice } from "@shared/utils/price.utils";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,8 +27,10 @@ import { formatCoordinates } from "@shared/utils/coordinates.utils";
     BadgeComponent,
     CardComponent,
     TypographyH2,
-    TypographyMuted,
+    TypographyH3,
     TypographyMono,
+    TypographyMuted,
+    TypographySpan,
   ],
   selector: "app-parking-general-info",
   standalone: true,
@@ -34,46 +42,51 @@ export class ParkingGeneralInfo {
   public readonly parking = input.required<ParkingLotListItemModel>();
 
   public readonly addressLine = computed<string>(() => {
-    const p = this.parking();
-    if (!p || !p.address) {
+    const address = this.parking()?.address;
+    if (!address) {
       return "";
     }
-    const { street, city, state } = p.address;
+    const { street, city, state } = address;
     return [street, city, state].filter(Boolean).join(", ");
   });
 
   public readonly addressSubline = computed<string>(() => {
-    const p = this.parking();
-    if (!p || !p.address) {
+    const address = this.parking()?.address;
+    if (!address) {
       return "";
     }
-    const { country, zipCode } = p.address;
+    const { country, zipCode } = address;
     return [country, zipCode].filter(Boolean).join(" · ");
   });
 
   public readonly formattedCoords = computed<string>(() => {
-    const p = this.parking();
-    if (!p || !p.coordinates) {
+    const coordinates = this.parking()?.coordinates;
+    if (!coordinates) {
       return "";
     }
-    return formatCoordinates(p.coordinates);
+    return formatCoordinates(coordinates);
   });
 
-  public static formattedDate(dateStr: string): string {
-    if (!dateStr) {
+  public readonly operatingHoursText = computed<string>(() => {
+    const hours = this.parking()?.operatingHours;
+    if (!hours?.openTime || !hours?.closeTime) {
       return "";
     }
-    const date = new Date(dateStr);
-    if (Number.isNaN(date.getTime())) {
-      return dateStr;
-    }
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    return `${day}/${month}/${year} · ${hours}:${minutes}`;
-  }
+    return `${hours.openTime.split("-")[0]} - ${hours.closeTime.split("-")[0]}`;
+  });
 
-  public readonly formattedDate = ParkingGeneralInfo.formattedDate;
+  public readonly gracePeriodText = computed<string>(() =>
+    formatDuration(this.parking()?.gracePeriodMinutes)
+  );
+
+  public readonly gracePeriodPriceText = computed<string>(() =>
+    formatPrice(this.parking()?.gracePeriodPrice)
+  );
+
+  public readonly ivaRateText = computed<string>(() =>
+    formatIvaRate(this.parking()?.ivaRate)
+  );
+
+  public static readonly formattedDate = formatDateTime;
+  public readonly formattedDate = formatDateTime;
 }

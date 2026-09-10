@@ -22,9 +22,13 @@ class TestHostComponent {
     coordinates: { latitude: 4.6097, longitude: -74.0817 },
     createdAt: "2026-01-01T10:30:00Z",
     currency: "COP",
+    gracePeriodMinutes: 15,
+    gracePeriodPrice: 5000,
     id: "lot-123",
+    ivaRate: 0.19,
     name: "Parqueadero Central",
     occuppationRate: 40,
+    operatingHours: { closeTime: "22:00", openTime: "06:00" },
     ownerName: "Juan Pérez",
     slotDistribution: [{ count: 30, prefix: "A", type: "CAR", zone: "Norte" }],
     totalCapacity: 50,
@@ -57,6 +61,11 @@ describe("ParkingGeneralInfo", () => {
     expect(textContent).toContain("Colombia · 110111");
     expect(textContent).toContain("4,6097, -74,0817");
     expect(textContent).toContain("lot-123");
+    expect(textContent).toContain("Políticas de liquidación");
+    expect(textContent).toContain("15 min");
+    expect(textContent).toContain("$ 5.000");
+    expect(textContent).toContain("19%");
+    expect(textContent).toContain("06:00 - 22:00");
   });
 
   it("should format dates properly", () => {
@@ -76,9 +85,13 @@ describe("ParkingGeneralInfo", () => {
       coordinates: { latitude: 0, longitude: 0 },
       createdAt: "",
       currency: "USD",
+      gracePeriodMinutes: 0,
+      gracePeriodPrice: 0,
       id: "lot-456",
+      ivaRate: 0,
       name: "Sin Dirección",
       occuppationRate: 0,
+      operatingHours: { closeTime: "18:00", openTime: "08:00" },
       ownerName: "Admin",
       slotDistribution: [],
       totalCapacity: 10,
@@ -89,6 +102,22 @@ describe("ParkingGeneralInfo", () => {
     const textContent = compiled.textContent || "";
     expect(textContent).toContain("Sin dirección");
     expect(textContent).toContain("lot-456");
+  });
+
+  it("should format gracePeriodText properly for days and hours", () => {
+    hostComponent.parking.update((current) => ({
+      ...current,
+      gracePeriodMinutes: 1440,
+    }));
+    fixture.detectChanges();
+    expect(compiled.textContent).toContain("1 día");
+
+    hostComponent.parking.update((current) => ({
+      ...current,
+      gracePeriodMinutes: 120,
+    }));
+    fixture.detectChanges();
+    expect(compiled.textContent).toContain("2 horas");
   });
 
   it("should format helper dates correctly", () => {

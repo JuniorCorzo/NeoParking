@@ -56,6 +56,9 @@ class ParkingLotsMapperTest {
             .totalCapacity(16L)
             .openTime("06:00:00-05:00")
             .closeTime("22:00:00-05:00")
+            .gracePeriodMinutes(15)
+            .gracePeriodPrice(new BigDecimal("5000.00"))
+            .ivaRate(new BigDecimal("0.1900"))
             .build();
 
     var result = parkingLotsMapper.toListItem(summaryData);
@@ -82,6 +85,10 @@ class ParkingLotsMapperTest {
     assertThat(result.operatingHours()).isNotNull();
     assertThat(result.operatingHours().getOpenTime()).isEqualTo(java.time.OffsetTime.of(6, 0, 0, 0, ZoneOffset.ofHours(-5)));
     assertThat(result.operatingHours().getCloseTime()).isEqualTo(java.time.OffsetTime.of(22, 0, 0, 0, ZoneOffset.ofHours(-5)));
+    assertThat(result.policy()).isNotNull();
+    assertThat(result.policy().gracePeriodMinutes()).isEqualTo(15);
+    assertThat(result.policy().gracePeriodPrice()).isEqualByComparingTo(new BigDecimal("5000.00"));
+    assertThat(result.policy().ivaRate()).isEqualByComparingTo(new BigDecimal("0.1900"));
   }
 
   @Test

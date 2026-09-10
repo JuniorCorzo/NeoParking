@@ -1,6 +1,6 @@
 package dev.angelcorzo.nivo.infrastructure.entrypoint.rest.slot.dto;
 
-import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.ParkingLotsInfo;
+import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.parkinglots.dto.commons.ParkingLotsInfo;
 import dev.angelcorzo.nivo.infrastructure.entrypoint.rest.tenants.dto.TenantInfo;
 import dev.angelcorzo.nivo.domain.model.slots.enums.SlotStatus;
 import dev.angelcorzo.nivo.domain.model.slots.enums.SlotType;
@@ -11,7 +11,18 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Builder(toBuilder = true)
-@Schema(description = "Parking slot details")
+@Schema(
+    description = "Parking slot details",
+    requiredProperties = {
+      "id",
+      "tenant",
+      "parking",
+      "slotNumber",
+      "type",
+      "status",
+      "createdAt",
+      "updatedAt"
+    })
 public record SlotResponse(
     @Schema(description = "Slot ID", example = "e4eebc99-9c0b-4ef8-bb6d-6bb9bd380a55")
     UUID id,
