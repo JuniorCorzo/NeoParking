@@ -14,13 +14,13 @@ export interface ParkingLotListItemResponse {
   coordinates: CoordinatesDto;
   createdAt: string;
   currency: string;
-  gracePeriodMinutes?: number;
-  gracePeriodPrice?: number;
+  gracePeriodMinutes: number;
+  gracePeriodPrice: number;
   id: string;
-  ivaRate?: number;
+  ivaRate: number;
   name: string;
   occuppationRate: number;
-  operatingHours?: OperatingHoursDto;
+  operatingHours: OperatingHoursDto;
   ownerName: string;
   slotDistribution: Array<SlotDistributionResponse>;
   totalCapacity: number;

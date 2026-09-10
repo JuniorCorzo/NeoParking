@@ -16,9 +16,9 @@ export type ParkingLotsModel = BaseModel & {
   operatingHours: OperatingHours;
   owner: UserInfoModel;
   tenant: TenantInfoModel;
-  gracePeriodMinutes?: number;
-  gracePeriodPrice?: number;
-  ivaRate?: number;
+  gracePeriodMinutes: number;
+  gracePeriodPrice: number;
+  ivaRate: number;
 };
 
 export interface ParkingLotListItemModel {
@@ -33,10 +33,10 @@ export interface ParkingLotListItemModel {
   slotDistribution: SlotDistribution[];
   totalCapacity: number;
   updatedAt: string;
-  operatingHours?: OperatingHours;
-  gracePeriodMinutes?: number;
-  gracePeriodPrice?: number;
-  ivaRate?: number;
+  operatingHours: OperatingHours;
+  gracePeriodMinutes: number;
+  gracePeriodPrice: number;
+  ivaRate: number;
 }
 
 export interface UpsertParkingLotsModel {
