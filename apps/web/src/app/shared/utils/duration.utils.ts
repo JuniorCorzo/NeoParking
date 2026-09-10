@@ -14,11 +14,11 @@ export const DURATION_UNIT_OPTIONS: readonly DurationOption[] = [
 const MINUTES_IN_HOUR = 60;
 const MINUTES_IN_DAY = 1440;
 
-const UNIT_MULTIPLIERS: Record<DurationUnit, number> = {
-  MINUTES: 1,
-  HOURS: MINUTES_IN_HOUR,
+const UNIT_MULTIPLIERS = {
   DAYS: MINUTES_IN_DAY,
-};
+  HOURS: MINUTES_IN_HOUR,
+  MINUTES: 1,
+} as const satisfies Record<DurationUnit, number>;
 
 export interface DurationValue {
   amount: number;
@@ -42,37 +42,57 @@ export const toMinutes = (
   return Math.max(0, Math.round(amount * multiplier));
 };
 
-export const fromMinutes = (totalMinutes?: number | null): DurationValue => {
+export const fromMinutes = (totalMinutes?: number): DurationValue => {
+  if (!totalMinutes || !Number.isFinite(totalMinutes) || totalMinutes <= 0) {
+    return { amount: 0, unit: "MINUTES" };
+  }
+
+  switch (true) {
+    case totalMinutes >= MINUTES_IN_DAY &&
+      totalMinutes % MINUTES_IN_DAY === 0: {
+      return { amount: totalMinutes / MINUTES_IN_DAY, unit: "DAYS" };
+    }
+    case totalMinutes >= MINUTES_IN_HOUR &&
+      totalMinutes % MINUTES_IN_HOUR === 0: {
+      return { amount: totalMinutes / MINUTES_IN_HOUR, unit: "HOURS" };
+    }
+    default: {
+      return { amount: totalMinutes, unit: "MINUTES" };
+    }
+  }
+};
+
+export const formatDuration = (totalMinutes?: number | null): string => {
   if (
     totalMinutes === null ||
     totalMinutes === undefined ||
     !Number.isFinite(totalMinutes) ||
-    totalMinutes <= 0
+    totalMinutes < 0
   ) {
-    return { amount: 0, unit: "MINUTES" };
+    return "-";
   }
 
-  if (totalMinutes >= MINUTES_IN_DAY && totalMinutes % MINUTES_IN_DAY === 0) {
-    return {
-      amount: totalMinutes / MINUTES_IN_DAY,
-      unit: "DAYS",
-    };
+  if (totalMinutes === 0) {
+    return "0 min";
   }
 
-  if (totalMinutes >= MINUTES_IN_HOUR && totalMinutes % MINUTES_IN_HOUR === 0) {
-    return {
-      amount: totalMinutes / MINUTES_IN_HOUR,
-      unit: "HOURS",
-    };
-  }
+  const { amount, unit } = fromMinutes(totalMinutes);
 
-  return {
-    amount: totalMinutes,
-    unit: "MINUTES",
-  };
+  switch (unit) {
+    case "DAYS": {
+      return `${amount} ${amount === 1 ? "día" : "días"}`;
+    }
+    case "HOURS": {
+      return `${amount} ${amount === 1 ? "hora" : "horas"}`;
+    }
+    default: {
+      return `${amount} min`;
+    }
+  }
 };
 
 export const DurationConverter = {
-  toMinutes,
+  formatDuration,
   fromMinutes,
+  toMinutes,
 } as const;

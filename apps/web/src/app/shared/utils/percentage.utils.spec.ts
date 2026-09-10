@@ -1,5 +1,6 @@
 import {
   PercentageConverter,
+  formatIvaRate,
   percentageToRate,
   rateToPercentage,
 } from "./percentage.utils";
@@ -22,7 +23,7 @@ describe("percentage.utils", () => {
 
     it("should return 0 for non-positive or invalid input", () => {
       expect(rateToPercentage(null)).toBe(0);
-      expect(rateToPercentage(undefined)).toBe(0);
+      expect(rateToPercentage()).toBe(0);
       expect(rateToPercentage(Number.NaN)).toBe(0);
       expect(rateToPercentage(-0.19)).toBe(0);
       expect(rateToPercentage(Number.POSITIVE_INFINITY)).toBe(0);
@@ -46,7 +47,7 @@ describe("percentage.utils", () => {
 
     it("should return 0 for non-positive or invalid input", () => {
       expect(percentageToRate(null)).toBe(0);
-      expect(percentageToRate(undefined)).toBe(0);
+      expect(percentageToRate()).toBe(0);
       expect(percentageToRate(Number.NaN)).toBe(0);
       expect(percentageToRate(-10)).toBe(0);
       expect(percentageToRate(Number.POSITIVE_INFINITY)).toBe(0);
@@ -76,6 +77,31 @@ describe("percentage.utils", () => {
           PercentageConverter.percentageToRate(16.5)
         )
       ).toBe(16.5);
+    });
+  });
+
+  describe("formatIvaRate", () => {
+    it("should format decimal rate as percentage", () => {
+      expect(formatIvaRate(0.19)).toBe("19%");
+    });
+
+    it("should format percentage numbers > 1 correctly", () => {
+      expect(formatIvaRate(19)).toBe("19%");
+    });
+
+    it("should format 0 as 0%", () => {
+      expect(formatIvaRate(0)).toBe("0%");
+    });
+
+    it("should return '-' for null, undefined, NaN, or negative values", () => {
+      expect(formatIvaRate(null)).toBe("-");
+      expect(formatIvaRate()).toBe("-");
+      expect(formatIvaRate(Number.NaN)).toBe("-");
+      expect(formatIvaRate(-0.19)).toBe("-");
+    });
+
+    it("should expose formatIvaRate on PercentageConverter", () => {
+      expect(PercentageConverter.formatIvaRate(0.19)).toBe("19%");
     });
   });
 });

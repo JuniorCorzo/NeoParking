@@ -1,6 +1,7 @@
 import {
   DURATION_UNIT_OPTIONS,
   DurationConverter,
+  formatDuration,
   fromMinutes,
   toMinutes,
 } from "./duration.utils";
@@ -38,7 +39,7 @@ describe("duration.utils", () => {
     it("should convert DAYS with 1440x multiplier", () => {
       expect(toMinutes(1, "DAYS")).toBe(1440);
       expect(toMinutes(2, "DAYS")).toBe(2880);
-      expect(toMinutes(7, "DAYS")).toBe(10080);
+      expect(toMinutes(7, "DAYS")).toBe(10_080);
     });
 
     it("should round fractional values to the nearest integer", () => {
@@ -50,7 +51,7 @@ describe("duration.utils", () => {
 
     it("should return 0 for invalid, null, undefined, NaN, or non-positive values", () => {
       expect(toMinutes(null)).toBe(0);
-      expect(toMinutes(undefined)).toBe(0);
+      expect(toMinutes()).toBe(0);
       expect(toMinutes(Number.NaN)).toBe(0);
       expect(toMinutes(-5, "MINUTES")).toBe(0);
       expect(toMinutes(-2, "HOURS")).toBe(0);
@@ -64,7 +65,7 @@ describe("duration.utils", () => {
       expect(fromMinutes(0)).toEqual({ amount: 0, unit: "MINUTES" });
       expect(fromMinutes(-10)).toEqual({ amount: 0, unit: "MINUTES" });
       expect(fromMinutes(null)).toEqual({ amount: 0, unit: "MINUTES" });
-      expect(fromMinutes(undefined)).toEqual({ amount: 0, unit: "MINUTES" });
+      expect(fromMinutes()).toEqual({ amount: 0, unit: "MINUTES" });
       expect(fromMinutes(Number.NaN)).toEqual({ amount: 0, unit: "MINUTES" });
       expect(fromMinutes(Number.POSITIVE_INFINITY)).toEqual({
         amount: 0,
@@ -124,11 +125,42 @@ describe("duration.utils", () => {
       });
 
       expect(
-        DurationConverter.fromMinutes(DurationConverter.toMinutes(25, "MINUTES"))
+        DurationConverter.fromMinutes(
+          DurationConverter.toMinutes(25, "MINUTES")
+        )
       ).toEqual({
         amount: 25,
         unit: "MINUTES",
       });
+    });
+  });
+
+  describe("formatDuration", () => {
+    it("should format days with singular and plural units", () => {
+      expect(formatDuration(1440)).toBe("1 día");
+      expect(formatDuration(2880)).toBe("2 días");
+    });
+
+    it("should format hours with singular and plural units", () => {
+      expect(formatDuration(60)).toBe("1 hora");
+      expect(formatDuration(120)).toBe("2 horas");
+    });
+
+    it("should format minutes", () => {
+      expect(formatDuration(15)).toBe("15 min");
+      expect(formatDuration(1)).toBe("1 min");
+      expect(formatDuration(0)).toBe("0 min");
+    });
+
+    it("should return '-' for invalid, null, undefined, NaN, or negative values", () => {
+      expect(formatDuration(null)).toBe("-");
+      expect(formatDuration()).toBe("-");
+      expect(formatDuration(-1)).toBe("-");
+      expect(formatDuration(Number.NaN)).toBe("-");
+    });
+
+    it("should expose formatDuration on DurationConverter", () => {
+      expect(DurationConverter.formatDuration(1440)).toBe("1 día");
     });
   });
 });
